@@ -1,0 +1,42 @@
+<resources>
+    <string name="app_name">七圈密码</string>
+    <string name="title_add_password">添加密码</string>
+    <string name="title_edit_password">修改密码</string>
+    <!--左侧抽屉菜单项-->
+    <string name="menu_group">分组</string>
+    <string name="menu_operation">操作</string>
+    <string name="group_default">默认分组</string>
+    <string name="group_all">[ 所有密码 ]</string>
+    <string name="group_add">添加分组</string>
+    <!--主菜单项-->
+    <string name="action_function">更多功能</string>
+    <string name="action_add">添加密码</string>
+    <string name="action_modify_main">修改主密码</string>
+    <string name="action_import_export">导入与导出</string>
+    <string name="action_distinct">密码去重</string>
+    <string name="action_about">关于</string>
+    <string name="action_export">导出到存储卡</string>
+    <string name="action_import">从存储卡导入</string>
+    <string name="action_save">保存</string>
+    <string name="action_delete">删除</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="username">用户名</string>
+    <string name="password">密码</string>
+    <string name="email">邮箱</string>
+    <string name="add_password_title_hint">输入标题（必填）</string>
+    <string name="add_password_name_hint">输入用户名</string>
+    <string name="add_password_password_hint">输入密码</string>
+    <string name="add_password_email_hint">输入绑定的邮箱</string>
+    <string name="add_password_note_hint">输入备注</string>
+    <string name="copy">复制</string>
+    <string name="delete">删除</string>
+    <string name="edit">修改</string>
+    <string name="title">标题</string>
+    <string name="isTop">置顶</string>
+    <string name="group">分组</string>
+
+    <string name="info_group_exist">该分组已经存在</string>
+</resources>
