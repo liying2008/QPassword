@@ -13,7 +13,7 @@ import cc.duduhuo.qpassword.service.listener.OnGetPasswordListener
  * Remarks:
  * =======================================================
  */
-class GetPasswordTask(val mId: Int,
+class GetPasswordTask(val mId: Long,
                       val mListener: OnGetPasswordListener,
                       val mPasswordService: PasswordService) : AsyncTask<Void, Void, Password?>() {
     override fun doInBackground(vararg params: Void?): Password? {

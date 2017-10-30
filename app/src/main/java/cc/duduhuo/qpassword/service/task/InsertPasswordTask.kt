@@ -1,7 +1,6 @@
 package cc.duduhuo.qpassword.service.task
 
 import android.os.AsyncTask
-import android.os.Bundle
 import cc.duduhuo.qpassword.bean.Group
 import cc.duduhuo.qpassword.bean.Password
 import cc.duduhuo.qpassword.db.GroupService
@@ -17,9 +16,10 @@ import cc.duduhuo.qpassword.service.listener.OnPasswordChangeListener
  * Remarks:
  * =======================================================
  */
-class InsertPasswordTask(val mPassword: Password,
-                         val mPasswordService: PasswordService,
-                         val mGroupService: GroupService) : AsyncTask<Void, Void, Bundle>() {
+class InsertPasswordTask(private val mPassword: Password,
+                         private val mPasswordService: PasswordService,
+                         private val mGroupService: GroupService) : AsyncTask<Void, Void, Password>() {
+    private var mIsNew = true
     private lateinit var mPasswordListeners: List<OnPasswordChangeListener>
     private lateinit var mGroupListeners: List<OnGroupChangeListener>
     fun setOnPasswordChangeListeners(listeners: List<OnPasswordChangeListener>) {
@@ -30,35 +30,29 @@ class InsertPasswordTask(val mPassword: Password,
         mGroupListeners = listeners
     }
 
-    override fun doInBackground(vararg params: Void?): Bundle {
-        val bundle = Bundle()
+    override fun doInBackground(vararg params: Void?): Password {
         val newGroupName = mPassword.groupName
         val groups = mGroupService.getAllPasswordGroup()
-        val isNew = groups.none { it.name == newGroupName }    // 是否是新的分组
+        mIsNew = groups.none { it.name == newGroupName }    // 是否是新的分组
 
-        if (isNew) {
+        if (mIsNew) {
             // 添加新分组
             val group = Group()
             group.name = newGroupName
             mGroupService.addPasswordGroup(group)
         }
-        bundle.putBoolean("isNew", isNew)
         val id = mPasswordService.insertPassword(mPassword)
         mPassword.id = id
-        bundle.putSerializable("password", mPassword)
-        return bundle
+        return mPassword
     }
 
-    override fun onPostExecute(result: Bundle) {
+    override fun onPostExecute(result: Password) {
         super.onPostExecute(result)
-        val isNew = result.getBoolean("isNew")
-        val password: Password = result.getSerializable("password") as Password
-
-        if (isNew) {
+        if (mIsNew) {
             val group = Group()
-            group.name = password.groupName
+            group.name = result.groupName
             mGroupListeners.map { it.onNewGroup(group) }
         }
-        mPasswordListeners.map { it.onNewPassword(password) }
+        mPasswordListeners.map { it.onNewPassword(result) }
     }
 }

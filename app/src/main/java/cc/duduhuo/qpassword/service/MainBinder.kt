@@ -68,7 +68,7 @@ class MainBinder(context: Context, val mApp: App) : Binder() {
      * @param listener
      * @param id ID
      */
-    fun getPassword(listener: OnGetPasswordListener, id: Int) {
+    fun getPassword(listener: OnGetPasswordListener, id: Long) {
         val task = GetPasswordTask(id, listener, mPasswordService)
         task.execute()
     }

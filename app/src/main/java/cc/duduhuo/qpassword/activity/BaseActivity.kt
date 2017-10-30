@@ -3,6 +3,7 @@ package cc.duduhuo.qpassword.activity
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import cc.duduhuo.qpassword.service.MainBinder
 
 /**
  * =======================================================
@@ -14,6 +15,7 @@ import android.support.v7.app.AppCompatActivity
  */
 @SuppressLint("Registered")
 open class BaseActivity : AppCompatActivity() {
+    protected var mMainBinder: MainBinder? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

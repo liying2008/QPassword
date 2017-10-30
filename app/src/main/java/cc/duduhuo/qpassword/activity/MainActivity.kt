@@ -1,7 +1,6 @@
 package cc.duduhuo.qpassword.activity
 
 import android.content.ComponentName
-import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
@@ -13,36 +12,41 @@ import android.view.MenuItem
 import cc.duduhuo.applicationtoast.AppToast
 import cc.duduhuo.qpassword.R
 import cc.duduhuo.qpassword.adapter.DrawerItemAdapter
+import cc.duduhuo.qpassword.adapter.PasswordListAdapter
+import cc.duduhuo.qpassword.bean.Password
 import cc.duduhuo.qpassword.config.Config
 import cc.duduhuo.qpassword.db.GroupService
 import cc.duduhuo.qpassword.model.DrawerItemNormal
 import cc.duduhuo.qpassword.service.MainBinder
 import cc.duduhuo.qpassword.service.MainService
+import cc.duduhuo.qpassword.service.listener.OnGetPasswordsListener
 import cc.duduhuo.qpassword.util.PreferencesUtils
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import kotlinx.android.synthetic.main.content_main.*
 
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity(), OnGetPasswordsListener {
+
     private lateinit var mMenuAdapter: DrawerItemAdapter
-    private var mMainBinder: MainBinder? = null
-
-    private val serviceConnection = object : ServiceConnection {
+    private lateinit var mPasswordAdapter: PasswordListAdapter
+    private val mServiceConnection = object : ServiceConnection {
         override fun onServiceDisconnected(name: ComponentName) {
             mMainBinder = null
         }
 
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
             mMainBinder = service as MainBinder
-            // 初始化数据
             initData()
         }
     }
 
     private fun initData() {
+        mPasswordAdapter = PasswordListAdapter(this)
+        rv_password.adapter = mPasswordAdapter
         // 得到上次选中的分组名称
         val lastGroup = PreferencesUtils.getString(this, Config.LAST_GROUP, getString(R.string.group_default))
-
+        mMainBinder?.getPasswords(this, lastGroup)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,8 +57,9 @@ class MainActivity : BaseActivity() {
         fab.setOnClickListener { view ->
 
         }
+        // 绑定服务
         val intent = MainService.getIntent(this)
-        this.bindService(intent, serviceConnection, BIND_AUTO_CREATE)
+        this.bindService(intent, mServiceConnection, BIND_AUTO_CREATE)
 
         setupDrawer()
         initGroupData()
@@ -95,6 +100,8 @@ class MainActivity : BaseActivity() {
         when (item.itemId) {
             R.id.action_add -> {
                 val intent = EditActivity.getIntent(this)
+                // TODO
+                intent.putExtra(EditActivity.PASSWORD_GROUP, getString(R.string.group_default))
                 startActivity(intent)
                 return true
             }
@@ -107,5 +114,14 @@ class MainActivity : BaseActivity() {
             AppToast.showToast(drawerItemNormal.title)
             drawer_layout.closeDrawer(GravityCompat.START)
         }
+    }
+
+    override fun onGetPasswords(groupName: String?, passwords: List<Password>) {
+        mPasswordAdapter.setData(passwords)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unbindService(mServiceConnection)
     }
 }

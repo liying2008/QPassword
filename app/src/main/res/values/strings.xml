@@ -39,4 +39,6 @@
     <string name="group">分组</string>
 
     <string name="info_group_exist">该分组已经存在</string>
+    <string name="title_can_not_be_empty">标题不可用空</string>
+    <string name="password_has_been_deleted">该条密码已经被删除</string>
 </resources>

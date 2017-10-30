@@ -1,7 +1,5 @@
 package cc.duduhuo.qpassword.bean
 
-import java.io.Serializable
-
 /**
  * =======================================================
  * Author: liying - liruoer2008@yeah.net
@@ -10,11 +8,10 @@ import java.io.Serializable
  * Remarks:
  * =======================================================
  */
-class Group : Serializable {
-    companion object {
-        val NAME = "name"
-    }
-
+class Group(
     /** 分组名称 */
-    var name: String = ""
+    var name: String = "") {
+    companion object {
+        const val NAME = "name"
+    }
 }

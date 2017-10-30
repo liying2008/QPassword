@@ -100,7 +100,7 @@ class PasswordService(context: Context) {
     private fun mapPassword(cursor: Cursor): Password {
         val password = Password()
         password.id = cursor.getLong(cursor.getColumnIndex(Password.ID))
-        password.createDate = cursor.getInt(cursor.getColumnIndex(Password.CREATE_DATE))
+        password.createDate = cursor.getLong(cursor.getColumnIndex(Password.CREATE_DATE))
         password.title = cursor.getString(cursor.getColumnIndex(Password.TITLE))
         password.username = cursor.getString(cursor.getColumnIndex(Password.USERNAME))
         password.password = cursor.getString(cursor.getColumnIndex(Password.PASSWORD))

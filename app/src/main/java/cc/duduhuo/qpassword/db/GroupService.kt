@@ -3,7 +3,6 @@ package cc.duduhuo.qpassword.db
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
-import android.database.sqlite.SQLiteDatabase
 import cc.duduhuo.qpassword.bean.Group
 import cc.duduhuo.qpassword.bean.Password
 
