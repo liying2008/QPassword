@@ -11,13 +11,22 @@ import cc.duduhuo.qpassword.bean.Password
  * =======================================================
  */
 interface OnPasswordChangeListener {
-    /**  增加了新密码 */
+    /**
+     * 增加了新密码
+     * @param password 增加的密码
+     */
     fun onNewPassword(password: Password)
 
-    /** 删除了密码 */
-    fun onDeletePassword(id: Long)
+    /**
+     * 删除了密码
+     * @param password 删除的密码
+     */
+    fun onDeletePassword(password: Password)
 
-    /** 更新了密码 */
-    fun onUpdatePassword(password: Password)
+    /**
+     * 更新了密码
+     * @param newPassword 新密码数据
+     */
+    fun onUpdatePassword(newPassword: Password)
 
 }

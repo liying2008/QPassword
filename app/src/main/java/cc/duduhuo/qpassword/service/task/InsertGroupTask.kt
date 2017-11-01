@@ -25,13 +25,13 @@ class InsertGroupTask(private val mGroup: Group,
 
     override fun doInBackground(vararg params: Void?): Group {
         val newGroupName = mGroup.name
-        val groups = mGroupService.getAllPasswordGroup()
+        val groups = mGroupService.getAllGroups()
         mIsNew = groups.none { it.name == newGroupName }    // 是否是新的分组
         if (mIsNew) {
             // 添加新分组
             val group = Group()
             group.name = newGroupName
-            mGroupService.addPasswordGroup(group)
+            mGroupService.addGroup(group)
         }
         return mGroup
     }

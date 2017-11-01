@@ -1,6 +1,8 @@
 package cc.duduhuo.qpassword.service.task
 
 import android.os.AsyncTask
+import android.util.Log
+import cc.duduhuo.qpassword.bean.Password
 import cc.duduhuo.qpassword.db.PasswordService
 import cc.duduhuo.qpassword.service.listener.OnPasswordChangeListener
 
@@ -12,7 +14,7 @@ import cc.duduhuo.qpassword.service.listener.OnPasswordChangeListener
  * Remarks:
  * =======================================================
  */
-class DeletePasswordTask(val mId: Long,
+class DeletePasswordTask(private val mPassword: Password,
                          private val passwordService: PasswordService) : AsyncTask<Void, Void, Int>() {
     private lateinit var mListeners: List<OnPasswordChangeListener>
     fun setOnPasswordChangeListeners(listeners: List<OnPasswordChangeListener>) {
@@ -20,11 +22,13 @@ class DeletePasswordTask(val mId: Long,
     }
 
     override fun doInBackground(vararg params: Void?): Int {
-        return passwordService.deletePassword(mId)
+        return passwordService.deletePassword(mPassword.id)
     }
 
     override fun onPostExecute(result: Int) {
         super.onPostExecute(result)
-        mListeners.map { it.onDeletePassword(mId) }
+        if (result > 0) {
+            mListeners.map { it.onDeletePassword(mPassword) }
+        }
     }
 }

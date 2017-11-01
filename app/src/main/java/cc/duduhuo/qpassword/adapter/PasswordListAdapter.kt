@@ -3,12 +3,17 @@ package cc.duduhuo.qpassword.adapter
 import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import cc.duduhuo.qpassword.R
 import cc.duduhuo.qpassword.bean.Password
+import cc.duduhuo.qpassword.util.formatDate
+import cc.duduhuo.qpassword.util.mComparator
 import kotlinx.android.synthetic.main.item_password.view.*
+import java.util.*
+
 
 /**
  * =======================================================
@@ -19,10 +24,62 @@ import kotlinx.android.synthetic.main.item_password.view.*
  * =======================================================
  */
 class PasswordListAdapter(private val mContext: Context) : RecyclerView.Adapter<PasswordListAdapter.ViewHolder>() {
-    private var mPasswords: List<Password> = mutableListOf()
-    fun setData(passwords: List<Password>) {
+    private var mPasswords: MutableList<Password> = mutableListOf()
+    private var mActionListener: OnPasswordActionListener? = null
+    fun setData(passwords: MutableList<Password>) {
         mPasswords = passwords
+        Collections.sort<Password>(mPasswords, mComparator)
         notifyDataSetChanged()
+    }
+
+    /**
+     * 添加一条数据
+     * @param password
+     */
+    fun addData(password: Password) {
+        mPasswords.add(0, password)
+        Collections.sort<Password>(mPasswords, mComparator)
+        notifyDataSetChanged()
+    }
+
+    /**
+     * 删除一条数据
+     * @param password 要删除的密码数据
+     */
+    fun delData(password: Password) {
+        val index = mPasswords.indexOf(password)
+        if (index >= 0) {
+            mPasswords.removeAt(index)
+            notifyItemRemoved(index)
+        }
+    }
+
+    /**
+     * 更新一条数据
+     * @param newPassword 新密码数据
+     */
+    fun updateData(newPassword: Password) {
+        var needSort = false
+        val size = mPasswords.size
+        var index = -1
+        for (i in 0 until size) {
+            if (mPasswords[i].id == newPassword.id) {
+                if (mPasswords[i].isTop != newPassword.isTop) {
+                    needSort = true
+                }
+                index = i
+                mPasswords[i] = newPassword
+                break
+            }
+        }
+        if (needSort) {
+            Collections.sort(mPasswords, mComparator)
+            notifyDataSetChanged()
+        } else {
+            if (index >= 0) {
+                notifyItemChanged(index)
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
@@ -33,8 +90,7 @@ class PasswordListAdapter(private val mContext: Context) : RecyclerView.Adapter<
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val password = mPasswords[position]
         holder.itemView.tv_title.text = password.title
-        //todo
-        holder.itemView.tv_date.text = password.createDate.toString()
+        holder.itemView.tv_date.text = formatDate(mContext, password.createDate)
         holder.itemView.tv_username.text = password.username
         holder.itemView.tv_password.text = password.password
 
@@ -57,9 +113,23 @@ class PasswordListAdapter(private val mContext: Context) : RecyclerView.Adapter<
         if (password.isTop) {
             holder.itemView.iv_top.visibility = View.VISIBLE
             holder.itemView.tv_date.setTextColor(mContext.resources.getColor(R.color.title_color))
+            holder.itemView.iv_date_icon.setImageResource(R.drawable.ic_date_highlight)
         } else {
             holder.itemView.iv_top.visibility = View.GONE
             holder.itemView.tv_date.setTextColor(mContext.resources.getColor(R.color.main_text_color))
+            holder.itemView.iv_date_icon.setImageResource(R.drawable.ic_date)
+        }
+
+        holder.itemView.rl_item_copy.setOnClickListener {
+            mActionListener?.onCopy(password)
+        }
+
+        holder.itemView.rl_item_delete.setOnClickListener {
+            mActionListener?.onDelete(password)
+        }
+
+        holder.itemView.rl_item_edit.setOnClickListener {
+            mActionListener?.onEdit(password)
         }
     }
 
@@ -68,4 +138,35 @@ class PasswordListAdapter(private val mContext: Context) : RecyclerView.Adapter<
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+
+    /**
+     * 设置密码操作监听器
+     * @param actionListener
+     */
+    fun setOnPasswordActionListener(actionListener: OnPasswordActionListener) {
+        this.mActionListener = actionListener
+    }
+
+    /**
+     * 密码操作 Listener
+     */
+    interface OnPasswordActionListener {
+        /**
+         * 复制密码信息
+         * @param password
+         */
+        fun onCopy(password: Password)
+
+        /**
+         * 删除密码
+         * @param password
+         */
+        fun onDelete(password: Password)
+
+        /**
+         * 编辑密码
+         * @param password
+         */
+        fun onEdit(password: Password)
+    }
 }

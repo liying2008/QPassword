@@ -13,7 +13,7 @@ import android.content.Context
  */
 
 object PreferencesUtils {
-    val PREFERENCES_NAME = "qpassword"
+    private val PREFERENCES_NAME = "qpassword"
 
     /**
      * put string preferences
@@ -37,7 +37,7 @@ object PreferencesUtils {
      * @return The preference value if it exists, or defValue. Throws ClassCastException if there is a preference with
      * this name that is not a string
      */
-    fun getString(context: Context, key: String, defaultValue: String? = null): String? {
+    fun getString(context: Context, key: String, defaultValue: String = ""): String {
         val settings = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
         return settings.getString(key, defaultValue)
     }

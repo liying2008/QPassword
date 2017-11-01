@@ -12,21 +12,22 @@ import cc.duduhuo.qpassword.service.listener.OnGroupChangeListener
  * Remarks:
  * =======================================================
  */
-class UpdateGroupNameTask(val mOldName: String,
-                          val mNewName: String,
-                          val mGroupService: GroupService) : AsyncTask<Void, Void, Void>() {
+class UpdateGroupNameTask(private val mOldName: String,
+                          private val mNewName: String,
+                          private val mMerge: Boolean,
+                          private val mGroupService: GroupService) : AsyncTask<Void, Void, Void>() {
     private lateinit var mGroupListeners: List<OnGroupChangeListener>
     fun setOnGroupChangeListeners(listeners: List<OnGroupChangeListener>) {
         mGroupListeners = listeners
     }
 
     override fun doInBackground(vararg params: Void?): Void? {
-        mGroupService.updatePasswdGroupName(mOldName, mNewName)
+        mGroupService.updateGroupName(mOldName, mNewName, mMerge)
         return null
     }
 
     override fun onPostExecute(result: Void?) {
         super.onPostExecute(result)
-        mGroupListeners.map { it.onUpdateGroupName(mOldName, mNewName) }
+        mGroupListeners.map { it.onUpdateGroupName(mOldName, mNewName, mMerge) }
     }
 }

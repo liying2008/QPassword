@@ -55,10 +55,10 @@ class MainBinder(context: Context, val mApp: App) : Binder() {
 
     /**
      * 删除密码
-     * @param id 密码ID
+     * @param password 要删除的密码
      */
-    fun deletePassword(id: Long) {
-        val task = DeletePasswordTask(id, mPasswordService)
+    fun deletePassword(password: Password) {
+        val task = DeletePasswordTask(password, mPasswordService)
         task.setOnPasswordChangeListeners(mOnPasswordChangeListeners)
         task.execute()
     }
@@ -127,9 +127,10 @@ class MainBinder(context: Context, val mApp: App) : Binder() {
      * 更新分组名称
      * @param oldName 旧名字
      * @param newName 新名字
+     * @param merge 是否是合并分组
      */
-    fun updateGroupName(oldName: String, newName: String) {
-        val task = UpdateGroupNameTask(oldName, newName, mGroupService)
+    fun updateGroupName(oldName: String, newName: String, merge: Boolean) {
+        val task = UpdateGroupNameTask(oldName, newName, merge, mGroupService)
         task.setOnGroupChangeListeners(mOnGroupChangeListeners)
         task.execute()
     }

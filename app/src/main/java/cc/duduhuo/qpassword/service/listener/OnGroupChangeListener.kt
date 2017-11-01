@@ -11,13 +11,24 @@ import cc.duduhuo.qpassword.bean.Group
  * =======================================================
  */
 interface OnGroupChangeListener {
-    /** 增加了新分组 */
+    /**
+     * 增加了新分组
+     * @param group
+     */
     fun onNewGroup(group: Group)
 
-    /** 删除分组 */
+    /**
+     * 删除分组
+     * @param groupName 分组名称
+     */
     fun onDeleteGroup(groupName: String)
 
-    /** 更新分组名称 */
-    fun onUpdateGroupName(oldGroupName: String, newGroupName: String)
+    /**
+     * 更新分组名称
+     * @param oldGroupName 旧分组名称
+     * @param newGroupName 新分组名称
+     * @param merge 是否是合并分组
+     */
+    fun onUpdateGroupName(oldGroupName: String, newGroupName: String, merge: Boolean)
 
 }

@@ -21,7 +21,7 @@ class GroupService(context: Context) {
      *
      * @param group 分组
      */
-    fun addPasswordGroup(group: Group) {
+    fun addGroup(group: Group) {
         val db = dbHelper.writableDatabase
         try {
             val contentValues = ContentValues()
@@ -39,7 +39,7 @@ class GroupService(context: Context) {
      *
      * @return
      */
-    fun getAllPasswordGroup(): List<Group> {
+    fun getAllGroups(): List<Group> {
         val groups = mutableListOf<Group>()
         val db = dbHelper.writableDatabase
         var cursor: Cursor? = null
@@ -65,14 +65,12 @@ class GroupService(context: Context) {
      *
      * @param oldGroupName 旧名字
      * @param newGroupName 新名字
+     * @param merge 是否是合并分组
      */
-    fun updatePasswdGroupName(oldGroupName: String, newGroupName: String) {
+    fun updateGroupName(oldGroupName: String, newGroupName: String, merge: Boolean) {
         val db = dbHelper.writableDatabase
-        var rawQuery: Cursor? = null
         try {
-            rawQuery = db.rawQuery("SELECT COUNT(${Group.NAME}) FROM ${DBInfo.Table.TB_GROUP} WHERE ${Group.NAME} = ?",
-                arrayOf(newGroupName))
-            if (rawQuery != null && rawQuery.moveToNext() && rawQuery.getInt(0) == 1) {
+            if (merge) {
                 // 新的分组已经存在 直接删除旧的分组
                 db.delete(DBInfo.Table.TB_GROUP, "${Group.NAME} = ?", arrayOf(oldGroupName))
             } else {
@@ -88,7 +86,6 @@ class GroupService(context: Context) {
         } catch (e: Exception) {
             e.printStackTrace()
         } finally {
-            rawQuery?.close()
             db.close()
         }
     }
@@ -98,11 +95,11 @@ class GroupService(context: Context) {
      * @param group 分组名称
      * @return 影响的行数
      */
-    fun deletePasswordGroup(group: String): Int {
+    fun deleteGroup(groupName: String): Int {
         val db = dbHelper.writableDatabase
-        val count = db.delete(DBInfo.Table.TB_GROUP, "${Group.NAME} = ?", arrayOf(group))
+        val count = db.delete(DBInfo.Table.TB_GROUP, "${Group.NAME} = ?", arrayOf(groupName))
         if (count > 0) {
-            db.delete(DBInfo.Table.TB_PASSWORD, "${Password.GROUP_NAME} = ?", arrayOf(group))
+            db.delete(DBInfo.Table.TB_PASSWORD, "${Password.GROUP_NAME} = ?", arrayOf(groupName))
         }
         db.close()
         return count

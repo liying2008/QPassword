@@ -17,7 +17,7 @@ class GetAllGroupsTask(private val mGroupService: GroupService,
                        private val mListener: OnGetAllGroupsListener) : AsyncTask<Void, Void, List<Group>>() {
 
     override fun doInBackground(vararg params: Void?): List<Group> {
-        return mGroupService.getAllPasswordGroup()
+        return mGroupService.getAllGroups()
     }
 
     override fun onPostExecute(result: List<Group>) {

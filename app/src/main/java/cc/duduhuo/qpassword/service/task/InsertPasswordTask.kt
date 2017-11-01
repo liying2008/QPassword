@@ -32,14 +32,14 @@ class InsertPasswordTask(private val mPassword: Password,
 
     override fun doInBackground(vararg params: Void?): Password {
         val newGroupName = mPassword.groupName
-        val groups = mGroupService.getAllPasswordGroup()
+        val groups = mGroupService.getAllGroups()
         mIsNew = groups.none { it.name == newGroupName }    // 是否是新的分组
 
         if (mIsNew) {
             // 添加新分组
             val group = Group()
             group.name = newGroupName
-            mGroupService.addPasswordGroup(group)
+            mGroupService.addGroup(group)
         }
         val id = mPasswordService.insertPassword(mPassword)
         mPassword.id = id

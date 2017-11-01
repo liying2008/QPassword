@@ -12,14 +12,15 @@ import cc.duduhuo.qpassword.service.listener.OnGroupChangeListener
  * Remarks:
  * =======================================================
  */
-class DeleteGroupTask(val mGroupName: String, val mGroupService: GroupService) : AsyncTask<Void, Void, Int>() {
+class DeleteGroupTask(private val mGroupName: String,
+                      private val mGroupService: GroupService) : AsyncTask<Void, Void, Int>() {
     private lateinit var mGroupListeners: List<OnGroupChangeListener>
     fun setOnGroupChangeListeners(listeners: List<OnGroupChangeListener>) {
         mGroupListeners = listeners
     }
 
     override fun doInBackground(vararg params: Void?): Int {
-        return mGroupService.deletePasswordGroup(mGroupName)
+        return mGroupService.deleteGroup(mGroupName)
     }
 
     override fun onPostExecute(result: Int) {

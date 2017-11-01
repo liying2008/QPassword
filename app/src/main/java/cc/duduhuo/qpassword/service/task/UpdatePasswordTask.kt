@@ -13,8 +13,8 @@ import cc.duduhuo.qpassword.service.listener.OnPasswordChangeListener
  * Remarks:
  * =======================================================
  */
-class UpdatePasswordTask(val mPassword: Password,
-                         val mPasswordService: PasswordService) : AsyncTask<Void, Void, Password>() {
+class UpdatePasswordTask(private val mPassword: Password,
+                         private val mPasswordService: PasswordService) : AsyncTask<Void, Void, Password>() {
     private lateinit var mListeners: List<OnPasswordChangeListener>
     fun setOnPasswordChangeListeners(listeners: List<OnPasswordChangeListener>) {
         mListeners = listeners

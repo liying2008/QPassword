@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.item_drawer_title.view.*
  * =======================================================
  * Author: liying - liruoer2008@yeah.net
  * Datetime: 2017/10/28 11:25
- * Description:
+ * Description: 抽屉列表适配器
  * Remarks:
  * =======================================================
  */
@@ -32,15 +32,34 @@ class DrawerItemAdapter(private val mContext: Context) : RecyclerView.Adapter<Dr
 
     private val dataList = mutableListOf<DrawerItem>()
 
-    fun initData(groupNames: List<Group>) {
+    fun initData(groups: List<Group>) {
         dataList.add(DrawerItemHeader())
         dataList.add(DrawerItemTitle(mContext.getString(R.string.menu_group)))
         dataList.add(DrawerItemNormal(R.drawable.ic_group, mContext.getString(R.string.group_all)))
-        groupNames.mapTo(dataList) { DrawerItemNormal(R.drawable.ic_group, it.name) }
+        groups.mapTo(dataList) { DrawerItemNormal(R.drawable.ic_group, it.name) }
         dataList.add(DrawerItemDivider())
         dataList.add(DrawerItemTitle(mContext.getString(R.string.menu_operation)))
         dataList.add(DrawerItemNormal(R.drawable.ic_add_box, mContext.getString(R.string.group_add)))
         notifyDataSetChanged()
+    }
+
+    /**
+     * 添加一个分组
+     */
+    fun addData(group: Group) {
+        val index = dataList.size - 2
+        dataList.add(index, DrawerItemNormal(R.drawable.ic_group, group.name))
+        notifyItemInserted(index)
+    }
+
+    /**
+     * 删除一个分组
+     */
+    fun delData(groupName: String) {
+        val item = DrawerItemNormal(R.drawable.ic_group, groupName)
+        val index = dataList.indexOf(item)
+        dataList.removeAt(index)
+        notifyItemRemoved(index)
     }
 
     override fun getItemViewType(position: Int): Int {

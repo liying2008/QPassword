@@ -18,7 +18,6 @@
     <string name="action_export">导出到存储卡</string>
     <string name="action_import">从存储卡导入</string>
     <string name="action_save">保存</string>
-    <string name="action_delete">删除</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -38,7 +37,21 @@
     <string name="isTop">置顶</string>
     <string name="group">分组</string>
 
+    <string name="just">刚刚</string>
+    <string name="minute_ago">%d分钟前</string>
+    <string name="hour_ago">%d小时前</string>
+
     <string name="info_group_exist">该分组已经存在</string>
     <string name="title_can_not_be_empty">标题不可用空</string>
     <string name="password_has_been_deleted">该条密码已经被删除</string>
+    <string name="share_to">分享到</string>
+    <string name="can_not_share">无法分享</string>
+    <string name="copy_username">复制 用户名 到剪贴板</string>
+    <string name="copy_username_done">已复制用户名到剪贴板</string>
+    <string name="copy_password">复制 密码 到剪贴板</string>
+    <string name="copy_password_done">已复制密码到剪贴板</string>
+    <string name="copy_email">复制 邮箱 到剪贴板</string>
+    <string name="copy_email_done">已复制邮箱到剪贴板</string>
+    <string name="alert_delete_message">删除后不可恢复，确定删除？</string>
+    <string name="cancel">取消</string>
 </resources>
