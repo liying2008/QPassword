@@ -9,7 +9,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import cc.duduhuo.applicationtoast.AppToast
 import android.content.Intent
-import android.content.ComponentName
 import android.os.Environment
 
 

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="@dimen/drawer_item_height"
+              android:background="?android:attr/selectableItemBackground"
+              android:gravity="center_vertical"
+              android:orientation="horizontal"
+              android:paddingLeft="@dimen/activity_horizontal_margin">
+
+    <ImageView
+        android:id="@+id/iv_ic"
+        android:layout_width="@dimen/drawer_item_icon_size"
+        android:layout_height="@dimen/drawer_item_icon_size"
+        tools:background="@drawable/ic_add_box"/>
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/drawer_item_text_margin_left"
+        android:textColor="#FF000000"
+        android:textSize="14sp"
+        tools:text="添加分组"/>
+</LinearLayout>

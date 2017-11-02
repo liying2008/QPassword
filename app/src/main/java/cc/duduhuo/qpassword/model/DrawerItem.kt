@@ -10,13 +10,17 @@ package cc.duduhuo.qpassword.model
  */
 interface DrawerItem
 
-// 有图片和文字的item
-class DrawerItemNormal(var iconRes: Int, var title: String) : DrawerItem
+// 分组 Item
+class GroupDrawerItem(var iconRes: Int, var title: String) : DrawerItem
 
-// 分割线item
-class DrawerItemDivider : DrawerItem
+// 操作 Item
+class OperationDrawerItem(var iconRes: Int, var title: String) : DrawerItem
 
-// 头部item
-class DrawerItemHeader : DrawerItem
+// 分割线 Item
+class DividerDrawerItem : DrawerItem
 
-class DrawerItemTitle(var title: String) : DrawerItem
+// 头部 Item
+class HeaderDrawerItem : DrawerItem
+
+// 标题 Item
+class TitleDrawerItem(var title: String) : DrawerItem

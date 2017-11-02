@@ -11,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.EditText
 import cc.duduhuo.applicationtoast.AppToast
 import cc.duduhuo.qpassword.R
 import cc.duduhuo.qpassword.adapter.DrawerItemAdapter
@@ -18,7 +19,8 @@ import cc.duduhuo.qpassword.adapter.PasswordListAdapter
 import cc.duduhuo.qpassword.bean.Group
 import cc.duduhuo.qpassword.bean.Password
 import cc.duduhuo.qpassword.config.Config
-import cc.duduhuo.qpassword.model.DrawerItemNormal
+import cc.duduhuo.qpassword.model.GroupDrawerItem
+import cc.duduhuo.qpassword.model.OperationDrawerItem
 import cc.duduhuo.qpassword.service.MainBinder
 import cc.duduhuo.qpassword.service.MainService
 import cc.duduhuo.qpassword.service.listener.OnGetAllGroupsListener
@@ -36,9 +38,13 @@ import kotlin.properties.Delegates
 class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeListener, OnGroupChangeListener, OnGetAllGroupsListener {
     private lateinit var mMenuAdapter: DrawerItemAdapter
     private lateinit var mPasswordAdapter: PasswordListAdapter
+    private lateinit var mGroupList: List<Group>
     private var mGroupName: String by Delegates.observable("") { prop, old, new ->
         if (new != "") {
-            title = new
+            if (new != old) {
+                PreferencesUtils.putString(this@MainActivity, Config.LAST_GROUP, new)
+                title = new
+            }
         } else {
             title = getString(R.string.app_name)
         }
@@ -64,8 +70,8 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
             val items = arrayOf<String>(getString(R.string.copy_username),
                 getString(R.string.copy_password),
                 getString(R.string.copy_email))
-            val build = AlertDialog.Builder(this@MainActivity)
-            build.setItems(items) { dialog, which ->
+            val builder = AlertDialog.Builder(this@MainActivity)
+            builder.setItems(items) { dialog, which ->
                 when (which) {
                     0 -> {
                         // 复制用户名
@@ -84,18 +90,18 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
                     }
                 }
             }
-            build.create().show()
+            builder.create().show()
         }
 
         override fun onDelete(password: Password) {
-            val build = AlertDialog.Builder(this@MainActivity)
-            build.setTitle(password.title)
-            build.setMessage(R.string.alert_delete_message)
-            build.setNegativeButton(R.string.delete) { dialog, which ->
+            val builder = AlertDialog.Builder(this@MainActivity)
+            builder.setTitle(password.title)
+            builder.setMessage(R.string.alert_delete_message)
+            builder.setNegativeButton(R.string.delete) { dialog, which ->
                 mMainBinder?.deletePassword(password)
             }
-            build.setPositiveButton(R.string.cancel, null)
-            build.create().show()
+            builder.setPositiveButton(R.string.cancel, null)
+            builder.create().show()
         }
 
         override fun onEdit(password: Password) {
@@ -176,18 +182,39 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
     }
 
     inner class DrawerItemClickListener : DrawerItemAdapter.OnItemClickListener {
-        override fun onItemClick(drawerItemNormal: DrawerItemNormal) {
-            val title = drawerItemNormal.title
+        override fun onGroupItemClick(groupDrawerItem: GroupDrawerItem) {
+            // 切换分组
+            mGroupName = groupDrawerItem.title
+            if (mGroupName == getString(R.string.group_all)) {
+                mMainBinder?.getPasswords(this@MainActivity, null)
+            } else {
+                mMainBinder?.getPasswords(this@MainActivity, mGroupName)
+            }
+            pb.visibility = View.VISIBLE
+            drawer_layout.closeDrawer(GravityCompat.START)
+        }
+
+        override fun onOperationItemClick(groupDrawerItem: OperationDrawerItem) {
+            val title = groupDrawerItem.title
             if (title == getString(R.string.group_add)) {
                 // 添加分组
-            } else {
-                // 切换分组
-                mGroupName = title
-                PreferencesUtils.putString(this@MainActivity, Config.LAST_GROUP, title)
-                if (mGroupName == getString(R.string.group_all)) {
-                    mMainBinder?.getPasswords(this@MainActivity, null)
-                } else {
-                    mMainBinder?.getPasswords(this@MainActivity, mGroupName)
+                val builder = AlertDialog.Builder(this@MainActivity)
+                val view = layoutInflater.inflate(R.layout.dialog_add_group, null, false)
+                builder.setView(view)
+                val etGroup = view.findViewById<EditText>(R.id.et_add_group)
+                builder.setTitle(R.string.group_add)
+                builder.setPositiveButton(R.string.ok, null)
+                builder.setNegativeButton(R.string.cancel, null)
+                val dialog = builder.create()
+                dialog.show()
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                    val groupName = etGroup.text.toString()
+                    if (groupName == getString(R.string.group_all) || mGroupList.contains(Group(groupName))) {
+                        AppToast.showToast(R.string.group_exists)
+                    } else {
+                        mMainBinder?.insertGroup(Group(groupName))
+                        dialog.dismiss()
+                    }
                 }
             }
             drawer_layout.closeDrawer(GravityCompat.START)
@@ -196,6 +223,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
 
     override fun onGetAllGroups(groups: List<Group>) {
         mMenuAdapter.initData(groups)
+        mGroupList = groups
     }
 
     override fun onGetPasswords(groupName: String?, passwords: List<Password>) {
@@ -231,7 +259,20 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
     }
 
     override fun onUpdateGroupName(oldGroupName: String, newGroupName: String, merge: Boolean) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        if (merge) {
+            // 合并分组（删除旧分组）
+            mMenuAdapter.delData(oldGroupName)
+        } else {
+            // 更新分组名称
+            mMenuAdapter.updateData(oldGroupName, newGroupName)
+        }
+
+        // 如果是当前选中的分组名称变了，重新加载密码列表
+        if (mGroupName == oldGroupName || mGroupName == newGroupName) {
+            mGroupName = newGroupName
+            mMainBinder?.getPasswords(this, newGroupName)
+            pb.visibility = View.VISIBLE
+        }
     }
 
     override fun onDestroy() {

@@ -5,6 +5,7 @@
     <color name="colorAccent">#FF4081</color>
     <color name="item_function_bg_pressed">#e2e2e2</color>
 
+    <color name="darker_color">#535353</color>
     <color name="title_color">#fd614f</color>
     <color name="separation_line_color">#DDDADFE5</color>
     <color name="main_text_color">#7C7F89</color>

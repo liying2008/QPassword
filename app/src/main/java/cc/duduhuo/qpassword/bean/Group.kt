@@ -8,7 +8,7 @@ package cc.duduhuo.qpassword.bean
  * Remarks:
  * =======================================================
  */
-class Group(
+data class Group(
     /** 分组名称 */
     var name: String = "") {
     companion object {

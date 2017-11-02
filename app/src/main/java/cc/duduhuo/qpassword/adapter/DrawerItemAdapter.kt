@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import cc.duduhuo.qpassword.R
 import cc.duduhuo.qpassword.bean.Group
 import cc.duduhuo.qpassword.model.*
-import kotlinx.android.synthetic.main.item_drawer_menu.view.*
+import kotlinx.android.synthetic.main.item_drawer_group.view.*
 import kotlinx.android.synthetic.main.item_drawer_title.view.*
 
 
@@ -23,54 +23,75 @@ import kotlinx.android.synthetic.main.item_drawer_title.view.*
 class DrawerItemAdapter(private val mContext: Context) : RecyclerView.Adapter<DrawerItemAdapter.DrawerViewHolder>() {
     companion object {
         private val TYPE_DIVIDER = 0
-        private val TYPE_NORMAL = 1
-        private val TYPE_HEADER = 2
-        private val TYPE_TITLE = 3
+        private val TYPE_GROUP = 1
+        private val TYPE_OPERATION = 2
+        private val TYPE_HEADER = 3
+        private val TYPE_TITLE = 4
     }
 
-    private var listener: OnItemClickListener? = null
+    private var mListener: OnItemClickListener? = null
 
-    private val dataList = mutableListOf<DrawerItem>()
+    private val mDataList = mutableListOf<DrawerItem>()
 
+    /**
+     * 初始化数据
+     * @param groups 分组列表
+     */
     fun initData(groups: List<Group>) {
-        dataList.add(DrawerItemHeader())
-        dataList.add(DrawerItemTitle(mContext.getString(R.string.menu_group)))
-        dataList.add(DrawerItemNormal(R.drawable.ic_group, mContext.getString(R.string.group_all)))
-        groups.mapTo(dataList) { DrawerItemNormal(R.drawable.ic_group, it.name) }
-        dataList.add(DrawerItemDivider())
-        dataList.add(DrawerItemTitle(mContext.getString(R.string.menu_operation)))
-        dataList.add(DrawerItemNormal(R.drawable.ic_add_box, mContext.getString(R.string.group_add)))
+        mDataList.add(HeaderDrawerItem())
+        mDataList.add(TitleDrawerItem(mContext.getString(R.string.menu_group)))
+        mDataList.add(GroupDrawerItem(R.drawable.ic_group, mContext.getString(R.string.group_all)))
+        groups.mapTo(mDataList) { GroupDrawerItem(R.drawable.ic_group, it.name) }
+        mDataList.add(DividerDrawerItem())
+        mDataList.add(TitleDrawerItem(mContext.getString(R.string.menu_operation)))
+        mDataList.add(OperationDrawerItem(R.drawable.ic_add_box, mContext.getString(R.string.group_add)))
         notifyDataSetChanged()
     }
 
     /**
      * 添加一个分组
+     * @param group 分组
      */
     fun addData(group: Group) {
-        val index = dataList.size - 2
-        dataList.add(index, DrawerItemNormal(R.drawable.ic_group, group.name))
+        val index = mDataList.size - 3
+        mDataList.add(index, GroupDrawerItem(R.drawable.ic_group, group.name))
         notifyItemInserted(index)
     }
 
     /**
      * 删除一个分组
+     * @param groupName 分组名称
      */
     fun delData(groupName: String) {
-        val item = DrawerItemNormal(R.drawable.ic_group, groupName)
-        val index = dataList.indexOf(item)
-        dataList.removeAt(index)
+        val item = GroupDrawerItem(R.drawable.ic_group, groupName)
+        val index = mDataList.indexOf(item)
+        mDataList.removeAt(index)
         notifyItemRemoved(index)
     }
 
+    /**
+     * 更新分组名称
+     * @param oldGroupName 旧分组名称
+     * @param newGroupName 新分组名称
+     */
+    fun updateData(oldGroupName: String, newGroupName: String) {
+        val item = GroupDrawerItem(R.drawable.ic_group, oldGroupName)
+        val index = mDataList.indexOf(item)
+        (mDataList[index] as GroupDrawerItem).title = newGroupName
+        notifyItemChanged(index)
+    }
+
     override fun getItemViewType(position: Int): Int {
-        val drawerItem = dataList[position]
-        if (drawerItem is DrawerItemDivider) {
+        val drawerItem = mDataList[position]
+        if (drawerItem is DividerDrawerItem) {
             return TYPE_DIVIDER
-        } else if (drawerItem is DrawerItemNormal) {
-            return TYPE_NORMAL
-        } else if (drawerItem is DrawerItemHeader) {
+        } else if (drawerItem is GroupDrawerItem) {
+            return TYPE_GROUP
+        } else if (drawerItem is OperationDrawerItem) {
+            return TYPE_OPERATION
+        } else if (drawerItem is HeaderDrawerItem) {
             return TYPE_HEADER
-        } else if (drawerItem is DrawerItemTitle) {
+        } else if (drawerItem is TitleDrawerItem) {
             return TYPE_TITLE
         }
         return super.getItemViewType(position)
@@ -81,29 +102,41 @@ class DrawerItemAdapter(private val mContext: Context) : RecyclerView.Adapter<Dr
         val inflater = LayoutInflater.from(mContext)
         when (viewType) {
             TYPE_DIVIDER -> viewHolder = DividerViewHolder(inflater.inflate(R.layout.item_drawer_divider, parent, false))
-            TYPE_HEADER -> viewHolder = HeaderViewHolder(inflater.inflate(R.layout.nav_header_main, parent, false))
-            TYPE_NORMAL -> viewHolder = NormalViewHolder(inflater.inflate(R.layout.item_drawer_menu, parent, false))
-            TYPE_TITLE -> viewHolder = NormalViewHolder(inflater.inflate(R.layout.item_drawer_title, parent, false))
+            TYPE_HEADER -> viewHolder = HeaderViewHolder(inflater.inflate(R.layout.item_drawer_header, parent, false))
+            TYPE_GROUP -> viewHolder = NormalViewHolder(inflater.inflate(R.layout.item_drawer_group, parent, false))
+            TYPE_OPERATION -> viewHolder = NormalViewHolder(inflater.inflate(R.layout.item_drawer_operation, parent, false))
+            TYPE_TITLE -> viewHolder = TitleViewHolder(inflater.inflate(R.layout.item_drawer_title, parent, false))
         }
         return viewHolder!!
     }
 
     override fun getItemCount(): Int {
-        return if (dataList == null) 0 else dataList.size
+        return mDataList.size
     }
 
     override fun onBindViewHolder(holder: DrawerViewHolder, position: Int) {
-        val item = dataList[position]
+        val item = mDataList[position]
         val type = getItemViewType(position)
-        when(type) {
-            TYPE_NORMAL -> {
-                val itemNormal = item as DrawerItemNormal
-                holder.itemView.iv_ic.setBackgroundResource(itemNormal.iconRes)
-                holder.itemView.tv_title.text = itemNormal.title
+        when (type) {
+            TYPE_GROUP -> {
+                val groupItem = item as GroupDrawerItem
+                holder.itemView.iv_ic.setBackgroundResource(groupItem.iconRes)
+                holder.itemView.tv_title.text = groupItem.title
 
                 holder.itemView.setOnClickListener {
-                    if (listener != null) {
-                        listener!!.onItemClick(itemNormal)
+                    if (mListener != null) {
+                        mListener!!.onGroupItemClick(groupItem)
+                    }
+                }
+            }
+            TYPE_OPERATION -> {
+                val opItem = item as OperationDrawerItem
+                holder.itemView.iv_ic.setBackgroundResource(opItem.iconRes)
+                holder.itemView.tv_title.text = opItem.title
+
+                holder.itemView.setOnClickListener {
+                    if (mListener != null) {
+                        mListener!!.onOperationItemClick(opItem)
                     }
                 }
             }
@@ -112,24 +145,34 @@ class DrawerItemAdapter(private val mContext: Context) : RecyclerView.Adapter<Dr
             }
 
             TYPE_TITLE -> {
-                val itemTitle = item as DrawerItemTitle
+                val itemTitle = item as TitleDrawerItem
                 holder.itemView.tv_title_title.text = itemTitle.title
             }
         }
     }
 
     fun setOnItemClickListener(listener: OnItemClickListener) {
-        this.listener = listener
+        this.mListener = listener
     }
 
     interface OnItemClickListener {
-        fun onItemClick(drawerItemNormal: DrawerItemNormal)
+        /**
+         * 分组菜单点击事件监听
+         * @param groupDrawerItem
+         */
+        fun onGroupItemClick(groupDrawerItem: GroupDrawerItem)
+
+        /**
+         * 操作菜单点击事件监听
+         * @param groupDrawerItem
+         */
+        fun onOperationItemClick(groupDrawerItem: OperationDrawerItem)
     }
 
     inner open class DrawerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     /**
-     * 有图标和文字的菜单项
+     * 分组菜单和操作菜单
      */
 
     inner class NormalViewHolder(itemView: View) : DrawerViewHolder(itemView)
@@ -143,6 +186,7 @@ class DrawerItemAdapter(private val mContext: Context) : RecyclerView.Adapter<Dr
      * 头部
      */
     inner class HeaderViewHolder(itemView: View) : DrawerViewHolder(itemView)
+
     /**
      * 标题菜单项
      */

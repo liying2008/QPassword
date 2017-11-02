@@ -22,7 +22,7 @@ class PasswordService(context: Context) {
      * @return 返回这条数据的自增主键 如果插入失败，返回-1
      */
     fun insertPassword(password: Password): Long {
-        var id: Long = -1
+        var id: Long = -1L
         val db = dbHelper.writableDatabase
         try {
             val contentValues = ContentValues()
@@ -53,7 +53,6 @@ class PasswordService(context: Context) {
         val db = dbHelper.writableDatabase
         try {
             val contentValues = ContentValues()
-            contentValues.put(Password.CREATE_DATE, password.createDate)
             contentValues.put(Password.TITLE, password.title)
             contentValues.put(Password.USERNAME, password.username)
             contentValues.put(Password.PASSWORD, password.password)

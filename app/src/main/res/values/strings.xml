@@ -53,5 +53,8 @@
     <string name="copy_email">复制 邮箱 到剪贴板</string>
     <string name="copy_email_done">已复制邮箱到剪贴板</string>
     <string name="alert_delete_message">删除后不可恢复，确定删除？</string>
+    <string name="ok">确定</string>
     <string name="cancel">取消</string>
+    <string name="enter_new_group_name">输入新分组名称</string>
+    <string name="group_exists">分组名称已存在</string>
 </resources>

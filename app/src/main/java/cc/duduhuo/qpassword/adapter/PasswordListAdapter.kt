@@ -68,7 +68,10 @@ class PasswordListAdapter(private val mContext: Context) : RecyclerView.Adapter<
                     needSort = true
                 }
                 index = i
+                // newPassword 里 createDate 为 0
+                val createDate = mPasswords[i].createDate
                 mPasswords[i] = newPassword
+                mPasswords[i].createDate = createDate
                 break
             }
         }

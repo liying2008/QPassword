@@ -8,7 +8,7 @@ package cc.duduhuo.qpassword.bean
  * Remarks:
  * =======================================================
  */
-class Password(
+data class Password(
     /** ID */
     var id: Long = 0,
     /** 创建时间 */
