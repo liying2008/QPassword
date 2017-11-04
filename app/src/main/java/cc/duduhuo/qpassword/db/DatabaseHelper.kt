@@ -17,6 +17,7 @@ import cc.duduhuo.qpassword.bean.Group
 class DatabaseHelper(private val mContext: Context) : SQLiteOpenHelper(mContext, DBInfo.DB_NAME, null, DBInfo.DB_VERSION) {
     override fun onCreate(db: SQLiteDatabase?) {
         //创建数据表
+        db?.execSQL(DBInfo.Table.TB_KEY_CREATE)
         db?.execSQL(DBInfo.Table.TB_PASSWORD_CREATE)
         db?.execSQL(DBInfo.Table.TB_GROUP_CREATE)
         // 插入一个默认分组

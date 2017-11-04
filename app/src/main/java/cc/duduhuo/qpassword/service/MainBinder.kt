@@ -4,8 +4,10 @@ import android.content.Context
 import android.os.Binder
 import cc.duduhuo.qpassword.app.App
 import cc.duduhuo.qpassword.bean.Group
+import cc.duduhuo.qpassword.bean.Key
 import cc.duduhuo.qpassword.bean.Password
 import cc.duduhuo.qpassword.db.GroupService
+import cc.duduhuo.qpassword.db.KeyService
 import cc.duduhuo.qpassword.db.PasswordService
 import cc.duduhuo.qpassword.service.listener.*
 import cc.duduhuo.qpassword.service.task.*
@@ -19,10 +21,14 @@ import cc.duduhuo.qpassword.service.task.*
  * =======================================================
  */
 class MainBinder(context: Context, val mApp: App) : Binder() {
+    private val mKeyService: KeyService = KeyService(context)
     private val mPasswordService: PasswordService = PasswordService(context)
     private val mGroupService: GroupService = GroupService(context)
     /** 密码变化监听器 */
     private val mOnPasswordChangeListeners = mutableListOf<OnPasswordChangeListener>()
+
+    /** 密钥变化监听器 */
+    private val mOnKeyChangeListeners = mutableListOf<OnKeyChangeListener>()
 
     /** 分组变化监听器 */
     private val mOnGroupChangeListeners = mutableListOf<OnGroupChangeListener>()
@@ -36,11 +42,48 @@ class MainBinder(context: Context, val mApp: App) : Binder() {
     }
 
     /**
+     * 注册密钥变化监听器
+     * @param listener 密钥变化监听器
+     */
+    fun registerOnKeyChangeListener(listener: OnKeyChangeListener) {
+        mOnKeyChangeListeners.add(listener)
+    }
+
+    /**
      * 注册分组变化监听器
      * @param listener 分组变化监听器
      */
     fun registerOnGroupChangeListener(listener: OnGroupChangeListener) {
         mOnGroupChangeListeners.add(listener)
+    }
+
+    /**
+     * 添加新密钥
+     * @param key 新密钥
+     */
+    fun insertKey(key: Key) {
+        val task = InsertKeyTask(key, mKeyService)
+        task.execute()
+    }
+
+    /**
+     * 获取密钥
+     * @param listener
+     */
+    fun getKey(listener: OnGetKeyListener) {
+        val task = GetKeyTask(listener, mKeyService)
+        task.execute()
+    }
+
+    /**
+     * 更新密钥
+     * @param oldKey 就密钥
+     * @param newKey 新密钥
+     */
+    fun updateKey(oldKey: Key, newKey: Key) {
+        val task = UpdateKeyTask(oldKey, newKey, mKeyService)
+        task.setOnKeyChangeListener(mOnKeyChangeListeners)
+        task.execute()
     }
 
     /**

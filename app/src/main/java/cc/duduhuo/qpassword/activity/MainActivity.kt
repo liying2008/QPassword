@@ -38,7 +38,7 @@ import kotlin.properties.Delegates
 class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeListener, OnGroupChangeListener, OnGetAllGroupsListener {
     private lateinit var mMenuAdapter: DrawerItemAdapter
     private lateinit var mPasswordAdapter: PasswordListAdapter
-    private lateinit var mGroupList: List<Group>
+    private var mGroupList = mutableListOf<Group>()
     private var mGroupName: String by Delegates.observable("") { prop, old, new ->
         if (new != "") {
             if (new != old) {
@@ -69,7 +69,8 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
         override fun onCopy(password: Password) {
             val items = arrayOf<String>(getString(R.string.copy_username),
                 getString(R.string.copy_password),
-                getString(R.string.copy_email))
+                getString(R.string.copy_email),
+                getString(R.string.copy_note))
             val builder = AlertDialog.Builder(this@MainActivity)
             builder.setItems(items) { dialog, which ->
                 when (which) {
@@ -87,6 +88,11 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
                         // 复制邮箱
                         copyText(this@MainActivity, password.email)
                         AppToast.showToast(R.string.copy_email_done)
+                    }
+                    3 -> {
+                        // 复制备注
+                        copyText(this@MainActivity, password.note)
+                        AppToast.showToast(R.string.copy_note_done)
                     }
                 }
             }
@@ -171,11 +177,26 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_add -> {
+                // 添加密码
                 val intent = EditActivity.getIntent(this)
-                // TODO
                 intent.putExtra(EditActivity.PASSWORD_GROUP, mGroupName)
                 startActivity(intent)
                 return true
+            }
+            R.id.action_modify_main -> {
+                // 修改主密码
+            }
+            R.id.action_export -> {
+                // 导出密码
+            }
+            R.id.action_import -> {
+                // 导入密码
+            }
+            R.id.action_distinct -> {
+                // 密码去重
+            }
+            R.id.action_about -> {
+                // 关于
             }
         }
         return super.onOptionsItemSelected(item)
@@ -192,6 +213,34 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
             }
             pb.visibility = View.VISIBLE
             drawer_layout.closeDrawer(GravityCompat.START)
+        }
+
+        override fun onGroupItemLongClick(groupDrawerItem: GroupDrawerItem) {
+            val title = groupDrawerItem.title
+            if (title == getString(R.string.group_all)) {
+                // 所有密码
+                AppToast.showToast(R.string.can_not_change_this_group)
+            } else {
+                val builder = AlertDialog.Builder(this@MainActivity)
+                val items = arrayOf(getString(R.string.update_group_name), getString(R.string.merge_group), getString(R.string.delete_group))
+                builder.setItems(items) { dialog, which ->
+                    when (which) {
+                        0 -> {
+                            // 修改分组名
+                            updateGroupName(title)
+                        }
+                        1 -> {
+                            // 合并分组到
+                            mergeGroup(title)
+                        }
+                        2 -> {
+                            // 删除分组
+                            deleteGroup(title)
+                        }
+                    }
+                }
+                builder.create().show()
+            }
         }
 
         override fun onOperationItemClick(groupDrawerItem: OperationDrawerItem) {
@@ -221,9 +270,74 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
         }
     }
 
+    /**
+     * 合并分组到
+     * @param groupName 分组名
+     */
+    private fun mergeGroup(groupName: String) {
+        if (mGroupList.size <= 1) {
+            AppToast.showToast(R.string.no_group_can_be_merge)
+            return
+        }
+        // 可以合并到的分组
+        val items = mGroupList
+            .filter { it.name != groupName }
+            .map { it.name }
+
+        val mergeBuilder = AlertDialog.Builder(this)
+        mergeBuilder.setItems(items.toTypedArray()) { dialog, which ->
+            val newGroupName = items[which]
+            mMainBinder?.updateGroupName(groupName, newGroupName, true)
+        }
+        mergeBuilder.create().show()
+    }
+
+    /**
+     * 删除分组
+     *
+     * @param groupName 分组名称
+     */
+    private fun deleteGroup(groupName: String) {
+        val delBuilder = AlertDialog.Builder(this)
+        delBuilder.setTitle(R.string.delete_group)
+        delBuilder.setMessage(getString(R.string.delete_group_message, title))
+        delBuilder.setPositiveButton(R.string.cancel, null)
+        delBuilder.setNegativeButton(R.string.delete) { dialog, which ->
+            mMainBinder?.deleteGroup(groupName)
+        }
+        delBuilder.create().show()
+    }
+
+    /**
+     * 更新分组名
+     * @param oldName 原分组名称
+     */
+    private fun updateGroupName(oldName: String) {
+        val updateBuilder = AlertDialog.Builder(this)
+        val view = layoutInflater.inflate(R.layout.dialog_update_group, null, false)
+        updateBuilder.setView(view)
+        val etGroup = view.findViewById<EditText>(R.id.et_update_group)
+        etGroup.setText(title)
+        etGroup.setSelection(title.length)
+        updateBuilder.setTitle(R.string.update_group_name)
+        updateBuilder.setPositiveButton(R.string.ok, null)
+        updateBuilder.setNegativeButton(R.string.cancel, null)
+        val updateDialog = updateBuilder.create()
+        updateDialog.show()
+        updateDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+            val groupName = etGroup.text.toString()
+            if (groupName == getString(R.string.group_all) || mGroupList.contains(Group(groupName))) {
+                AppToast.showToast(R.string.group_exists)
+            } else {
+                mMainBinder?.updateGroupName(oldName, groupName, false)
+                updateDialog.dismiss()
+            }
+        }
+    }
+
     override fun onGetAllGroups(groups: List<Group>) {
         mMenuAdapter.initData(groups)
-        mGroupList = groups
+        mGroupList = groups.toMutableList()
     }
 
     override fun onGetPasswords(groupName: String?, passwords: List<Password>) {
@@ -232,11 +346,8 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
     }
 
     override fun onNewPassword(password: Password) {
-        if (password.groupName == mGroupName) {
-            mPasswordAdapter.addData(password)
-        } else if (mGroupName == getString(R.string.group_all)) {
-            // 所有密码（组）
-            // todo
+        AppToast.showToast(getString(R.string.password_added, password.title))
+        if (password.groupName == mGroupName || mGroupName == getString(R.string.group_all)) {
             mPasswordAdapter.addData(password)
         }
     }
@@ -246,33 +357,58 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
     }
 
     override fun onUpdatePassword(newPassword: Password) {
-        mPasswordAdapter.updateData(newPassword)
-        // todo
+        AppToast.showToast(getString(R.string.password_updated, newPassword.title))
+        mPasswordAdapter.updateData(newPassword, mGroupName)
     }
 
     override fun onNewGroup(group: Group) {
+        mGroupList.add(group)
         mMenuAdapter.addData(group)
+        AppToast.showToast(getString(R.string.group_added, group.name))
+        showGroup(group.name)
     }
 
     override fun onDeleteGroup(groupName: String) {
-        mMenuAdapter.delData(groupName)
+        val result = mMenuAdapter.delData(groupName)
+        if (result) {
+            mGroupList.remove(Group(groupName))
+            if (mGroupName == groupName) {
+                showGroup(getString(R.string.group_all))
+            }
+        }
     }
 
     override fun onUpdateGroupName(oldGroupName: String, newGroupName: String, merge: Boolean) {
         if (merge) {
             // 合并分组（删除旧分组）
             mMenuAdapter.delData(oldGroupName)
+            mGroupList.remove(Group(oldGroupName))
+            AppToast.showToast(getString(R.string.group_merged, oldGroupName, newGroupName))
         } else {
             // 更新分组名称
             mMenuAdapter.updateData(oldGroupName, newGroupName)
+            mGroupList[mGroupList.indexOf(Group(oldGroupName))].name = newGroupName
+            AppToast.showToast(getString(R.string.group_name_has_been_update, newGroupName))
         }
 
         // 如果是当前选中的分组名称变了，重新加载密码列表
         if (mGroupName == oldGroupName || mGroupName == newGroupName) {
-            mGroupName = newGroupName
-            mMainBinder?.getPasswords(this, newGroupName)
-            pb.visibility = View.VISIBLE
+            showGroup(newGroupName)
         }
+    }
+
+    /**
+     * 显示某个分组密码
+     * @param groupName 分组名称
+     */
+    private fun showGroup(groupName: String) {
+        mGroupName = groupName
+        if (mGroupName == getString(R.string.group_all)) {
+            mMainBinder?.getPasswords(this, null)
+        } else {
+            mMainBinder?.getPasswords(this, mGroupName)
+        }
+        pb.visibility = View.VISIBLE
     }
 
     override fun onDestroy() {

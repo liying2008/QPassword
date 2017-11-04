@@ -15,7 +15,7 @@ import java.util.ArrayList
  * =======================================================
  */
 class PasswordService(context: Context) {
-    private val dbHelper: DatabaseHelper = DatabaseHelper(context)
+    private val mDbHelper: DatabaseHelper = DatabaseHelper(context)
     /**
      * 插入一条密码
      * @param password 要插入的密码
@@ -23,7 +23,7 @@ class PasswordService(context: Context) {
      */
     fun insertPassword(password: Password): Long {
         var id: Long = -1L
-        val db = dbHelper.writableDatabase
+        val db = mDbHelper.writableDatabase
         try {
             val contentValues = ContentValues()
             contentValues.put(Password.CREATE_DATE, password.createDate)
@@ -50,7 +50,7 @@ class PasswordService(context: Context) {
      */
     fun updatePassword(password: Password): Int {
         var result = 0
-        val db = dbHelper.writableDatabase
+        val db = mDbHelper.writableDatabase
         try {
             val contentValues = ContentValues()
             contentValues.put(Password.TITLE, password.title)
@@ -79,7 +79,7 @@ class PasswordService(context: Context) {
      */
     fun getPassword(id: Long): Password? {
         var password: Password? = null
-        val db = dbHelper.writableDatabase
+        val db = mDbHelper.writableDatabase
         var cursor: Cursor? = null
         try {
             cursor = db.query(DBInfo.Table.TB_PASSWORD, null, "${Password.ID} = ?", arrayOf(id.toString()), null, null, null)
@@ -117,7 +117,7 @@ class PasswordService(context: Context) {
      */
     fun getAllPassword(): List<Password> {
         val passwords = mutableListOf<Password>()
-        val db = dbHelper.writableDatabase
+        val db = mDbHelper.writableDatabase
         var cursor: Cursor? = null
 
         try {
@@ -146,7 +146,7 @@ class PasswordService(context: Context) {
      */
     fun deletePassword(id: Long): Int {
         var result = -1
-        val db = dbHelper.writableDatabase
+        val db = mDbHelper.writableDatabase
         result = db.delete(DBInfo.Table.TB_PASSWORD, "${Password.ID} = ?", arrayOf(id.toString()))
         db.close()
         return result
@@ -160,7 +160,7 @@ class PasswordService(context: Context) {
      */
     fun getAllPasswordByGroupName(groupName: String): List<Password> {
         val passwords = ArrayList<Password>()
-        val db = dbHelper.writableDatabase
+        val db = mDbHelper.writableDatabase
 
         var cursor: Cursor? = null
 

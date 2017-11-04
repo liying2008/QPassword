@@ -15,14 +15,14 @@ import cc.duduhuo.qpassword.bean.Password
  * =======================================================
  */
 class GroupService(context: Context) {
-    private val dbHelper: DatabaseHelper = DatabaseHelper(context)
+    private val mDbHelper: DatabaseHelper = DatabaseHelper(context)
     /**
      * 数据库中添加分组
      *
      * @param group 分组
      */
     fun addGroup(group: Group) {
-        val db = dbHelper.writableDatabase
+        val db = mDbHelper.writableDatabase
         try {
             val contentValues = ContentValues()
             contentValues.put(Group.NAME, group.name)
@@ -41,7 +41,7 @@ class GroupService(context: Context) {
      */
     fun getAllGroups(): List<Group> {
         val groups = mutableListOf<Group>()
-        val db = dbHelper.writableDatabase
+        val db = mDbHelper.writableDatabase
         var cursor: Cursor? = null
         try {
             cursor = db.query(DBInfo.Table.TB_GROUP, null, null, null, null, null, null)
@@ -68,7 +68,7 @@ class GroupService(context: Context) {
      * @param merge 是否是合并分组
      */
     fun updateGroupName(oldGroupName: String, newGroupName: String, merge: Boolean) {
-        val db = dbHelper.writableDatabase
+        val db = mDbHelper.writableDatabase
         try {
             if (merge) {
                 // 新的分组已经存在 直接删除旧的分组
@@ -96,7 +96,7 @@ class GroupService(context: Context) {
      * @return 影响的行数
      */
     fun deleteGroup(groupName: String): Int {
-        val db = dbHelper.writableDatabase
+        val db = mDbHelper.writableDatabase
         val count = db.delete(DBInfo.Table.TB_GROUP, "${Group.NAME} = ?", arrayOf(groupName))
         if (count > 0) {
             db.delete(DBInfo.Table.TB_PASSWORD, "${Password.GROUP_NAME} = ?", arrayOf(groupName))

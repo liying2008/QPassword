@@ -62,11 +62,26 @@ class DrawerItemAdapter(private val mContext: Context) : RecyclerView.Adapter<Dr
      * 删除一个分组
      * @param groupName 分组名称
      */
-    fun delData(groupName: String) {
-        val item = GroupDrawerItem(R.drawable.ic_group, groupName)
-        val index = mDataList.indexOf(item)
-        mDataList.removeAt(index)
-        notifyItemRemoved(index)
+    fun delData(groupName: String): Boolean {
+        val size = mDataList.size
+        var curData: DrawerItem
+        var index = -1
+        for (i in 0 until size) {
+            curData = mDataList[i]
+            if (curData is GroupDrawerItem) {
+                if (curData.title == groupName) {
+                    index = i
+                    break
+                }
+            }
+        }
+        if (index >= 0) {
+            mDataList.removeAt(index)
+            notifyItemRemoved(index)
+            return true
+        } else {
+            return false
+        }
     }
 
     /**
@@ -75,8 +90,18 @@ class DrawerItemAdapter(private val mContext: Context) : RecyclerView.Adapter<Dr
      * @param newGroupName 新分组名称
      */
     fun updateData(oldGroupName: String, newGroupName: String) {
-        val item = GroupDrawerItem(R.drawable.ic_group, oldGroupName)
-        val index = mDataList.indexOf(item)
+        val size = mDataList.size
+        var curData: DrawerItem
+        var index = 0
+        for (i in 0 until size) {
+            curData = mDataList[i]
+            if (curData is GroupDrawerItem) {
+                if (curData.title == oldGroupName) {
+                    index = i
+                    break
+                }
+            }
+        }
         (mDataList[index] as GroupDrawerItem).title = newGroupName
         notifyItemChanged(index)
     }
@@ -124,9 +149,11 @@ class DrawerItemAdapter(private val mContext: Context) : RecyclerView.Adapter<Dr
                 holder.itemView.tv_title.text = groupItem.title
 
                 holder.itemView.setOnClickListener {
-                    if (mListener != null) {
-                        mListener!!.onGroupItemClick(groupItem)
-                    }
+                    mListener?.onGroupItemClick(groupItem)
+                }
+                holder.itemView.setOnLongClickListener {
+                    mListener?.onGroupItemLongClick(groupItem)
+                    return@setOnLongClickListener true
                 }
             }
             TYPE_OPERATION -> {
@@ -135,9 +162,7 @@ class DrawerItemAdapter(private val mContext: Context) : RecyclerView.Adapter<Dr
                 holder.itemView.tv_title.text = opItem.title
 
                 holder.itemView.setOnClickListener {
-                    if (mListener != null) {
-                        mListener!!.onOperationItemClick(opItem)
-                    }
+                    mListener?.onOperationItemClick(opItem)
                 }
             }
             TYPE_HEADER -> {
@@ -161,6 +186,12 @@ class DrawerItemAdapter(private val mContext: Context) : RecyclerView.Adapter<Dr
          * @param groupDrawerItem
          */
         fun onGroupItemClick(groupDrawerItem: GroupDrawerItem)
+
+        /**
+         * 分组菜单长按事件监听
+         * @param groupDrawerItem
+         */
+        fun onGroupItemLongClick(groupDrawerItem: GroupDrawerItem)
 
         /**
          * 操作菜单点击事件监听

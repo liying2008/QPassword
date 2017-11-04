@@ -52,9 +52,22 @@
     <string name="copy_password_done">已复制密码到剪贴板</string>
     <string name="copy_email">复制 邮箱 到剪贴板</string>
     <string name="copy_email_done">已复制邮箱到剪贴板</string>
+    <string name="copy_note">复制 备注 到剪贴板</string>
+    <string name="copy_note_done">已复制备注到剪贴板</string>
     <string name="alert_delete_message">删除后不可恢复，确定删除？</string>
     <string name="ok">确定</string>
     <string name="cancel">取消</string>
     <string name="enter_new_group_name">输入新分组名称</string>
     <string name="group_exists">分组名称已存在</string>
+    <string name="group_added">“%s” 分组已添加</string>
+    <string name="can_not_change_this_group">不允许更改该分组</string>
+    <string name="update_group_name">修改分组名</string>
+    <string name="merge_group">合并分组到…</string>
+    <string name="delete_group">删除分组</string>
+    <string name="delete_group_message">将删除 “%s” 分组下的所有密码，而且无法恢复，确定要删除吗？</string>
+    <string name="group_name_has_been_update">分组名已更改为 %s</string>
+    <string name="no_group_can_be_merge">没有分组可合并</string>
+    <string name="group_merged">“%s” 分组已被合并到 “%s” 分组</string>
+    <string name="password_added">“%s” 密码已添加</string>
+    <string name="password_updated">“%s” 密码已更新</string>
 </resources>

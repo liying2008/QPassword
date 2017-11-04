@@ -1,6 +1,7 @@
 package cc.duduhuo.qpassword.db
 
 import cc.duduhuo.qpassword.bean.Group
+import cc.duduhuo.qpassword.bean.Key
 import cc.duduhuo.qpassword.bean.Password
 
 
@@ -23,8 +24,12 @@ object DBInfo {
      * 数据库表
      */
     object Table {
+        val TB_KEY = "password_key"
         val TB_PASSWORD = "password"
         val TB_GROUP = "password_group"
+        val TB_KEY_CREATE = "CREATE TABLE IF NOT EXISTS " + TB_KEY + " (" +
+            Key.KEY + " CHARACTER(160) PRIMARY KEY" +
+            ");"
         val TB_PASSWORD_CREATE = "CREATE TABLE IF NOT EXISTS " + TB_PASSWORD + " (" +
             Password.ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
             Password.CREATE_DATE + " INTEGER NOT NULL," +

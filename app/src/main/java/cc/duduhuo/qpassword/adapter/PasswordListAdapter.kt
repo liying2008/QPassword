@@ -57,29 +57,41 @@ class PasswordListAdapter(private val mContext: Context) : RecyclerView.Adapter<
     /**
      * 更新一条数据
      * @param newPassword 新密码数据
+     * @param curGroup 当前所处分组
      */
-    fun updateData(newPassword: Password) {
+    fun updateData(newPassword: Password, curGroup: String) {
+        var curPassword: Password
         var needSort = false
         val size = mPasswords.size
         var index = -1
+        var needRemove = false
         for (i in 0 until size) {
-            if (mPasswords[i].id == newPassword.id) {
-                if (mPasswords[i].isTop != newPassword.isTop) {
-                    needSort = true
-                }
+            curPassword = mPasswords[i]
+            if (curPassword.id == newPassword.id) {
                 index = i
-                // newPassword 里 createDate 为 0
-                val createDate = mPasswords[i].createDate
-                mPasswords[i] = newPassword
-                mPasswords[i].createDate = createDate
+                if (curPassword.groupName != newPassword.groupName && curGroup != mContext.getString(R.string.group_all)) {
+                    needRemove = true
+                    mPasswords.removeAt(index)
+                } else {
+                    if (curPassword.isTop != newPassword.isTop) {
+                        needSort = true
+                    }
+                    // newPassword 里 createDate 为 0
+                    val createDate = curPassword.createDate
+                    mPasswords[i] = newPassword
+                    mPasswords[i].createDate = createDate
+                }
                 break
             }
         }
-        if (needSort) {
-            Collections.sort(mPasswords, mComparator)
-            notifyDataSetChanged()
+
+        if (needRemove) {
+            notifyItemRemoved(index)
         } else {
-            if (index >= 0) {
+            if (needSort) {
+                Collections.sort(mPasswords, mComparator)
+                notifyDataSetChanged()
+            } else if (index >= 0) {
                 notifyItemChanged(index)
             }
         }
