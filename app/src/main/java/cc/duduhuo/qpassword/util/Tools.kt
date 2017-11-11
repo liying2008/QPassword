@@ -1,15 +1,15 @@
 package cc.duduhuo.qpassword.util
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
+import android.os.Environment
+import cc.duduhuo.applicationtoast.AppToast
 import cc.duduhuo.qpassword.R
 import cc.duduhuo.qpassword.bean.Password
 import java.text.SimpleDateFormat
 import java.util.*
-import android.content.ClipData
-import android.content.ClipboardManager
-import cc.duduhuo.applicationtoast.AppToast
-import android.content.Intent
-import android.os.Environment
 
 
 /**

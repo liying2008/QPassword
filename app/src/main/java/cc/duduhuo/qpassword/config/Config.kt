@@ -11,4 +11,10 @@ package cc.duduhuo.qpassword.config
 object Config {
     /** 上次显示的分组名成 */
     const val LAST_GROUP = "last_group"
+    /** 上次导出密码的方式 */
+    const val LAST_EXPORT = "last_export"
+    /** 存储卡上的工作目录 */
+    const val WORK_DIR = "QPassword"
+    /** 密码导入导出目录 */
+    const val EXPOER_DIR = "password"
 }

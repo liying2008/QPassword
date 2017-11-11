@@ -1,4 +1,4 @@
-package cc.duduhuo.qpassword.activity
+package cc.duduhuo.qpassword.ui.activity
 
 import android.content.ComponentName
 import android.content.Context
@@ -25,7 +25,7 @@ import java.util.*
 
 
 class EditActivity : BaseActivity(), OnGetPasswordListener, OnGetPasswordsListener, OnGetAllGroupsListener {
-
+    private var mMainBinder: MainBinder? = null
     /** 当前模式，默认增加 */
     private var mMode = MODE_ADD
     /** 修改密码的ID */
@@ -102,10 +102,6 @@ class EditActivity : BaseActivity(), OnGetPasswordListener, OnGetPasswordsListen
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            android.R.id.home -> {
-                finish()
-                return true
-            }
             R.id.action_save -> {
                 if (mMainBinder != null) {
                     savePassword()

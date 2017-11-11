@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--最大密钥长度-->
+    <integer name="max_key_length">16</integer>
+</resources>

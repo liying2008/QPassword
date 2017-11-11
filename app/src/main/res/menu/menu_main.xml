@@ -15,26 +15,17 @@
                 android:title="@string/action_modify_main"
                 app:showAsAction="never"/>
             <item
-                android:id="@+id/action_import_export"
-                android:icon="@drawable/ic_import_export"
+                android:id="@+id/action_export"
+                android:icon="@drawable/ic_export"
                 android:orderInCategory="3"
-                android:title="@string/action_import_export"
-                app:showAsAction="never">
-                <menu>
-                    <item
-                        android:id="@+id/action_export"
-                        android:icon="@drawable/ic_export"
-                        android:orderInCategory="3"
-                        android:title="@string/action_export"
-                        app:showAsAction="never"/>
-                    <item
-                        android:id="@+id/action_import"
-                        android:icon="@drawable/ic_import"
-                        android:orderInCategory="3"
-                        android:title="@string/action_import"
-                        app:showAsAction="never"/>
-                </menu>
-            </item>
+                android:title="@string/action_export"
+                app:showAsAction="never"/>
+            <item
+                android:id="@+id/action_import"
+                android:icon="@drawable/ic_import"
+                android:orderInCategory="3"
+                android:title="@string/action_import"
+                app:showAsAction="never"/>
             <item
                 android:id="@+id/action_distinct"
                 android:icon="@drawable/ic_distinct"

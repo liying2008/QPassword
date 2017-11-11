@@ -1,5 +1,6 @@
-package cc.duduhuo.qpassword.activity
+package cc.duduhuo.qpassword.ui.activity
 
+import android.app.ProgressDialog
 import android.content.ComponentName
 import android.content.ServiceConnection
 import android.os.Bundle
@@ -10,7 +11,6 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.EditText
 import cc.duduhuo.applicationtoast.AppToast
 import cc.duduhuo.qpassword.R
@@ -36,6 +36,8 @@ import kotlin.properties.Delegates
 
 
 class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeListener, OnGroupChangeListener, OnGetAllGroupsListener {
+    private var mMainBinder: MainBinder? = null
+    private lateinit var mProgressDialog: ProgressDialog
     private lateinit var mMenuAdapter: DrawerItemAdapter
     private lateinit var mPasswordAdapter: PasswordListAdapter
     private var mGroupList = mutableListOf<Group>()
@@ -126,6 +128,10 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
         fab.setOnClickListener { view ->
 
         }
+        mProgressDialog = ProgressDialog(this@MainActivity)
+        mProgressDialog.setMessage(getString(R.string.reading_passwords))
+        mProgressDialog.setCanceledOnTouchOutside(false)
+
         // 绑定服务
         val intent = MainService.getIntent(this)
         this.bindService(intent, mServiceConnection, BIND_AUTO_CREATE)
@@ -137,8 +143,8 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
     }
 
     private fun initData() {
-        // 显示 ProgressBar
-        pb.visibility = View.VISIBLE
+        // 显示 ProgressDialog
+        mProgressDialog.show()
         setupDrawer()
 
         mPasswordAdapter = PasswordListAdapter(this)
@@ -188,9 +194,11 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
             }
             R.id.action_export -> {
                 // 导出密码
+                startActivity(ExportActivity.getIntent(this))
             }
             R.id.action_import -> {
                 // 导入密码
+                startActivity(ImportActivity.getIntent(this))
             }
             R.id.action_distinct -> {
                 // 密码去重
@@ -211,7 +219,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
             } else {
                 mMainBinder?.getPasswords(this@MainActivity, mGroupName)
             }
-            pb.visibility = View.VISIBLE
+            mProgressDialog.show()
             drawer_layout.closeDrawer(GravityCompat.START)
         }
 
@@ -341,7 +349,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
     }
 
     override fun onGetPasswords(groupName: String?, passwords: List<Password>) {
-        pb.visibility = View.GONE
+        mProgressDialog.dismiss()
         mPasswordAdapter.setData(passwords.toMutableList())
     }
 
@@ -408,7 +416,8 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
         } else {
             mMainBinder?.getPasswords(this, mGroupName)
         }
-        pb.visibility = View.VISIBLE
+        mProgressDialog.isShowing
+        mProgressDialog.show()
     }
 
     override fun onDestroy() {
