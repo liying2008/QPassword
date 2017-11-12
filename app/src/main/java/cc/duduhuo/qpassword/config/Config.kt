@@ -1,5 +1,7 @@
 package cc.duduhuo.qpassword.config
 
+import cc.duduhuo.qpassword.bean.Key
+
 /**
  * =======================================================
  * Author: liying - liruoer2008@yeah.net
@@ -16,5 +18,9 @@ object Config {
     /** 存储卡上的工作目录 */
     const val WORK_DIR = "QPassword"
     /** 密码导入导出目录 */
-    const val EXPOER_DIR = "password"
+    const val EXPORT_DIR = "password"
+    /** 没有设置主密码时，key的默认值 */
+    const val NO_PASSWORD = "0"
+    /** 主密码 */
+    var mKey: Key? = null
 }

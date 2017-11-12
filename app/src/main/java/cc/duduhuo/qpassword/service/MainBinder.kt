@@ -27,7 +27,7 @@ class MainBinder(context: Context, val mApp: App) : Binder() {
     /** 密码变化监听器 */
     private val mOnPasswordChangeListeners = mutableListOf<OnPasswordChangeListener>()
 
-    /** 密钥变化监听器 */
+    /** 主密码变化监听器 */
     private val mOnKeyChangeListeners = mutableListOf<OnKeyChangeListener>()
 
     /** 分组变化监听器 */
@@ -42,8 +42,8 @@ class MainBinder(context: Context, val mApp: App) : Binder() {
     }
 
     /**
-     * 注册密钥变化监听器
-     * @param listener 密钥变化监听器
+     * 注册主密码变化监听器
+     * @param listener 主密码变化监听器
      */
     fun registerOnKeyChangeListener(listener: OnKeyChangeListener) {
         mOnKeyChangeListeners.add(listener)
@@ -58,16 +58,17 @@ class MainBinder(context: Context, val mApp: App) : Binder() {
     }
 
     /**
-     * 添加新密钥
-     * @param key 新密钥
+     * 添加主密码
+     * @param key 主密码
      */
-    fun insertKey(key: Key) {
+    fun insertKey(key: Key, listener: OnNewKeyListener) {
         val task = InsertKeyTask(key, mKeyService)
+        task.setOnNewKeyListener(listener)
         task.execute()
     }
 
     /**
-     * 获取密钥
+     * 获取主密码
      * @param listener
      */
     fun getKey(listener: OnGetKeyListener) {
@@ -76,9 +77,9 @@ class MainBinder(context: Context, val mApp: App) : Binder() {
     }
 
     /**
-     * 更新密钥
-     * @param oldKey 就密钥
-     * @param newKey 新密钥
+     * 更新主密码
+     * @param oldKey 旧主密码
+     * @param newKey 新主密码
      */
     fun updateKey(oldKey: Key, newKey: Key) {
         val task = UpdateKeyTask(oldKey, newKey, mKeyService)

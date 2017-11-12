@@ -13,16 +13,22 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <!-- 主界面 -->
+        <!-- 启动界面 -->
         <activity
-            android:name=".ui.activity.MainActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:name=".ui.activity.SplashActivity"
+            android:theme="@style/AppTheme.NoActionBar.FullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+
+        <!-- 主界面 -->
+        <activity
+            android:name=".ui.activity.MainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <!-- 添加密码/更新密码界面 -->
         <activity android:name=".ui.activity.EditActivity"/>
@@ -32,11 +38,32 @@
             android:enabled="true"
             android:exported="false">
         </service>
-        <!--导出密码界面-->
+        <!-- 导出密码界面 -->
         <activity android:name=".ui.activity.ExportActivity">
         </activity>
-        <!--导入密码界面-->
+        <!-- 导入密码界面 -->
         <activity android:name=".ui.activity.ImportActivity">
+        </activity>
+        <!--创建图案密码界面-->
+        <activity android:name=".ui.activity.CreatePatternLockActivity">
+        </activity>
+        <!--图案密码解锁界面-->
+        <activity android:name=".ui.activity.PatternLockActivity">
+        </activity>
+        <!--主密码创建选项界面-->
+        <activity android:name=".ui.activity.CreateKeyOptionsActivity">
+        </activity>
+        <!--创建数字密码界面-->
+        <activity android:name=".ui.activity.CreateNumberLockActivity">
+        </activity>
+        <!--创建复杂密码界面-->
+        <activity android:name=".ui.activity.CreateComplexLockActivity">
+        </activity>
+        <!--数字密码解锁界面-->
+        <activity android:name=".ui.activity.NumberLockActivity">
+        </activity>
+        <!--复杂密码解锁界面-->
+        <activity android:name=".ui.activity.ComplexLockActivity">
         </activity>
     </application>
 

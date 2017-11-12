@@ -13,7 +13,7 @@ data class Export(
     var isEncrypted: Boolean = false,
     /** 是否采用图案解锁 */
     var isPattern: Boolean = false,
-    /** 加密密钥的 SHA1 值 */
+    /** 主密码的 SHA1 值 */
     var key: String = "",
     /** 密码列表 */
     var passwords: List<Password> = arrayListOf())

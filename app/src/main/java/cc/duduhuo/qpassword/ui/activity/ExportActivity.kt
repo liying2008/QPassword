@@ -129,7 +129,7 @@ class ExportActivity : BaseActivity() {
                 if (isExistSDCard()) {
                     // 存在存储卡
                     val path = Environment.getExternalStorageDirectory().absolutePath + File.separator +
-                        Config.WORK_DIR + File.separator + Config.EXPOER_DIR
+                        Config.WORK_DIR + File.separator + Config.EXPORT_DIR
                     val dir = File(path)
                     if (dir.exists() && dir.isDirectory) {
                         writeFile(path, export, progressDialog)

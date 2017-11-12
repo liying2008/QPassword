@@ -1,9 +1,16 @@
 <resources>
     <string name="app_name">七圈密码</string>
+    <string name="slogan">简单、安全、易用的密码记录本</string>
+    <string name="copyright">Copyright 2017 LiYing. All Rights Reserved.</string>
     <string name="title_add_password">添加密码</string>
     <string name="title_edit_password">修改密码</string>
     <string name="title_export_password">导出密码</string>
     <string name="title_import_password">导入密码</string>
+    <string name="title_create_key">创建主密码</string>
+    <string name="title_create_pattern_key">创建图案密码</string>
+    <string name="title_create_number_key">创建数字密码</string>
+    <string name="title_create_complex_key">创建复杂密码</string>
+    <string name="title_pattern_unlock">图案密码解锁</string>
     <!--左侧抽屉菜单项-->
     <string name="menu_group">分组</string>
     <string name="menu_operation">操作</string>
@@ -20,6 +27,17 @@
     <string name="action_export">导出到存储卡</string>
     <string name="action_import">从存储卡导入</string>
     <string name="action_save">保存</string>
+
+    <!--Pattern Lock View-->
+    <string name="please_connect_at_least_4_points">请连接至少4个点</string>
+    <string name="please_draw_unlock_pattern">请绘制解锁图案</string>
+    <string name="connect_at_least_4_points">至少连接 4 个点，请重试</string>
+    <string name="meet_requirement">满足要求</string>
+    <string name="please_try_again_later">请 %ds 之后重试</string>
+    <string name="pattern_wrong_try_again_later">图案错误，请 %ds 之后重试</string>
+    <string name="pattern_wrong_try_again">图案错误，你还可以再尝试 %d 次</string>
+    <string name="pattern_redraw">重新绘制</string>
+    <string name="done">完成</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -84,4 +102,12 @@
     <string name="i_known">我知道了</string>
     <string name="exporting">正在导出，请稍候…</string>
     <string name="reading_passwords">正在读取密码…</string>
+
+    <string name="create_key_options">请选择创建主密码的方式</string>
+    <string name="create_key_tip">&#160;&#160;&#160;&#160;主密码是进入密码本的唯一凭据，请务必牢记，丢失之后无法找回。同时，为了你的密码数据的安全，推荐使用复杂密码作为主密码。</string>
+    <string name="key_pattern_lock">图案密码</string>
+    <string name="key_number_lock">数字密码</string>
+    <string name="key_complex_lock">复杂密码（推荐）</string>
+    <string name="key_no_lock">不创建主密码（不推荐）</string>
+    <string name="no_key_message">如果不创建主密码，密码本中的密码将不会以加密的方式存储，你确定不需要创建主密码？</string>
 </resources>

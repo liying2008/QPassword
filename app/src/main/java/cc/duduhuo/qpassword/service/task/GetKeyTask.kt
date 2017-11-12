@@ -9,7 +9,7 @@ import cc.duduhuo.qpassword.service.listener.OnGetKeyListener
  * =======================================================
  * Author: liying - liruoer2008@yeah.net
  * Datetime: 2017/11/4 15:29
- * Description: 获取加密密钥（SHA1 值）的异步任务
+ * Description: 获取主密码（SHA1 值）的异步任务
  * Remarks:
  * =======================================================
  */

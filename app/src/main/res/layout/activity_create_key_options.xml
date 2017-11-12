@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context="cc.duduhuo.qpassword.ui.activity.CreateKeyOptionsActivity">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center_horizontal"
+        android:text="@string/create_key_options"
+        android:textColor="@color/title_text_color"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/create_key_tip"
+        android:textColor="@color/warning_text_color"
+        android:textSize="14sp"/>
+
+    <Button
+        android:id="@+id/btn_pattern_key"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:onClick="createPatternKey"
+        android:text="@string/key_pattern_lock"/>
+
+    <Button
+        android:id="@+id/btn_number_key"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:onClick="createNumberKey"
+        android:text="@string/key_number_lock"/>
+
+    <Button
+        android:id="@+id/btn_complex_key"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:onClick="createComplexKey"
+        android:text="@string/key_complex_lock"/>
+
+    <Button
+        android:id="@+id/btn_no_key"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:onClick="createNoKey"
+        android:text="@string/key_no_lock"/>
+</LinearLayout>

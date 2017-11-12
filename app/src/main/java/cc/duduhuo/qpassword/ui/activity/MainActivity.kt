@@ -2,6 +2,8 @@ package cc.duduhuo.qpassword.ui.activity
 
 import android.app.ProgressDialog
 import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
@@ -41,6 +43,13 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
     private lateinit var mMenuAdapter: DrawerItemAdapter
     private lateinit var mPasswordAdapter: PasswordListAdapter
     private var mGroupList = mutableListOf<Group>()
+
+    companion object {
+        fun getIntent(context: Context): Intent {
+            return Intent(context, MainActivity::class.java)
+        }
+    }
+
     private var mGroupName: String by Delegates.observable("") { prop, old, new ->
         if (new != "") {
             if (new != old) {

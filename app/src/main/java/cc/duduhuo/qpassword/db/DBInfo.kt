@@ -27,8 +27,10 @@ object DBInfo {
         val TB_KEY = "password_key"
         val TB_PASSWORD = "password"
         val TB_GROUP = "password_group"
+
         val TB_KEY_CREATE = "CREATE TABLE IF NOT EXISTS " + TB_KEY + " (" +
-            Key.KEY + " CHARACTER(160) PRIMARY KEY" +
+            Key.KEY + " CHARACTER(160) PRIMARY KEY," +
+            Key.MODE + " INTEGER NOT NULL" +
             ");"
         val TB_PASSWORD_CREATE = "CREATE TABLE IF NOT EXISTS " + TB_PASSWORD + " (" +
             Password.ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +

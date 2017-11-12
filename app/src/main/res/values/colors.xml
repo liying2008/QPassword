@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryLight">#667ced</color>
+    <color name="colorPrimaryTiny">#95a2e4</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="item_function_bg_pressed">#e2e2e2</color>
@@ -13,4 +15,10 @@
     <color name="tip_text_color">#8e8e8e</color>
     <color name="warning_text_color">#f78e10</color>
     <color name="func_text_color">#979aa6</color>
+
+    <!--Pattern Lock View-->
+    <color name="pattern_normal_color">#949bff</color>
+    <color name="pattern_correct_color">#136b12</color>
+    <color name="pattern_wrong_color">#ca481f</color>
+
 </resources>

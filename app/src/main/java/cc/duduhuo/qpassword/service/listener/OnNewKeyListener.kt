@@ -5,16 +5,15 @@ import cc.duduhuo.qpassword.bean.Key
 /**
  * =======================================================
  * Author: liying - liruoer2008@yeah.net
- * Datetime: 2017/11/4 15:40
- * Description: 主密码变化监听
+ * Datetime: 2017/11/12 20:29
+ * Description: 创建主密码监听
  * Remarks:
  * =======================================================
  */
-interface OnKeyChangeListener {
+interface OnNewKeyListener {
     /**
-     * 更新了主密码
-     * @param oldKey 旧主密码
-     * @param newKey 新主密码
+     * 创建主密码
+     * @param key 主密码的 SHA-1 值
      */
-    fun onUpdateKey(oldKey: Key, newKey: Key)
+    fun onNewKey(key: Key)
 }
