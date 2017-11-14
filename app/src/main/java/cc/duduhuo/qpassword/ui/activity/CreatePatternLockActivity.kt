@@ -67,6 +67,7 @@ class CreatePatternLockActivity : BaseActivity() {
                 mMainBinder?.insertKey(Key(mKey!!.sha1Hex(), Key.MODE_PATTERN), object : OnNewKeyListener {
                     override fun onNewKey(key: Key) {
                         Config.mKey = key
+                        Config.mOriKey = mKey
                         startActivity(MainActivity.getIntent(this@CreatePatternLockActivity))
                         this@CreatePatternLockActivity.finish()
                     }

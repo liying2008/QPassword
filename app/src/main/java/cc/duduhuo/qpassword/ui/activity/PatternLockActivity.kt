@@ -8,6 +8,7 @@ import android.os.Handler
 import android.widget.TextView
 import cc.duduhuo.applicationtoast.AppToast
 import cc.duduhuo.qpassword.R
+import cc.duduhuo.qpassword.config.Config
 import cc.duduhuo.qpassword.util.sha1Hex
 import com.andrognito.patternlockview.PatternLockView
 import com.andrognito.patternlockview.listener.PatternLockViewListener
@@ -38,7 +39,7 @@ class PatternLockActivity : BaseActivity() {
     }
 
     private val mClearPatternRunnable = Runnable { mPatternLockView.clearPattern() }
-    
+
     private val mPatternLockViewListener = object : PatternLockViewListener {
         override fun onStarted() {
             // no op
@@ -49,7 +50,8 @@ class PatternLockActivity : BaseActivity() {
         }
 
         override fun onComplete(pattern: List<PatternLockView.Dot>) {
-            val key = PatternLockUtils.patternToString(mPatternLockView, pattern).sha1Hex()
+            val oriKey = PatternLockUtils.patternToString(mPatternLockView, pattern)
+            val key = oriKey.sha1Hex()
             if (pattern.size < 4) {
                 mTvInfo.setText(R.string.connect_at_least_4_points)
                 mHandler.removeCallbacks(mClearPatternRunnable)
@@ -58,6 +60,8 @@ class PatternLockActivity : BaseActivity() {
                 return
             }
             if (key == mKey) {
+                Config.mOriKey = oriKey
+                mTvInfo.setText(R.string.pattern_correct)
                 mPatternLockView.setViewMode(PatternLockView.PatternViewMode.CORRECT)
                 startActivity(MainActivity.getIntent(this@PatternLockActivity))
                 finish()

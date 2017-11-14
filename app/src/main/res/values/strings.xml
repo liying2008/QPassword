@@ -29,11 +29,12 @@
     <string name="action_save">保存</string>
 
     <!--Pattern Lock View-->
-    <string name="please_connect_at_least_4_points">请连接至少4个点</string>
+    <string name="please_connect_at_least_4_points">请连接至少 4 个点</string>
     <string name="please_draw_unlock_pattern">请绘制解锁图案</string>
     <string name="connect_at_least_4_points">至少连接 4 个点，请重试</string>
     <string name="meet_requirement">满足要求</string>
     <string name="please_try_again_later">请 %ds 之后重试</string>
+    <string name="pattern_correct">图案正确</string>
     <string name="pattern_wrong_try_again_later">图案错误，请 %ds 之后重试</string>
     <string name="pattern_wrong_try_again">图案错误，你还可以再尝试 %d 次</string>
     <string name="pattern_redraw">重新绘制</string>
@@ -110,4 +111,9 @@
     <string name="key_complex_lock">复杂密码（推荐）</string>
     <string name="key_no_lock">不创建主密码（不推荐）</string>
     <string name="no_key_message">如果不创建主密码，密码本中的密码将不会以加密的方式存储，你确定不需要创建主密码？</string>
+
+    <string name="key_length_can_not_too_short">主密码长度不可以小于 %d 位</string>
+    <string name="please_enter_number_key">请输入 %1$d–%2$d 位的数字密码</string>
+    <string name="key_max_length_tip">主密码最多 %d 位</string>
+    <string name="key_wrong">主密码错误</string>
 </resources>
