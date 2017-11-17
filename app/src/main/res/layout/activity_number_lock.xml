@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:padding="10dp"
-        android:textColor="@color/title_text_color"
+        android:textColor="@color/lock_msg_tip"
         android:textSize="14sp"
         tools:text="@string/please_enter_number_key"/>
 
@@ -25,7 +25,7 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginTop="8dp"
-        android:background="@drawable/number_textview_bg"
+        android:background="@drawable/key_input_bg"
         android:maxLength="@integer/max_key_length"
         android:paddingBottom="10dp"
         android:paddingLeft="10dp"

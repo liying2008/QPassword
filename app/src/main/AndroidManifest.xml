@@ -57,13 +57,17 @@
         <activity android:name=".ui.activity.CreateNumberLockActivity">
         </activity>
         <!--创建复杂密码界面-->
-        <activity android:name=".ui.activity.CreateComplexLockActivity">
+        <activity
+            android:name=".ui.activity.CreateComplexLockActivity"
+            android:windowSoftInputMode="stateVisible">
         </activity>
         <!--数字密码解锁界面-->
         <activity android:name=".ui.activity.NumberLockActivity">
         </activity>
         <!--复杂密码解锁界面-->
-        <activity android:name=".ui.activity.ComplexLockActivity">
+        <activity
+            android:name=".ui.activity.ComplexLockActivity"
+            android:windowSoftInputMode="stateVisible">
         </activity>
     </application>
 

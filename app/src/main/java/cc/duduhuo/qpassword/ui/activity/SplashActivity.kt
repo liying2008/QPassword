@@ -53,7 +53,7 @@ class SplashActivity : BaseActivity(), SplashLoadDataTask.OnLoadKeyListener {
             start(NumberLockActivity.getIntent(this, key.key))
         } else if (key.mode == Key.MODE_COMPLEX) {
             // 已有密钥，跳转到复杂密码解锁界面
-            start(ComplexLockActivity.getIntent(this))
+            start(ComplexLockActivity.getIntent(this, key.key))
         }
     }
 

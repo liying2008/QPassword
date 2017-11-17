@@ -27,10 +27,11 @@ class PatternLockActivity : BaseActivity() {
     private lateinit var mPatternLockView: PatternLockView
     private lateinit var mTvInfo: TextView
     private val mHandler = Handler()
+    /** 输错主密码的次数 */
     private var mWrongCount: Int = 0
 
     companion object {
-        const val INTENT_KEY = "key"
+        private const val INTENT_KEY = "key"
         fun getIntent(context: Context, key: String): Intent {
             val intent = Intent(context, PatternLockActivity::class.java)
             intent.putExtra(INTENT_KEY, key)
@@ -98,7 +99,7 @@ class PatternLockActivity : BaseActivity() {
     /**
      * 30s倒计时
      */
-    fun countDown() {
+    private fun countDown() {
         object : CountDownTimer(30000, 1000) {
 
             override fun onTick(millisUntilFinished: Long) {

@@ -3,6 +3,7 @@ package cc.duduhuo.qpassword.ui.activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.support.v7.widget.GridLayoutManager
 import android.view.View
 import android.widget.TextView
@@ -28,12 +29,16 @@ class NumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClickListen
     private var mMaxKeyLength: Int = 0
     /** 用户输入的密码 */
     private var mKey: String = ""
+    /** 显示的内容（*） */
+    private var mAsterisk: String = ""
     /** 实际的主密码（SHA-1加密后） */
     private lateinit var mRealKey: String
+    /** 输错主密码的次数 */
+    private var mWrongCount: Int = 0
     private var mAdapter: NumberGridAdapter? = null
 
     companion object {
-        const val INTENT_KEY = "key"
+        private const val INTENT_KEY = "key"
         fun getIntent(context: Context, key: String): Intent {
             val intent = Intent(context, NumberLockActivity::class.java)
             intent.putExtra(INTENT_KEY, key)
@@ -61,6 +66,7 @@ class NumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClickListen
         // 清空输入
         iv_clear_btn.setOnClickListener {
             mKey = ""
+            mAsterisk = ""
             tv_number_lock.text = ""
             iv_clear_btn.visibility = View.GONE
         }
@@ -70,7 +76,8 @@ class NumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClickListen
         iv_clear_btn.visibility = View.VISIBLE
         if (mKey.length < mMaxKeyLength) {
             mKey += number
-            tv_number_lock.text = mKey
+            mAsterisk += "●"
+            tv_number_lock.text = mAsterisk
         } else {
             AppToast.showToast(getString(R.string.key_max_length_tip, mMaxKeyLength))
         }
@@ -79,7 +86,8 @@ class NumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClickListen
     override fun onClickDel(view: TextView) {
         if (mKey.isNotEmpty()) {
             mKey = mKey.substring(0, mKey.length - 1)
-            tv_number_lock.text = mKey
+            mAsterisk = mAsterisk.substring(0, mAsterisk.length - 1)
+            tv_number_lock.text = mAsterisk
 
             if (mKey.isEmpty()) {
                 iv_clear_btn.visibility = View.GONE
@@ -96,9 +104,33 @@ class NumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClickListen
                 startActivity(MainActivity.getIntent(this@NumberLockActivity))
                 finish()
             } else {
-                AppToast.showToast(R.string.key_wrong)
+                mWrongCount++
+                if (mWrongCount >= 5) {
+                    view.isEnabled = false
+                    AppToast.showToast(getString(R.string.key_wrong_try_again_later, 30))
+                    countDown(view)
+                } else {
+                    tv_number_info.text = getString(R.string.key_wrong_try_again, 5 - mWrongCount)
+                }
             }
         }
     }
 
+    /**
+     * 30s倒计时
+     */
+    private fun countDown(view: TextView) {
+        object : CountDownTimer(30000, 1000) {
+
+            override fun onTick(millisUntilFinished: Long) {
+                tv_number_info.text = getString(R.string.please_try_again_later, millisUntilFinished / 1000)
+            }
+
+            override fun onFinish() {
+                tv_number_info.text = getString(R.string.please_enter_number_key, mMinKeyLength, mMaxKeyLength)
+                view.isEnabled = true
+                mWrongCount = 0
+            }
+        }.start()
+    }
 }

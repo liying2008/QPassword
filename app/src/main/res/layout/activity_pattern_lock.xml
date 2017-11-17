@@ -26,6 +26,6 @@
         android:layout_marginBottom="30dp"
         android:gravity="center"
         android:text="@string/please_draw_unlock_pattern"
-        android:textColor="@color/pomegranate"
+        android:textColor="@color/lock_msg_tip"
         android:textSize="14sp"/>
 </RelativeLayout>

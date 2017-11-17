@@ -20,5 +20,6 @@
     <color name="pattern_normal_color">#949bff</color>
     <color name="pattern_correct_color">#136b12</color>
     <color name="pattern_wrong_color">#ca481f</color>
+    <color name="lock_msg_tip">#f4511e</color>
 
 </resources>
