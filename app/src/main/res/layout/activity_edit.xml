@@ -189,7 +189,7 @@
                 android:gravity="center_vertical"
                 android:hint="@string/add_password_email_hint"
                 android:imeOptions="actionNext"
-                android:inputType="textVisiblePassword"
+                android:inputType="textEmailAddress"
                 android:maxLines="1"
                 android:nextFocusForward="@id/et_note"
                 android:textColor="@color/main_text_color"

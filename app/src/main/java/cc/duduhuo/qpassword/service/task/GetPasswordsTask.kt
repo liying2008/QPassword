@@ -4,6 +4,7 @@ import android.os.AsyncTask
 import cc.duduhuo.qpassword.bean.Password
 import cc.duduhuo.qpassword.db.PasswordService
 import cc.duduhuo.qpassword.service.listener.OnGetPasswordsListener
+import cc.duduhuo.qpassword.service.listener.OnPasswordFailListener
 
 /**
  * =======================================================
@@ -15,8 +16,14 @@ import cc.duduhuo.qpassword.service.listener.OnGetPasswordsListener
  */
 class GetPasswordsTask(private val mListener: OnGetPasswordsListener,
                        private val mGroupName: String?,
-                       private val mPasswordService: PasswordService):AsyncTask<Void, Void, List<Password>>() {
-    override fun doInBackground(vararg params: Void?): List<Password> {
+                       private val mPasswordService: PasswordService):AsyncTask<Void, Void, List<Password>?>() {
+    private lateinit var mPasswordFailListeners: List<OnPasswordFailListener>
+
+    fun setOnPasswordFailListeners(listeners: List<OnPasswordFailListener>) {
+        mPasswordFailListeners = listeners
+    }
+
+    override fun doInBackground(vararg params: Void?): List<Password>? {
         if (mGroupName == null) {
             return mPasswordService.getAllPassword()
         } else {
@@ -24,8 +31,12 @@ class GetPasswordsTask(private val mListener: OnGetPasswordsListener,
         }
     }
 
-    override fun onPostExecute(result: List<Password>) {
-        super.onPostExecute(result)
-        mListener.onGetPasswords(mGroupName, result)
+    override fun onPostExecute(passwords: List<Password>?) {
+        super.onPostExecute(passwords)
+        if (passwords == null) {
+            mPasswordFailListeners.map { it.onKeyLose() }
+        } else {
+            mListener.onGetPasswords(mGroupName, passwords)
+        }
     }
 }

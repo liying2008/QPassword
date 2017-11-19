@@ -4,6 +4,7 @@ import android.os.AsyncTask
 import cc.duduhuo.qpassword.bean.Password
 import cc.duduhuo.qpassword.db.PasswordService
 import cc.duduhuo.qpassword.service.listener.OnPasswordChangeListener
+import cc.duduhuo.qpassword.service.listener.OnPasswordFailListener
 
 /**
  * =======================================================
@@ -15,18 +16,28 @@ import cc.duduhuo.qpassword.service.listener.OnPasswordChangeListener
  */
 class UpdatePasswordTask(private val mPassword: Password,
                          private val mPasswordService: PasswordService) : AsyncTask<Void, Void, Password>() {
+    private var mId = 0
     private lateinit var mListeners: List<OnPasswordChangeListener>
+    private lateinit var mPasswordFailListeners: List<OnPasswordFailListener>
+    fun setOnPasswordFailListeners(listeners: List<OnPasswordFailListener>) {
+        mPasswordFailListeners = listeners
+    }
+
     fun setOnPasswordChangeListeners(listeners: List<OnPasswordChangeListener>) {
         mListeners = listeners
     }
 
     override fun doInBackground(vararg params: Void?): Password {
-        mPasswordService.updatePassword(mPassword)
+        mId = mPasswordService.updatePassword(mPassword)
         return mPassword
     }
 
-    override fun onPostExecute(result: Password) {
-        super.onPostExecute(result)
-        mListeners.map { it.onUpdatePassword(result) }
+    override fun onPostExecute(password: Password) {
+        super.onPostExecute(password)
+        if (mId == -2) {
+            mPasswordFailListeners.map { it.onKeyLose() }
+        } else {
+            mListeners.map { it.onUpdatePassword(password) }
+        }
     }
 }

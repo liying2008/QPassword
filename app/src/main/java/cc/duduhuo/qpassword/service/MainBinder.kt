@@ -20,18 +20,27 @@ import cc.duduhuo.qpassword.service.task.*
  * Remarks:
  * =======================================================
  */
-class MainBinder(context: Context, val mApp: App) : Binder() {
+class MainBinder(context: Context) : Binder() {
     private val mKeyService: KeyService = KeyService(context)
     private val mPasswordService: PasswordService = PasswordService(context)
     private val mGroupService: GroupService = GroupService(context)
+
+    /** 读取 / 更新 / 写入密码失败监听 */
+    private val mOnPasswordFailListeners = mutableListOf<OnPasswordFailListener>()
     /** 密码变化监听器 */
     private val mOnPasswordChangeListeners = mutableListOf<OnPasswordChangeListener>()
-
     /** 主密码变化监听器 */
     private val mOnKeyChangeListeners = mutableListOf<OnKeyChangeListener>()
-
     /** 分组变化监听器 */
     private val mOnGroupChangeListeners = mutableListOf<OnGroupChangeListener>()
+
+    /**
+     * 注册读取 / 更新 / 写入密码失败监听器
+     * @param listener 读取 / 更新 / 写入密码失败监听器
+     */
+    fun registerOnPasswordFailListener(listener: OnPasswordFailListener) {
+        mOnPasswordFailListeners.add(listener)
+    }
 
     /**
      * 注册密码变化监听器
@@ -78,11 +87,13 @@ class MainBinder(context: Context, val mApp: App) : Binder() {
 
     /**
      * 更新主密码
-     * @param oldKey 旧主密码
-     * @param newKey 新主密码
+     * @param oldKey 旧主密码对象
+     * @param oldOriKey 旧主密码（未SHA-1加密）
+     * @param newKey 新主密码对象
+     * @param newOriKey 新主密码（未SHA-1加密）
      */
-    fun updateKey(oldKey: Key, newKey: Key) {
-        val task = UpdateKeyTask(oldKey, newKey, mKeyService)
+    fun updateKey(oldKey: Key, oldOriKey: String, newKey: Key, newOriKey: String) {
+        val task = UpdateKeyTask(oldKey, oldOriKey, newKey, newOriKey, mKeyService)
         task.setOnKeyChangeListener(mOnKeyChangeListeners)
         task.execute()
     }
@@ -94,6 +105,7 @@ class MainBinder(context: Context, val mApp: App) : Binder() {
      */
     fun getPasswords(listener: OnGetPasswordsListener, groupName: String? = null) {
         val task = GetPasswordsTask(listener, groupName, mPasswordService)
+        task.setOnPasswordFailListeners(mOnPasswordFailListeners)
         task.execute()
     }
 
@@ -114,6 +126,7 @@ class MainBinder(context: Context, val mApp: App) : Binder() {
      */
     fun getPassword(listener: OnGetPasswordListener, id: Long) {
         val task = GetPasswordTask(id, listener, mPasswordService)
+        task.setOnPasswordFailListeners(mOnPasswordFailListeners)
         task.execute()
     }
 
@@ -124,6 +137,7 @@ class MainBinder(context: Context, val mApp: App) : Binder() {
     fun updatePassword(password: Password) {
         val task = UpdatePasswordTask(password, mPasswordService)
         task.setOnPasswordChangeListeners(mOnPasswordChangeListeners)
+        task.setOnPasswordFailListeners(mOnPasswordFailListeners)
         task.execute()
     }
 
@@ -135,6 +149,7 @@ class MainBinder(context: Context, val mApp: App) : Binder() {
         val task = InsertPasswordTask(password, mPasswordService, mGroupService)
         task.setOnGroupChangeListeners(mOnGroupChangeListeners)
         task.setOnPasswordChangeListeners(mOnPasswordChangeListeners)
+        task.setOnPasswordFailListeners(mOnPasswordFailListeners)
         task.execute()
     }
 

@@ -25,19 +25,17 @@ import cc.duduhuo.qpassword.model.GroupDrawerItem
 import cc.duduhuo.qpassword.model.OperationDrawerItem
 import cc.duduhuo.qpassword.service.MainBinder
 import cc.duduhuo.qpassword.service.MainService
-import cc.duduhuo.qpassword.service.listener.OnGetAllGroupsListener
-import cc.duduhuo.qpassword.service.listener.OnGetPasswordsListener
-import cc.duduhuo.qpassword.service.listener.OnGroupChangeListener
-import cc.duduhuo.qpassword.service.listener.OnPasswordChangeListener
+import cc.duduhuo.qpassword.service.listener.*
 import cc.duduhuo.qpassword.util.PreferencesUtils
 import cc.duduhuo.qpassword.util.copyText
+import cc.duduhuo.qpassword.util.keyLosed
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import kotlin.properties.Delegates
 
 
-class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeListener, OnGroupChangeListener, OnGetAllGroupsListener {
+class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeListener, OnGroupChangeListener, OnGetAllGroupsListener, OnPasswordFailListener {
     private var mMainBinder: MainBinder? = null
     private lateinit var mProgressDialog: ProgressDialog
     private lateinit var mMenuAdapter: DrawerItemAdapter
@@ -71,6 +69,8 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
             mMainBinder?.registerOnGroupChangeListener(this@MainActivity)
             // 注册密码变化监听器
             mMainBinder?.registerOnPasswordChangeListener(this@MainActivity)
+            // 注册读取 / 更新 / 写入密码失败监听器
+            mMainBinder?.registerOnPasswordFailListener(this@MainActivity)
 
             initData()
         }
@@ -200,6 +200,11 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
             }
             R.id.action_modify_main -> {
                 // 修改主密码
+                if (keyLosed()) {
+                    restartApp()
+                    return true
+                }
+                startActivity(CreateKeyOptionsActivity.getIntent(this, CreateKeyOptionsActivity.MODE_UPDATE))
             }
             R.id.action_export -> {
                 // 导出密码
@@ -427,6 +432,18 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
         }
         mProgressDialog.isShowing
         mProgressDialog.show()
+    }
+
+    override fun onInsertFail() {
+        AppToast.showToast(R.string.insert_password_fail)
+    }
+
+    override fun onReadFail() {
+        AppToast.showToast(R.string.read_password_fail)
+    }
+
+    override fun onKeyLose() {
+        restartApp()
     }
 
     override fun onDestroy() {

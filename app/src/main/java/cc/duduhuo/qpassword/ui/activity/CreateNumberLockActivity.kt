@@ -29,6 +29,7 @@ import kotlinx.android.synthetic.main.activity_create_number_lock.*
  * =======================================================
  */
 class CreateNumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClickListener {
+    private var mMode: Int = MODE_CREATE
     /** 最小主密码长度 */
     private var mMinKeyLength: Int = 0
     /** 最大主密码长度 */
@@ -38,8 +39,13 @@ class CreateNumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClick
     private var mAdapter: NumberGridAdapter? = null
 
     companion object {
-        fun getIntent(context: Context): Intent {
-            return Intent(context, CreateNumberLockActivity::class.java)
+        private const val MODE = "mode"
+        const val MODE_CREATE = 0
+        const val MODE_UPDATE = 1
+        fun getIntent(context: Context, mode: Int): Intent {
+            val intent = Intent(context, CreateNumberLockActivity::class.java)
+            intent.putExtra(MODE, mode)
+            return intent
         }
     }
 

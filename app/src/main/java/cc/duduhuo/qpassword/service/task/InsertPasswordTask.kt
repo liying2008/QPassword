@@ -7,6 +7,7 @@ import cc.duduhuo.qpassword.db.GroupService
 import cc.duduhuo.qpassword.db.PasswordService
 import cc.duduhuo.qpassword.service.listener.OnGroupChangeListener
 import cc.duduhuo.qpassword.service.listener.OnPasswordChangeListener
+import cc.duduhuo.qpassword.service.listener.OnPasswordFailListener
 
 /**
  * =======================================================
@@ -19,11 +20,17 @@ import cc.duduhuo.qpassword.service.listener.OnPasswordChangeListener
 class InsertPasswordTask(private val mPassword: Password,
                          private val mPasswordService: PasswordService,
                          private val mGroupService: GroupService) : AsyncTask<Void, Void, Password>() {
+    private var mId: Long = 0L
     private var mIsNew = true
     private lateinit var mPasswordListeners: List<OnPasswordChangeListener>
+    private lateinit var mPasswordFailListeners: List<OnPasswordFailListener>
     private lateinit var mGroupListeners: List<OnGroupChangeListener>
     fun setOnPasswordChangeListeners(listeners: List<OnPasswordChangeListener>) {
         mPasswordListeners = listeners
+    }
+
+    fun setOnPasswordFailListeners(listeners: List<OnPasswordFailListener>) {
+        mPasswordFailListeners = listeners
     }
 
     fun setOnGroupChangeListeners(listeners: List<OnGroupChangeListener>) {
@@ -42,17 +49,27 @@ class InsertPasswordTask(private val mPassword: Password,
             mGroupService.addGroup(group)
         }
         val id = mPasswordService.insertPassword(mPassword)
-        mPassword.id = id
+        if (id > 0) {
+            mPassword.id = id
+        } else {
+            mId = id
+        }
         return mPassword
     }
 
-    override fun onPostExecute(result: Password) {
-        super.onPostExecute(result)
-        if (mIsNew) {
-            val group = Group()
-            group.name = result.groupName
-            mGroupListeners.map { it.onNewGroup(group) }
+    override fun onPostExecute(password: Password) {
+        super.onPostExecute(password)
+        if (mId == -1L) {
+            mPasswordFailListeners.map { it.onInsertFail() }
+        } else if (mId == -2L) {
+            mPasswordFailListeners.map { it.onKeyLose() }
+        } else {
+            if (mIsNew) {
+                val group = Group()
+                group.name = password.groupName
+                mGroupListeners.map { it.onNewGroup(group) }
+            }
+            mPasswordListeners.map { it.onNewPassword(password) }
         }
-        mPasswordListeners.map { it.onNewPassword(result) }
     }
 }

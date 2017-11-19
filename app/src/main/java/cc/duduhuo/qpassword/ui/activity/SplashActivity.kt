@@ -1,6 +1,7 @@
 package cc.duduhuo.qpassword.ui.activity
 
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
@@ -15,6 +16,7 @@ import cc.duduhuo.qpassword.service.task.SplashLoadDataTask
 
 class SplashActivity : BaseActivity(), SplashLoadDataTask.OnLoadKeyListener {
     private var mMainBinder: MainBinder? = null
+
     private val mServiceConnection = object : ServiceConnection {
         override fun onServiceDisconnected(name: ComponentName) {
             mMainBinder = null
@@ -41,7 +43,7 @@ class SplashActivity : BaseActivity(), SplashLoadDataTask.OnLoadKeyListener {
     override fun onKeyLoaded(key: Key?) {
         if (key == null || key.key == "") {
             // 没有密钥，跳转到创建密钥界面
-            start(CreateKeyOptionsActivity.getIntent(this))
+            start(CreateKeyOptionsActivity.getIntent(this, CreateKeyOptionsActivity.MODE_CREATE))
         } else if (key.key == Config.NO_PASSWORD && key.mode == Key.MODE_NO_KEY) {
             // 没有设置密钥，直接跳转到主界面
             start(MainActivity.getIntent(this))

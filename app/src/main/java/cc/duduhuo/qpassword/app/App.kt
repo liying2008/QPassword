@@ -1,7 +1,6 @@
 package cc.duduhuo.qpassword.app
 
 import android.app.Application
-
 import cc.duduhuo.applicationtoast.AppToast
 
 /**

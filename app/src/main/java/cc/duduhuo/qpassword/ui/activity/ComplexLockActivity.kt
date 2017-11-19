@@ -122,5 +122,4 @@ class ComplexLockActivity : BaseActivity() {
             }
         }
     }
-
 }

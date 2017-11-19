@@ -3,8 +3,12 @@ package cc.duduhuo.qpassword.db
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
+import cc.duduhuo.qpassword.bean.Key
 import cc.duduhuo.qpassword.bean.Password
-import java.util.ArrayList
+import cc.duduhuo.qpassword.config.Config
+import cc.duduhuo.qpassword.util.aesDecrypt
+import cc.duduhuo.qpassword.util.aesEncrypt
+import cc.duduhuo.qpassword.util.keyLosed
 
 /**
  * =======================================================
@@ -19,9 +23,13 @@ class PasswordService(context: Context) {
     /**
      * 插入一条密码
      * @param password 要插入的密码
-     * @return 返回这条数据的自增主键 如果插入失败，返回-1
+     * @return 返回这条数据的自增主键 如果插入失败，返回- 1L
+     * 如果 Config.mKey 不存在，返回 -2L
      */
     fun insertPassword(password: Password): Long {
+        if (keyLosed()) {
+            return -2L
+        }
         var id: Long = -1L
         val db = mDbHelper.writableDatabase
         try {
@@ -29,7 +37,11 @@ class PasswordService(context: Context) {
             contentValues.put(Password.CREATE_DATE, password.createDate)
             contentValues.put(Password.TITLE, password.title)
             contentValues.put(Password.USERNAME, password.username)
-            contentValues.put(Password.PASSWORD, password.password)
+            if (Config.mKey!!.mode == Key.MODE_NO_KEY) {
+                contentValues.put(Password.PASSWORD, password.password)
+            } else {
+                contentValues.put(Password.PASSWORD, password.password.aesEncrypt(Config.mOriKey!!))
+            }
             contentValues.put(Password.EMAIL, password.email)
             contentValues.put(Password.NOTE, password.note)
             contentValues.put(Password.IS_TOP, if (password.isTop) 1 else 0)
@@ -47,15 +59,23 @@ class PasswordService(context: Context) {
      * 更新密码
      * @param password 更新的密码数据
      * @return 影响的行数 the number of rows affected
+     * 返回-2: 主密码丢失
      */
     fun updatePassword(password: Password): Int {
         var result = 0
+        if (keyLosed()) {
+            return -2
+        }
         val db = mDbHelper.writableDatabase
         try {
             val contentValues = ContentValues()
             contentValues.put(Password.TITLE, password.title)
             contentValues.put(Password.USERNAME, password.username)
-            contentValues.put(Password.PASSWORD, password.password)
+            if (Config.mKey!!.mode == Key.MODE_NO_KEY) {
+                contentValues.put(Password.PASSWORD, password.password)
+            } else {
+                contentValues.put(Password.PASSWORD, password.password.aesEncrypt(Config.mOriKey!!))
+            }
             contentValues.put(Password.EMAIL, password.email)
             contentValues.put(Password.NOTE, password.note)
             contentValues.put(Password.IS_TOP, if (password.isTop) 1 else 0)
@@ -75,10 +95,14 @@ class PasswordService(context: Context) {
      * 根据id查询数据库中的密码信息
      *
      * @param id
-     * @return 查询到密码信息，如果没有该数据，返回null
+     * @return 查询到密码信息，如果没有该数据，返回 id=-1 的 Password 对象
+     * null：表示 主密码丢失
      */
     fun getPassword(id: Long): Password? {
-        var password: Password? = null
+        if (keyLosed()) {
+            return null
+        }
+        var password: Password = Password(-1L)
         val db = mDbHelper.writableDatabase
         var cursor: Cursor? = null
         try {
@@ -96,26 +120,17 @@ class PasswordService(context: Context) {
         return password
     }
 
-    private fun mapPassword(cursor: Cursor): Password {
-        val password = Password()
-        password.id = cursor.getLong(cursor.getColumnIndex(Password.ID))
-        password.createDate = cursor.getLong(cursor.getColumnIndex(Password.CREATE_DATE))
-        password.title = cursor.getString(cursor.getColumnIndex(Password.TITLE))
-        password.username = cursor.getString(cursor.getColumnIndex(Password.USERNAME))
-        password.password = cursor.getString(cursor.getColumnIndex(Password.PASSWORD))
-        password.email = cursor.getString(cursor.getColumnIndex(Password.EMAIL))
-        password.note = cursor.getString(cursor.getColumnIndex(Password.NOTE))
-        password.isTop = cursor.getInt(cursor.getColumnIndex(Password.IS_TOP)) == 1
-        password.groupName = cursor.getString(cursor.getColumnIndex(Password.GROUP_NAME))
-        return password
-    }
-
     /**
      * 获得数据库中保存的所有密码信息
      *
      * @return 返回数据列表
+     * null：主密码丢失
      */
-    fun getAllPassword(): List<Password> {
+    fun getAllPassword(): List<Password>? {
+        if (keyLosed()) {
+            return null
+        }
+
         val passwords = mutableListOf<Password>()
         val db = mDbHelper.writableDatabase
         var cursor: Cursor? = null
@@ -157,9 +172,13 @@ class PasswordService(context: Context) {
      *
      * @param groupName 分组名
      * @return 返回数据列表
+     * null：主密码丢失
      */
-    fun getAllPasswordByGroupName(groupName: String): List<Password> {
-        val passwords = ArrayList<Password>()
+    fun getAllPasswordByGroupName(groupName: String): List<Password>? {
+        if (keyLosed()) {
+            return null
+        }
+        val passwords = mutableListOf<Password>()
         val db = mDbHelper.writableDatabase
 
         var cursor: Cursor? = null
@@ -178,6 +197,24 @@ class PasswordService(context: Context) {
             db.close()
         }
         return passwords
+    }
+
+    private fun mapPassword(cursor: Cursor): Password {
+        val password = Password()
+        password.id = cursor.getLong(cursor.getColumnIndex(Password.ID))
+        password.createDate = cursor.getLong(cursor.getColumnIndex(Password.CREATE_DATE))
+        password.title = cursor.getString(cursor.getColumnIndex(Password.TITLE))
+        password.username = cursor.getString(cursor.getColumnIndex(Password.USERNAME))
+        if (Config.mKey!!.mode == Key.MODE_NO_KEY) {
+            password.password = cursor.getString(cursor.getColumnIndex(Password.PASSWORD))
+        } else {
+            password.password = cursor.getString(cursor.getColumnIndex(Password.PASSWORD)).aesDecrypt(Config.mOriKey!!)
+        }
+        password.email = cursor.getString(cursor.getColumnIndex(Password.EMAIL))
+        password.note = cursor.getString(cursor.getColumnIndex(Password.NOTE))
+        password.isTop = cursor.getInt(cursor.getColumnIndex(Password.IS_TOP)) == 1
+        password.groupName = cursor.getString(cursor.getColumnIndex(Password.GROUP_NAME))
+        return password
     }
 
 }

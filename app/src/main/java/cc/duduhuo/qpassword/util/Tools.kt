@@ -7,7 +7,9 @@ import android.content.Intent
 import android.os.Environment
 import cc.duduhuo.applicationtoast.AppToast
 import cc.duduhuo.qpassword.R
+import cc.duduhuo.qpassword.bean.Key
 import cc.duduhuo.qpassword.bean.Password
+import cc.duduhuo.qpassword.config.Config
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -111,4 +113,17 @@ fun shareText(context: Context, text: String) {
  */
 fun isExistSDCard(): Boolean {
     return Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED
+}
+
+/**
+ * 主密码 是否被 回收
+ * @return true: 已被回收； false: 未被回收
+ */
+fun keyLosed(): Boolean {
+    if (Config.mKey == null) {
+        return true
+    } else if (Config.mKey!!.mode != Key.MODE_NO_KEY && Config.mOriKey.isNullOrEmpty()) {
+        return true
+    }
+    return false
 }

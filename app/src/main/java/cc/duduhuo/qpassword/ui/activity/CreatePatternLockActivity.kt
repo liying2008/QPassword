@@ -7,6 +7,7 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.widget.TextView
+import cc.duduhuo.applicationtoast.AppToast
 import cc.duduhuo.qpassword.R
 import cc.duduhuo.qpassword.bean.Key
 import cc.duduhuo.qpassword.config.Config
@@ -28,14 +29,20 @@ import kotlinx.android.synthetic.main.activity_create_pattern_lock.*
  * =======================================================
  */
 class CreatePatternLockActivity : BaseActivity() {
+    private var mMode: Int = MODE_CREATE
     private var mKey: String? = null
     private var mMainBinder: MainBinder? = null
     private lateinit var mPatternLockView: PatternLockView
     private lateinit var mTvInfo: TextView
 
     companion object {
-        fun getIntent(context: Context): Intent {
-            return Intent(context, CreatePatternLockActivity::class.java)
+        private const val MODE = "mode"
+        const val MODE_CREATE = 0
+        const val MODE_UPDATE = 1
+        fun getIntent(context: Context, mode: Int): Intent {
+            val intent = Intent(context, CreatePatternLockActivity::class.java)
+            intent.putExtra(MODE, mode)
+            return intent
         }
     }
 
@@ -55,15 +62,15 @@ class CreatePatternLockActivity : BaseActivity() {
     private fun initViews() {
         mPatternLockView.isInputEnabled = true
         btn_redraw.isEnabled = true
-        btn_done.isEnabled = true
         btn_redraw.setOnClickListener {
             // 重新绘制
             mTvInfo.setText(R.string.please_connect_at_least_4_points)
             mPatternLockView.clearPattern()
+            btn_done.isEnabled = false
         }
 
         btn_done.setOnClickListener {
-            if (mKey != null) {
+            if (mKey != null && mKey!!.length >= 4) {
                 mMainBinder?.insertKey(Key(mKey!!.sha1Hex(), Key.MODE_PATTERN), object : OnNewKeyListener {
                     override fun onNewKey(key: Key) {
                         Config.mKey = key
@@ -73,7 +80,7 @@ class CreatePatternLockActivity : BaseActivity() {
                     }
                 })
             } else {
-                mTvInfo.setText(R.string.connect_at_least_4_points)
+                AppToast.showToast(R.string.connect_at_least_4_points)
             }
         }
     }
@@ -81,6 +88,7 @@ class CreatePatternLockActivity : BaseActivity() {
     private val mPatternLockViewListener = object : PatternLockViewListener {
         override fun onStarted() {
             mTvInfo.setText(R.string.please_connect_at_least_4_points)
+            btn_done.isEnabled = false
         }
 
         override fun onProgress(progressPattern: List<PatternLockView.Dot>) {
@@ -96,10 +104,12 @@ class CreatePatternLockActivity : BaseActivity() {
             }
             mTvInfo.setText(R.string.meet_requirement)
             mPatternLockView.setViewMode(PatternLockView.PatternViewMode.CORRECT)
+            btn_done.isEnabled = true
         }
 
         override fun onCleared() {
             mTvInfo.setText(R.string.please_connect_at_least_4_points)
+            btn_done.isEnabled = false
         }
     }
 

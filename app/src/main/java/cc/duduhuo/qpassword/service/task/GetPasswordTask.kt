@@ -4,6 +4,7 @@ import android.os.AsyncTask
 import cc.duduhuo.qpassword.bean.Password
 import cc.duduhuo.qpassword.db.PasswordService
 import cc.duduhuo.qpassword.service.listener.OnGetPasswordListener
+import cc.duduhuo.qpassword.service.listener.OnPasswordFailListener
 
 /**
  * =======================================================
@@ -16,13 +17,26 @@ import cc.duduhuo.qpassword.service.listener.OnGetPasswordListener
 class GetPasswordTask(private val mId: Long,
                       private val mListener: OnGetPasswordListener,
                       private val mPasswordService: PasswordService) : AsyncTask<Void, Void, Password?>() {
+
+    private lateinit var mPasswordFailListeners: List<OnPasswordFailListener>
+
+    fun setOnPasswordFailListeners(listeners: List<OnPasswordFailListener>) {
+        mPasswordFailListeners = listeners
+    }
+
     override fun doInBackground(vararg params: Void?): Password? {
         return mPasswordService.getPassword(mId)
     }
 
-    override fun onPostExecute(result: Password?) {
-        super.onPostExecute(result)
-        mListener.onGetPassword(result)
+    override fun onPostExecute(password: Password?) {
+        super.onPostExecute(password)
+        if (password == null) {
+            mPasswordFailListeners.map { it.onKeyLose() }
+        } else if (password.id == -1L) {
+            mPasswordFailListeners.map { it.onReadFail() }
+        } else {
+            mListener.onGetPassword(password)
+        }
     }
 
 }

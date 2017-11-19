@@ -20,7 +20,7 @@ import cc.duduhuo.qpassword.service.MainService
 import cc.duduhuo.qpassword.service.listener.OnGetPasswordsListener
 import cc.duduhuo.qpassword.util.PreferencesUtils
 import cc.duduhuo.qpassword.util.isExistSDCard
-import cc.duduhuo.util.digest.Digest
+import cc.duduhuo.qpassword.util.sha1Hex
 import com.alibaba.fastjson.JSON
 import kotlinx.android.synthetic.main.activity_export.*
 import java.io.File
@@ -93,7 +93,7 @@ class ExportActivity : BaseActivity() {
                     return@setOnClickListener
                 }
                 export.isEncrypted = true
-                export.key = Digest.sha1Hex(key)
+                export.key = key.sha1Hex()
             }
             exportPassword(export)
         }

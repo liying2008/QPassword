@@ -28,6 +28,7 @@ import kotlinx.android.synthetic.main.activity_create_complex_lock.*
  * =======================================================
  */
 class CreateComplexLockActivity : BaseActivity() {
+    private var mMode: Int = MODE_CREATE
     /** 最小主密码长度 */
     private var mMinKeyLength: Int = 0
     /** 最大主密码长度 */
@@ -35,8 +36,13 @@ class CreateComplexLockActivity : BaseActivity() {
     private var mMainBinder: MainBinder? = null
 
     companion object {
-        fun getIntent(context: Context): Intent {
-            return Intent(context, CreateComplexLockActivity::class.java)
+        private const val MODE = "mode"
+        const val MODE_CREATE = 0
+        const val MODE_UPDATE = 1
+        fun getIntent(context: Context, mode: Int): Intent {
+            val intent = Intent(context, CreateComplexLockActivity::class.java)
+            intent.putExtra(MODE, mode)
+            return intent
         }
     }
 

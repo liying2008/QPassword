@@ -14,21 +14,22 @@ import cc.duduhuo.qpassword.service.listener.OnKeyChangeListener
  * =======================================================
  */
 class UpdateKeyTask(private val mOldKey: Key,
+                    private val mOldOriKey: String,
                     private val mNewKey: Key,
-                    private val mKeyService: KeyService) : AsyncTask<Void, Void, Void?>() {
+                    private val mNewOriKey: String,
+                    private val mKeyService: KeyService) : AsyncTask<Void, Void, Boolean>() {
     private lateinit var mListeners: List<OnKeyChangeListener>
 
     fun setOnKeyChangeListener(listeners: List<OnKeyChangeListener>) {
         this.mListeners = listeners
     }
 
-    override fun doInBackground(vararg params: Void?): Void? {
-        mKeyService.updateKey(mOldKey, mNewKey)
-        return null
+    override fun doInBackground(vararg params: Void?): Boolean {
+        return mKeyService.updateKey(mOldKey, mOldOriKey, mNewKey, mNewOriKey)
     }
 
-    override fun onPostExecute(result: Void?) {
-        super.onPostExecute(result)
+    override fun onPostExecute(update: Boolean) {
+        super.onPostExecute(update)
         mListeners.map { it.onUpdateKey(mOldKey, mNewKey) }
     }
 }

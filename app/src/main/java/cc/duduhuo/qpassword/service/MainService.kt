@@ -4,7 +4,6 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.IBinder
-import cc.duduhuo.qpassword.app.App
 
 class MainService : Service() {
     companion object {
@@ -16,7 +15,7 @@ class MainService : Service() {
     private lateinit var mMainBinder: MainBinder
     override fun onCreate() {
         super.onCreate()
-        mMainBinder = MainBinder(this, applicationContext as App)
+        mMainBinder = MainBinder(this)
     }
 
     override fun onBind(intent: Intent): IBinder {

@@ -1,6 +1,7 @@
 package cc.duduhuo.qpassword.util
 
-import cc.duduhuo.util.digest.Digest
+import cc.duduhuo.util.android.crypto.AES
+import cc.duduhuo.util.android.digest.Digest
 
 /**
  * =======================================================
@@ -10,6 +11,18 @@ import cc.duduhuo.util.digest.Digest
  * Remarks:
  * =======================================================
  */
-fun String.sha1Hex(): String {
-    return Digest.sha1Hex(this)
-}
+
+/**
+ * 得到字符串的 SHA-1 值
+ */
+fun String.sha1Hex(): String = Digest.sha1Hex(this)
+
+/**
+ * 将字符串采用 AES 加密
+ */
+fun String.aesEncrypt(seed: String): String = AES.encrypt(this, seed)
+
+/**
+ * 将加密字符串采用 AES 解密
+ */
+fun String.aesDecrypt(seed: String): String = AES.decrypt(this, seed)

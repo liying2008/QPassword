@@ -7,6 +7,7 @@
     <string name="title_export_password">导出密码</string>
     <string name="title_import_password">导入密码</string>
     <string name="title_create_key">创建主密码</string>
+    <string name="title_update_key">更改主密码</string>
     <string name="title_create_pattern_key">创建图案密码</string>
     <string name="title_create_number_key">创建数字密码</string>
     <string name="title_create_complex_key">创建复杂密码</string>
@@ -103,14 +104,17 @@
     <string name="i_known">我知道了</string>
     <string name="exporting">正在导出，请稍候…</string>
     <string name="reading_passwords">正在读取密码…</string>
+    <string name="insert_password_fail">插入密码失败</string>
+    <string name="read_password_fail">读取密码失败</string>
 
-    <string name="create_key_options">请选择创建主密码的方式</string>
+    <string name="create_key_options">请选择主密码类型</string>
     <string name="create_key_tip">&#160;&#160;&#160;&#160;主密码是进入密码本的唯一凭据，请务必牢记，丢失之后无法找回。同时，为了你的密码数据的安全，推荐使用复杂密码作为主密码。</string>
     <string name="key_pattern_lock">图案密码</string>
     <string name="key_number_lock">数字密码</string>
     <string name="key_complex_lock">复杂密码（推荐）</string>
     <string name="key_no_lock">不创建主密码（不推荐）</string>
     <string name="no_key_message">如果不创建主密码，密码本中的密码将不会以加密的方式存储，你确定不需要创建主密码？</string>
+    <string name="key_updated">主密码已更新</string>
 
     <string name="key_length_can_not_too_short">主密码长度不可以小于 %d 位</string>
     <string name="please_enter_number_key">请输入 %1$d – %2$d 位的数字密码</string>
