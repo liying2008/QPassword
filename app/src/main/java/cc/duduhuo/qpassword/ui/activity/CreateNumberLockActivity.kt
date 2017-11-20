@@ -16,7 +16,9 @@ import cc.duduhuo.qpassword.bean.Key
 import cc.duduhuo.qpassword.config.Config
 import cc.duduhuo.qpassword.service.MainBinder
 import cc.duduhuo.qpassword.service.MainService
+import cc.duduhuo.qpassword.service.listener.OnKeyChangeListener
 import cc.duduhuo.qpassword.service.listener.OnNewKeyListener
+import cc.duduhuo.qpassword.util.keyLost
 import cc.duduhuo.qpassword.util.sha1Hex
 import kotlinx.android.synthetic.main.activity_create_number_lock.*
 
@@ -28,7 +30,7 @@ import kotlinx.android.synthetic.main.activity_create_number_lock.*
  * Remarks:
  * =======================================================
  */
-class CreateNumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClickListener {
+class CreateNumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClickListener, OnKeyChangeListener {
     private var mMode: Int = MODE_CREATE
     /** 最小主密码长度 */
     private var mMinKeyLength: Int = 0
@@ -58,6 +60,7 @@ class CreateNumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClick
             mMainBinder = service as MainBinder
             if (mMainBinder != null) {
                 initViews()
+                mMainBinder?.registerOnKeyChangeListener(this@CreateNumberLockActivity)
             }
         }
     }
@@ -65,6 +68,7 @@ class CreateNumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClick
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_number_lock)
+        mMode = intent.getIntExtra(MODE, MODE_CREATE)
         setTitle(R.string.title_create_number_key)
 
         mMaxKeyLength = resources.getInteger(R.integer.max_key_length)
@@ -73,6 +77,15 @@ class CreateNumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClick
         // 绑定服务
         val intent = MainService.getIntent(this)
         this.bindService(intent, mServiceConnection, BIND_AUTO_CREATE)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (mMode == MODE_UPDATE) {
+            if (keyLost()) {
+                restartApp()
+            }
+        }
     }
 
     private fun initViews() {
@@ -115,14 +128,30 @@ class CreateNumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClick
             AppToast.showToast(getString(R.string.key_length_can_not_too_short, mMinKeyLength))
         } else {
             view.isEnabled = false
-            mMainBinder?.insertKey(Key(mKey.sha1Hex(), Key.MODE_NUMBER), object : OnNewKeyListener {
-                override fun onNewKey(key: Key) {
-                    Config.mKey = key
-                    Config.mOriKey = mKey
-                    startActivity(MainActivity.getIntent(this@CreateNumberLockActivity))
-                    finish()
-                }
-            })
+            if (mMode == MODE_CREATE) {
+                mMainBinder?.insertKey(Key(mKey.sha1Hex(), Key.MODE_NUMBER), object : OnNewKeyListener {
+                    override fun onNewKey(key: Key) {
+                        Config.mKey = key
+                        Config.mOriKey = mKey
+                        startActivity(MainActivity.getIntent(this@CreateNumberLockActivity))
+                        finish()
+                    }
+                })
+            } else if (mMode == MODE_UPDATE) {
+                mMainBinder?.updateKey(Config.mKey!!, Config.mOriKey, Key(mKey.sha1Hex(), Key.MODE_NUMBER), mKey)
+            }
+        }
+    }
+
+    override fun onUpdateKey(oldKey: Key, newKey: Key) {
+        Config.mKey = newKey
+        Config.mOriKey = mKey
+        if (oldKey.key != newKey.key) {
+            AppToast.showToast(R.string.key_updated)
+            destroyAllActivities()
+            startActivity(MainActivity.getIntent(this))
+        } else {
+            finish()
         }
     }
 

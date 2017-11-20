@@ -8,7 +8,7 @@ import cc.duduhuo.qpassword.bean.Password
 import cc.duduhuo.qpassword.config.Config
 import cc.duduhuo.qpassword.util.aesDecrypt
 import cc.duduhuo.qpassword.util.aesEncrypt
-import cc.duduhuo.qpassword.util.keyLosed
+import cc.duduhuo.qpassword.util.keyLost
 
 /**
  * =======================================================
@@ -27,7 +27,7 @@ class PasswordService(context: Context) {
      * 如果 Config.mKey 不存在，返回 -2L
      */
     fun insertPassword(password: Password): Long {
-        if (keyLosed()) {
+        if (keyLost()) {
             return -2L
         }
         var id: Long = -1L
@@ -40,7 +40,7 @@ class PasswordService(context: Context) {
             if (Config.mKey!!.mode == Key.MODE_NO_KEY) {
                 contentValues.put(Password.PASSWORD, password.password)
             } else {
-                contentValues.put(Password.PASSWORD, password.password.aesEncrypt(Config.mOriKey!!))
+                contentValues.put(Password.PASSWORD, password.password.aesEncrypt(Config.mOriKey))
             }
             contentValues.put(Password.EMAIL, password.email)
             contentValues.put(Password.NOTE, password.note)
@@ -63,7 +63,7 @@ class PasswordService(context: Context) {
      */
     fun updatePassword(password: Password): Int {
         var result = 0
-        if (keyLosed()) {
+        if (keyLost()) {
             return -2
         }
         val db = mDbHelper.writableDatabase
@@ -74,7 +74,7 @@ class PasswordService(context: Context) {
             if (Config.mKey!!.mode == Key.MODE_NO_KEY) {
                 contentValues.put(Password.PASSWORD, password.password)
             } else {
-                contentValues.put(Password.PASSWORD, password.password.aesEncrypt(Config.mOriKey!!))
+                contentValues.put(Password.PASSWORD, password.password.aesEncrypt(Config.mOriKey))
             }
             contentValues.put(Password.EMAIL, password.email)
             contentValues.put(Password.NOTE, password.note)
@@ -99,7 +99,7 @@ class PasswordService(context: Context) {
      * null：表示 主密码丢失
      */
     fun getPassword(id: Long): Password? {
-        if (keyLosed()) {
+        if (keyLost()) {
             return null
         }
         var password: Password = Password(-1L)
@@ -127,7 +127,7 @@ class PasswordService(context: Context) {
      * null：主密码丢失
      */
     fun getAllPassword(): List<Password>? {
-        if (keyLosed()) {
+        if (keyLost()) {
             return null
         }
 
@@ -175,7 +175,7 @@ class PasswordService(context: Context) {
      * null：主密码丢失
      */
     fun getAllPasswordByGroupName(groupName: String): List<Password>? {
-        if (keyLosed()) {
+        if (keyLost()) {
             return null
         }
         val passwords = mutableListOf<Password>()
@@ -208,7 +208,7 @@ class PasswordService(context: Context) {
         if (Config.mKey!!.mode == Key.MODE_NO_KEY) {
             password.password = cursor.getString(cursor.getColumnIndex(Password.PASSWORD))
         } else {
-            password.password = cursor.getString(cursor.getColumnIndex(Password.PASSWORD)).aesDecrypt(Config.mOriKey!!)
+            password.password = cursor.getString(cursor.getColumnIndex(Password.PASSWORD)).aesDecrypt(Config.mOriKey)
         }
         password.email = cursor.getString(cursor.getColumnIndex(Password.EMAIL))
         password.note = cursor.getString(cursor.getColumnIndex(Password.NOTE))

@@ -17,7 +17,7 @@ import android.view.View
  * Remarks:
  * =======================================================
  */
-class NumberItemDecoration(val context: Context) : RecyclerView.ItemDecoration() {
+class FileItemDecoration(val context: Context) : RecyclerView.ItemDecoration() {
     private var mPaint: Paint? = null
     private var mDivider: Drawable
     /** 分割线高度 */

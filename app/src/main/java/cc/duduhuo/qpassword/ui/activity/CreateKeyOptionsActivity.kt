@@ -13,7 +13,7 @@ import cc.duduhuo.qpassword.service.MainBinder
 import cc.duduhuo.qpassword.service.MainService
 import cc.duduhuo.qpassword.service.listener.OnKeyChangeListener
 import cc.duduhuo.qpassword.service.listener.OnNewKeyListener
-import cc.duduhuo.qpassword.util.keyLosed
+import cc.duduhuo.qpassword.util.keyLost
 import kotlinx.android.synthetic.main.activity_create_key_options.*
 
 /**
@@ -98,6 +98,10 @@ class CreateKeyOptionsActivity : BaseActivity(), OnKeyChangeListener {
             .setMessage(R.string.no_key_message)
             .setPositiveButton(R.string.cancel, null)
             .setNegativeButton(R.string.ok) { dialog, which ->
+                btn_pattern_key.isEnabled = false
+                btn_number_key.isEnabled = false
+                btn_complex_key.isEnabled = false
+                btn_no_key.isEnabled = false
                 if (mMode == MODE_CREATE) {
                     mMainBinder?.insertKey(Key(Config.NO_PASSWORD, Key.MODE_NO_KEY), object : OnNewKeyListener {
                         override fun onNewKey(key: Key) {
@@ -109,11 +113,7 @@ class CreateKeyOptionsActivity : BaseActivity(), OnKeyChangeListener {
 
                     })
                 } else if (mMode == MODE_UPDATE) {
-                    if (keyLosed()) {
-                        restartApp()
-                        return@setNegativeButton
-                    }
-                    mMainBinder?.updateKey(Config.mKey!!, Config.mOriKey!!, Key(Config.NO_PASSWORD, Key.MODE_NO_KEY), Config.NO_PASSWORD)
+                    mMainBinder?.updateKey(Config.mKey!!, Config.mOriKey, Key(Config.NO_PASSWORD, Key.MODE_NO_KEY), Config.NO_PASSWORD)
                 }
             }
             .create().show()
@@ -128,6 +128,15 @@ class CreateKeyOptionsActivity : BaseActivity(), OnKeyChangeListener {
             startActivity(MainActivity.getIntent(this))
         } else {
             this@CreateKeyOptionsActivity.finish()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (mMode == MODE_UPDATE) {
+            if (keyLost()) {
+                restartApp()
+            }
         }
     }
 

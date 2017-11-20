@@ -13,7 +13,9 @@ import cc.duduhuo.qpassword.bean.Key
 import cc.duduhuo.qpassword.config.Config
 import cc.duduhuo.qpassword.service.MainBinder
 import cc.duduhuo.qpassword.service.MainService
+import cc.duduhuo.qpassword.service.listener.OnKeyChangeListener
 import cc.duduhuo.qpassword.service.listener.OnNewKeyListener
+import cc.duduhuo.qpassword.util.keyLost
 import cc.duduhuo.qpassword.util.sha1Hex
 import com.andrognito.patternlockview.PatternLockView
 import com.andrognito.patternlockview.listener.PatternLockViewListener
@@ -28,7 +30,7 @@ import kotlinx.android.synthetic.main.activity_create_pattern_lock.*
  * Remarks:
  * =======================================================
  */
-class CreatePatternLockActivity : BaseActivity() {
+class CreatePatternLockActivity : BaseActivity(), OnKeyChangeListener {
     private var mMode: Int = MODE_CREATE
     private var mKey: String? = null
     private var mMainBinder: MainBinder? = null
@@ -55,6 +57,7 @@ class CreatePatternLockActivity : BaseActivity() {
             mMainBinder = service as MainBinder
             if (mMainBinder != null) {
                 initViews()
+                mMainBinder?.registerOnKeyChangeListener(this@CreatePatternLockActivity)
             }
         }
     }
@@ -71,14 +74,21 @@ class CreatePatternLockActivity : BaseActivity() {
 
         btn_done.setOnClickListener {
             if (mKey != null && mKey!!.length >= 4) {
-                mMainBinder?.insertKey(Key(mKey!!.sha1Hex(), Key.MODE_PATTERN), object : OnNewKeyListener {
-                    override fun onNewKey(key: Key) {
-                        Config.mKey = key
-                        Config.mOriKey = mKey
-                        startActivity(MainActivity.getIntent(this@CreatePatternLockActivity))
-                        this@CreatePatternLockActivity.finish()
-                    }
-                })
+                btn_done.isEnabled = false
+                btn_redraw.isEnabled = false
+
+                if (mMode == MODE_CREATE) {
+                    mMainBinder?.insertKey(Key(mKey!!.sha1Hex(), Key.MODE_PATTERN), object : OnNewKeyListener {
+                        override fun onNewKey(key: Key) {
+                            Config.mKey = key
+                            Config.mOriKey = mKey!!
+                            startActivity(MainActivity.getIntent(this@CreatePatternLockActivity))
+                            this@CreatePatternLockActivity.finish()
+                        }
+                    })
+                } else if (mMode == MODE_UPDATE) {
+                    mMainBinder?.updateKey(Config.mKey!!, Config.mOriKey, Key(mKey!!.sha1Hex(), Key.MODE_PATTERN), mKey!!)
+                }
             } else {
                 AppToast.showToast(R.string.connect_at_least_4_points)
             }
@@ -116,6 +126,7 @@ class CreatePatternLockActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_pattern_lock)
+        mMode = intent.getIntExtra(MODE, MODE_CREATE)
         setTitle(R.string.title_create_pattern_key)
         mPatternLockView = findViewById(R.id.pattern_lock_view)
         mTvInfo = findViewById(R.id.tv_info)
@@ -125,6 +136,27 @@ class CreatePatternLockActivity : BaseActivity() {
         val intent = MainService.getIntent(this)
         this.bindService(intent, mServiceConnection, BIND_AUTO_CREATE)
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (mMode == MODE_UPDATE) {
+            if (keyLost()) {
+                restartApp()
+            }
+        }
+    }
+
+    override fun onUpdateKey(oldKey: Key, newKey: Key) {
+        Config.mKey = newKey
+        Config.mOriKey = mKey!!
+        if (oldKey.key != newKey.key) {
+            AppToast.showToast(R.string.key_updated)
+            destroyAllActivities()
+            startActivity(MainActivity.getIntent(this))
+        } else {
+            finish()
+        }
     }
 
     override fun onDestroy() {

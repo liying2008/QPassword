@@ -15,7 +15,9 @@ import cc.duduhuo.qpassword.bean.Key
 import cc.duduhuo.qpassword.config.Config
 import cc.duduhuo.qpassword.service.MainBinder
 import cc.duduhuo.qpassword.service.MainService
+import cc.duduhuo.qpassword.service.listener.OnKeyChangeListener
 import cc.duduhuo.qpassword.service.listener.OnNewKeyListener
+import cc.duduhuo.qpassword.util.keyLost
 import cc.duduhuo.qpassword.util.sha1Hex
 import kotlinx.android.synthetic.main.activity_create_complex_lock.*
 
@@ -27,13 +29,14 @@ import kotlinx.android.synthetic.main.activity_create_complex_lock.*
  * Remarks:
  * =======================================================
  */
-class CreateComplexLockActivity : BaseActivity() {
+class CreateComplexLockActivity : BaseActivity(), OnKeyChangeListener {
     private var mMode: Int = MODE_CREATE
     /** 最小主密码长度 */
     private var mMinKeyLength: Int = 0
     /** 最大主密码长度 */
     private var mMaxKeyLength: Int = 0
     private var mMainBinder: MainBinder? = null
+    private var mKey: String = ""
 
     companion object {
         private const val MODE = "mode"
@@ -55,6 +58,7 @@ class CreateComplexLockActivity : BaseActivity() {
             mMainBinder = service as MainBinder
             if (mMainBinder != null) {
                 initViews()
+                mMainBinder?.registerOnKeyChangeListener(this@CreateComplexLockActivity)
             }
         }
     }
@@ -62,6 +66,7 @@ class CreateComplexLockActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_complex_lock)
+        mMode = intent.getIntExtra(MODE, MODE_CREATE)
         setTitle(R.string.title_create_complex_key)
 
         mMaxKeyLength = resources.getInteger(R.integer.max_key_length)
@@ -70,6 +75,15 @@ class CreateComplexLockActivity : BaseActivity() {
         // 绑定服务
         val intent = MainService.getIntent(this)
         this.bindService(intent, mServiceConnection, BIND_AUTO_CREATE)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (mMode == MODE_UPDATE) {
+            if (keyLost()) {
+                restartApp()
+            }
+        }
     }
 
     private fun initViews() {
@@ -88,19 +102,35 @@ class CreateComplexLockActivity : BaseActivity() {
      * @param view
      */
     fun ok(view: View) {
-        val oriKey = et_complex_lock.text.toString()
-        if (oriKey.length < mMinKeyLength) {
+        mKey = et_complex_lock.text.toString()
+        if (mKey.length < mMinKeyLength) {
             AppToast.showToast(getString(R.string.key_length_can_not_too_short, mMinKeyLength))
         } else {
             btn_ok.isEnabled = false
-            mMainBinder?.insertKey(Key(oriKey.sha1Hex(), Key.MODE_COMPLEX), object : OnNewKeyListener {
-                override fun onNewKey(key: Key) {
-                    Config.mKey = key
-                    Config.mOriKey = oriKey
-                    startActivity(MainActivity.getIntent(this@CreateComplexLockActivity))
-                    finish()
-                }
-            })
+            if (mMode == MODE_CREATE) {
+                mMainBinder?.insertKey(Key(mKey.sha1Hex(), Key.MODE_COMPLEX), object : OnNewKeyListener {
+                    override fun onNewKey(key: Key) {
+                        Config.mKey = key
+                        Config.mOriKey = mKey
+                        startActivity(MainActivity.getIntent(this@CreateComplexLockActivity))
+                        finish()
+                    }
+                })
+            } else if (mMode == MODE_UPDATE) {
+                mMainBinder?.updateKey(Config.mKey!!, Config.mOriKey, Key(mKey.sha1Hex(), Key.MODE_COMPLEX), mKey)
+            }
+        }
+    }
+
+    override fun onUpdateKey(oldKey: Key, newKey: Key) {
+        Config.mKey = newKey
+        Config.mOriKey = mKey
+        if (oldKey.key != newKey.key) {
+            AppToast.showToast(R.string.key_updated)
+            destroyAllActivities()
+            startActivity(MainActivity.getIntent(this))
+        } else {
+            finish()
         }
     }
 

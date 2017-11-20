@@ -1,10 +1,7 @@
 package cc.duduhuo.qpassword.ui.activity
 
 import android.app.ProgressDialog
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.content.*
 import android.os.Bundle
 import android.os.Environment
 import android.os.IBinder
@@ -19,6 +16,7 @@ import cc.duduhuo.qpassword.service.MainBinder
 import cc.duduhuo.qpassword.service.MainService
 import cc.duduhuo.qpassword.service.listener.OnGetPasswordsListener
 import cc.duduhuo.qpassword.util.PreferencesUtils
+import cc.duduhuo.qpassword.util.aesEncrypt
 import cc.duduhuo.qpassword.util.isExistSDCard
 import cc.duduhuo.qpassword.util.sha1Hex
 import com.alibaba.fastjson.JSON
@@ -86,6 +84,7 @@ class ExportActivity : BaseActivity() {
             val export = Export()
             if (mExportType == EXPORT_NO_ENCRYPTED) {
                 export.isEncrypted = false
+                exportPassword(export)
             } else if (mExportType == EXPORT_ENCRYPTED) {
                 val key = et_key.text.toString().trim()
                 if (key == "") {
@@ -94,8 +93,8 @@ class ExportActivity : BaseActivity() {
                 }
                 export.isEncrypted = true
                 export.key = key.sha1Hex()
+                exportPassword(export, key)
             }
-            exportPassword(export)
         }
     }
 
@@ -115,8 +114,9 @@ class ExportActivity : BaseActivity() {
     /**
      * 导出密码
      * @param export 用于导出的数据实体
+     * @param oriKey 加密种子
      */
-    private fun exportPassword(export: Export) {
+    private fun exportPassword(export: Export, oriKey: String? = null) {
         val progressDialog = ProgressDialog(this@ExportActivity)
         progressDialog.setCanceledOnTouchOutside(false)
         progressDialog.setMessage(getString(R.string.exporting))
@@ -124,7 +124,11 @@ class ExportActivity : BaseActivity() {
 
         mMainBinder?.getPasswords(object : OnGetPasswordsListener {
             override fun onGetPasswords(groupName: String?, passwords: List<Password>) {
-                export.passwords = passwords
+                if (export.isEncrypted) {
+                    export.passwords = encrypt(passwords, oriKey!!)
+                } else {
+                    export.passwords = passwords
+                }
 
                 if (isExistSDCard()) {
                     // 存在存储卡
@@ -146,6 +150,19 @@ class ExportActivity : BaseActivity() {
     }
 
     /**
+     * 加密 Password List
+     * @param passwords
+     * @param key
+     */
+    private fun encrypt(passwords: List<Password>, key: String): List<Password> {
+        val size = passwords.size
+        for (i in 0 until size) {
+            passwords[i].password = passwords[i].password.aesEncrypt(key)
+        }
+        return passwords
+    }
+
+    /**
      * 将密码信息写入文件
      * @param dir 写入外部存储卡的目录
      * @param export
@@ -153,8 +170,8 @@ class ExportActivity : BaseActivity() {
      */
     private fun writeFile(dir: String?, export: Export, progressDialog: ProgressDialog) {
         val jsonString = JSON.toJSONString(export)
-        val fileName = SimpleDateFormat("yyyMMdd-HHmmss", Locale.getDefault()).format(Date()) +
-            ".qpwd"
+        val fileName = SimpleDateFormat(Config.EXPORT_FILENAME_FORMAT, Locale.getDefault()).format(Date()) +
+            Config.EXPORT_FILE_EXTENSION
 
         val file = if (dir == null) {
             File(fileName)
@@ -167,7 +184,9 @@ class ExportActivity : BaseActivity() {
         // 显示导出成功提醒对话框
         val builder = AlertDialog.Builder(this@ExportActivity)
         builder.setMessage(getString(R.string.export_success, fileName))
-        builder.setPositiveButton(R.string.i_known, null)
+        builder.setPositiveButton(R.string.i_known, DialogInterface.OnClickListener { dialog, which ->
+            finish()
+        })
         val dialog = builder.create()
         dialog.setCanceledOnTouchOutside(false)
         dialog.show()

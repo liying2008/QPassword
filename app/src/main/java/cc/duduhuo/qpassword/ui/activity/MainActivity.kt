@@ -28,7 +28,7 @@ import cc.duduhuo.qpassword.service.MainService
 import cc.duduhuo.qpassword.service.listener.*
 import cc.duduhuo.qpassword.util.PreferencesUtils
 import cc.duduhuo.qpassword.util.copyText
-import cc.duduhuo.qpassword.util.keyLosed
+import cc.duduhuo.qpassword.util.keyLost
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -151,6 +151,12 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
         toggle.syncState()
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (keyLost()) {
+            restartApp()
+        }
+    }
     private fun initData() {
         // 显示 ProgressDialog
         mProgressDialog.show()
@@ -200,10 +206,6 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
             }
             R.id.action_modify_main -> {
                 // 修改主密码
-                if (keyLosed()) {
-                    restartApp()
-                    return true
-                }
                 startActivity(CreateKeyOptionsActivity.getIntent(this, CreateKeyOptionsActivity.MODE_UPDATE))
             }
             R.id.action_export -> {

@@ -119,10 +119,10 @@ fun isExistSDCard(): Boolean {
  * 主密码 是否被 回收
  * @return true: 已被回收； false: 未被回收
  */
-fun keyLosed(): Boolean {
+fun keyLost(): Boolean {
     if (Config.mKey == null) {
         return true
-    } else if (Config.mKey!!.mode != Key.MODE_NO_KEY && Config.mOriKey.isNullOrEmpty()) {
+    } else if (Config.mKey!!.mode != Key.MODE_NO_KEY && Config.mOriKey == Config.NO_PASSWORD) {
         return true
     }
     return false

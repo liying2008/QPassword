@@ -8,4 +8,18 @@
     android:orientation="vertical"
     tools:context="cc.duduhuo.qpassword.ui.activity.ImportActivity">
 
+    <TextView
+        android:id="@+id/tv_import_msg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:padding="10dp"
+        android:text="@string/import_password_tip"
+        android:textColor="@color/tip_text_color"
+        android:textSize="14sp"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_file"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 </LinearLayout>

@@ -19,10 +19,14 @@ object Config {
     const val WORK_DIR = "QPassword"
     /** 密码导入导出目录 */
     const val EXPORT_DIR = "password"
+    /** 导出的文件的扩展名 */
+    const val EXPORT_FILE_EXTENSION = ".qpwd"
+    /** 导出的文件的文件名格式 */
+    const val EXPORT_FILENAME_FORMAT = "yyyMMdd-HHmmss"
     /** 没有设置主密码时，key的默认值 */
     const val NO_PASSWORD = "0"
     /** 主密码对象 */
     var mKey: Key? = null
     /** 未经 SHA-1加密的主密码 */
-    var mOriKey: String? = null
+    var mOriKey: String = NO_PASSWORD
 }
