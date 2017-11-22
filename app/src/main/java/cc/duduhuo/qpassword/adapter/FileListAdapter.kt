@@ -19,10 +19,18 @@ import kotlinx.android.synthetic.main.item_import_file.view.*
  */
 class FileListAdapter(private val mContext: Context,
                       private val mFileList: List<ImportFile>) : RecyclerView.Adapter<FileListAdapter.ViewHolder>() {
+    private var mFileClickListener: OnFileClickListener? = null
+    fun setOnFileClickListener(listener: OnFileClickListener) {
+        this.mFileClickListener = listener
+    }
+
     override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
         val file = mFileList[position]
         if (holder != null) {
             holder.itemView.tv_file.text = file.fileName
+            holder.itemView.setOnClickListener {
+                mFileClickListener?.onFileClick(file.absolutePath)
+            }
         }
     }
 
@@ -40,4 +48,14 @@ class FileListAdapter(private val mContext: Context,
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
+    /**
+     * 文件名点击监听
+     */
+    interface OnFileClickListener {
+        /**
+         * 文件名被点击
+         * @param absolutePath 绝对路径
+         */
+        fun onFileClick(absolutePath: String)
+    }
 }

@@ -8,7 +8,7 @@ package cc.duduhuo.qpassword.bean
  * Remarks:
  * =======================================================
  */
-data class Export(
+data class Export @JvmOverloads constructor(
     /** 是否加密 */
     var isEncrypted: Boolean = false,
     /** 是否采用图案解锁 */
@@ -16,4 +16,4 @@ data class Export(
     /** 主密码的 SHA1 值 */
     var key: String = "",
     /** 密码列表 */
-    var passwords: List<Password> = arrayListOf())
+    var passwords: List<Password> = mutableListOf())

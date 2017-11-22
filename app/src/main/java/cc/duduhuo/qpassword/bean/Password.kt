@@ -8,7 +8,7 @@ package cc.duduhuo.qpassword.bean
  * Remarks:
  * =======================================================
  */
-data class Password(
+data class Password @JvmOverloads constructor(
     /** ID */
     var id: Long = 0,
     /** 创建时间 */

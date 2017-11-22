@@ -157,6 +157,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
             restartApp()
         }
     }
+
     private fun initData() {
         // 显示 ProgressDialog
         mProgressDialog.show()
@@ -282,7 +283,9 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
                 dialog.show()
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
                     val groupName = etGroup.text.toString()
-                    if (groupName == getString(R.string.group_all) || mGroupList.contains(Group(groupName))) {
+                    if (groupName.isEmpty()) {
+                        AppToast.showToast(R.string.group_name_can_not_be_empty)
+                    } else if (groupName == getString(R.string.group_all) || mGroupList.contains(Group(groupName))) {
                         AppToast.showToast(R.string.group_exists)
                     } else {
                         mMainBinder?.insertGroup(Group(groupName))
