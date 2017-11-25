@@ -10,7 +10,9 @@ package cc.duduhuo.qpassword.bean
  */
 class ImportFile(
     /** 文件名 */
-    val fileName: String = "",
+    var fileName: String = "",
     /** 文件的绝对路径 */
-    val absolutePath: String = ""
+    var absolutePath: String = "",
+    /** 文件大小 */
+    var fileSize: Long = 0L
 )

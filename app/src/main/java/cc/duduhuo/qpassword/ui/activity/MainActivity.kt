@@ -43,6 +43,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
     private var mGroupList = mutableListOf<Group>()
 
     companion object {
+        private const val REQUEST_CODE_IMPORT = 0x0000
         fun getIntent(context: Context): Intent {
             return Intent(context, MainActivity::class.java)
         }
@@ -215,7 +216,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
             }
             R.id.action_import -> {
                 // 导入密码
-                startActivity(ImportActivity.getIntent(this))
+                startActivityForResult(ImportActivity.getIntent(this), REQUEST_CODE_IMPORT)
             }
             R.id.action_distinct -> {
                 // 密码去重
@@ -449,6 +450,16 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
 
     override fun onKeyLose() {
         restartApp()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_IMPORT) {
+            if (resultCode == ImportActivity.RESULT_CODE_IMPORT) {
+                // 重新读取数据库中该分组下的密码数据
+                showGroup(mGroupName)
+            }
+        }
     }
 
     override fun onDestroy() {

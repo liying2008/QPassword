@@ -134,5 +134,7 @@
     <string name="importing">正在导入，请稍候…</string>
     <string name="imported">导入完成，一共导入 %d 个密码</string>
     <string name="import_zero">文件中无密码数据</string>
-    <string name="importing_please_wait">正在进行密码导入，请稍候</string>
+    <string name="importing_please_wait">请稍候操作…</string>
+    <string name="parsing_password_file">正在解析文件…</string>
+    <string name="importing_passwords">正在导入密码数据…</string>
 </resources>

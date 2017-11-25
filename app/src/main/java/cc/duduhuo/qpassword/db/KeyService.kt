@@ -2,7 +2,6 @@ package cc.duduhuo.qpassword.db
 
 import android.content.ContentValues
 import android.content.Context
-import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import cc.duduhuo.qpassword.bean.Key
 import cc.duduhuo.qpassword.bean.Password
@@ -26,16 +25,12 @@ class KeyService(context: Context) {
      */
     fun addKey(key: Key) {
         val db = mDbHelper.writableDatabase
-        try {
-            val contentValues = ContentValues()
-            contentValues.put(Key.KEY, key.key)
-            contentValues.put(Key.MODE, key.mode)
-            db.insert(DBInfo.Table.TB_KEY, null, contentValues)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            db.close()
-        }
+        val contentValues = ContentValues()
+        contentValues.put(Key.KEY, key.key)
+        contentValues.put(Key.MODE, key.mode)
+        db.insert(DBInfo.Table.TB_KEY, null, contentValues)
+        contentValues.clear()
+        db.close()
     }
 
     /**
@@ -53,18 +48,14 @@ class KeyService(context: Context) {
             return false
         }
         val db = mDbHelper.writableDatabase
-        try {
-            val contentValues = ContentValues()
-            contentValues.put(Key.KEY, newKey.key)
-            contentValues.put(Key.MODE, newKey.mode)
-            db.update(DBInfo.Table.TB_KEY, contentValues, "${Key.KEY} = ?", arrayOf(oldKey.key))
-            // 更新全部密码（重新加密）
-            updatePassword(db, oldKey, oldOriKey, newKey, newOriKey)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            db.close()
-        }
+        val contentValues = ContentValues()
+        contentValues.put(Key.KEY, newKey.key)
+        contentValues.put(Key.MODE, newKey.mode)
+        db.update(DBInfo.Table.TB_KEY, contentValues, "${Key.KEY} = ?", arrayOf(oldKey.key))
+        // 更新全部密码（重新加密）
+        updatePassword(db, oldKey, oldOriKey, newKey, newOriKey)
+        contentValues.clear()
+        db.close()
         return true
     }
 
@@ -76,69 +67,57 @@ class KeyService(context: Context) {
     fun getKey(): Key? {
         val db = mDbHelper.writableDatabase
         var key: Key? = null
-        var cursor: Cursor? = null
-        try {
-            cursor = db.query(DBInfo.Table.TB_KEY, null, null, null, null, null, null)
+        val cursor = db.query(DBInfo.Table.TB_KEY, null, null, null, null, null, null)
 
-            if (cursor!!.moveToNext()) {
-                key = Key()
-                key.key = cursor.getString(cursor.getColumnIndex(Key.KEY))
-                key.mode = cursor.getInt(cursor.getColumnIndex(Key.MODE))
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            cursor?.close()
-            db.close()
+        if (cursor.moveToNext()) {
+            key = Key()
+            key.key = cursor.getString(cursor.getColumnIndex(Key.KEY))
+            key.mode = cursor.getInt(cursor.getColumnIndex(Key.MODE))
         }
+        cursor.close()
+        db.close()
         return key
     }
 
     private fun updatePassword(db: SQLiteDatabase, oldKey: Key, oldOriKey: String, newKey: Key, newOriKey: String) {
-        var cursor: Cursor? = null
-        try {
-            cursor = db.query(DBInfo.Table.TB_PASSWORD, null, null, null, null, null, null)
+        val cursor = db.query(DBInfo.Table.TB_PASSWORD, null, null, null, null, null, null)
 
-            val password = Password()
-            val cv = ContentValues()
-            if (oldKey.mode == Key.MODE_NO_KEY && newKey.mode != Key.MODE_NO_KEY) {
-                // 直接加密
-                while (cursor!!.moveToNext()) {
-                    password.id = cursor.getLong(cursor.getColumnIndex(Password.ID))
-                    password.password = cursor.getString(cursor.getColumnIndex(Password.PASSWORD))
-                    cv.clear()
-                    cv.put(Password.ID, password.id)
-                    cv.put(Password.PASSWORD, password.password.aesEncrypt(newOriKey))
-                    db.update(DBInfo.Table.TB_PASSWORD, cv, "${Password.ID} = ?",
-                        arrayOf(password.id.toString()))
-                }
-            } else if (oldKey.mode != Key.MODE_NO_KEY && newKey.mode == Key.MODE_NO_KEY) {
-                // 解密后不加密
-                while (cursor!!.moveToNext()) {
-                    password.id = cursor.getLong(cursor.getColumnIndex(Password.ID))
-                    password.password = cursor.getString(cursor.getColumnIndex(Password.PASSWORD)).aesDecrypt(oldOriKey)
-                    cv.clear()
-                    cv.put(Password.ID, password.id)
-                    cv.put(Password.PASSWORD, password.password)
-                    val i = db.update(DBInfo.Table.TB_PASSWORD, cv, "${Password.ID} = ?",
-                        arrayOf(password.id.toString()))
-                }
-            } else if (oldKey.mode != Key.MODE_NO_KEY && newKey.mode != Key.MODE_NO_KEY) {
-                // 先解密后加密
-                while (cursor!!.moveToNext()) {
-                    password.id = cursor.getLong(cursor.getColumnIndex(Password.ID))
-                    password.password = cursor.getString(cursor.getColumnIndex(Password.PASSWORD)).aesDecrypt(oldOriKey)
-                    cv.clear()
-                    cv.put(Password.ID, password.id)
-                    cv.put(Password.PASSWORD, password.password.aesEncrypt(newOriKey))
-                    db.update(DBInfo.Table.TB_PASSWORD, cv, "${Password.ID} = ?",
-                        arrayOf(password.id.toString()))
-                }
+        val password = Password()
+        val cv = ContentValues()
+        if (oldKey.mode == Key.MODE_NO_KEY && newKey.mode != Key.MODE_NO_KEY) {
+            // 直接加密
+            while (cursor!!.moveToNext()) {
+                password.id = cursor.getLong(cursor.getColumnIndex(Password.ID))
+                password.password = cursor.getString(cursor.getColumnIndex(Password.PASSWORD))
+                cv.clear()
+                cv.put(Password.ID, password.id)
+                cv.put(Password.PASSWORD, password.password.aesEncrypt(newOriKey))
+                db.update(DBInfo.Table.TB_PASSWORD, cv, "${Password.ID} = ?",
+                    arrayOf(password.id.toString()))
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            cursor?.close()
+        } else if (oldKey.mode != Key.MODE_NO_KEY && newKey.mode == Key.MODE_NO_KEY) {
+            // 解密后不加密
+            while (cursor!!.moveToNext()) {
+                password.id = cursor.getLong(cursor.getColumnIndex(Password.ID))
+                password.password = cursor.getString(cursor.getColumnIndex(Password.PASSWORD)).aesDecrypt(oldOriKey)
+                cv.clear()
+                cv.put(Password.ID, password.id)
+                cv.put(Password.PASSWORD, password.password)
+                val i = db.update(DBInfo.Table.TB_PASSWORD, cv, "${Password.ID} = ?",
+                    arrayOf(password.id.toString()))
+            }
+        } else if (oldKey.mode != Key.MODE_NO_KEY && newKey.mode != Key.MODE_NO_KEY) {
+            // 先解密后加密
+            while (cursor!!.moveToNext()) {
+                password.id = cursor.getLong(cursor.getColumnIndex(Password.ID))
+                password.password = cursor.getString(cursor.getColumnIndex(Password.PASSWORD)).aesDecrypt(oldOriKey)
+                cv.clear()
+                cv.put(Password.ID, password.id)
+                cv.put(Password.PASSWORD, password.password.aesEncrypt(newOriKey))
+                db.update(DBInfo.Table.TB_PASSWORD, cv, "${Password.ID} = ?",
+                    arrayOf(password.id.toString()))
+            }
         }
+        cursor.close()
     }
 }

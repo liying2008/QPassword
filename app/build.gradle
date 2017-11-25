@@ -31,6 +31,7 @@ dependencies {
     implementation 'com.alibaba:fastjson:1.1.61.android'
     implementation 'com.andrognito.patternlockview:patternlockview:1.0.0'
     implementation 'cc.duduhuo.util:digest-util-android:1.0.0'
+    implementation 'com.google.guava:guava:23.5-android'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'

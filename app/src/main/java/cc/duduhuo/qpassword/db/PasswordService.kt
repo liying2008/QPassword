@@ -30,28 +30,60 @@ class PasswordService(context: Context) {
         if (keyLost()) {
             return -2L
         }
-        var id: Long = -1L
+        val id: Long
         val db = mDbHelper.writableDatabase
-        try {
-            val contentValues = ContentValues()
-            contentValues.put(Password.CREATE_DATE, password.createDate)
-            contentValues.put(Password.TITLE, password.title)
-            contentValues.put(Password.USERNAME, password.username)
-            if (Config.mKey!!.mode == Key.MODE_NO_KEY) {
-                contentValues.put(Password.PASSWORD, password.password)
-            } else {
-                contentValues.put(Password.PASSWORD, password.password.aesEncrypt(Config.mOriKey))
-            }
-            contentValues.put(Password.EMAIL, password.email)
-            contentValues.put(Password.NOTE, password.note)
-            contentValues.put(Password.IS_TOP, if (password.isTop) 1 else 0)
-            contentValues.put(Password.GROUP_NAME, password.groupName)
-            id = db.insert(DBInfo.Table.TB_PASSWORD, null, contentValues)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            db.close()
+        val contentValues = ContentValues()
+        contentValues.put(Password.CREATE_DATE, password.createDate)
+        contentValues.put(Password.TITLE, password.title)
+        contentValues.put(Password.USERNAME, password.username)
+        if (Config.mKey!!.mode == Key.MODE_NO_KEY) {
+            contentValues.put(Password.PASSWORD, password.password)
+        } else {
+            contentValues.put(Password.PASSWORD, password.password.aesEncrypt(Config.mOriKey))
         }
+        contentValues.put(Password.EMAIL, password.email)
+        contentValues.put(Password.NOTE, password.note)
+        contentValues.put(Password.IS_TOP, if (password.isTop) 1 else 0)
+        contentValues.put(Password.GROUP_NAME, password.groupName)
+        id = db.insert(DBInfo.Table.TB_PASSWORD, null, contentValues)
+        contentValues.clear()
+        db.close()
+        return id
+    }
+
+    /**
+     * 插入密码List
+     * @param passwords 要插入的密码List
+     * @return 全部成功：返回0；如果插入失败：返回- 1L
+     * 如果 Config.mKey 不存在，返回 -2L
+     */
+    fun insertPasswords(passwords: List<Password>): Long {
+        if (keyLost()) {
+            return -2L
+        }
+        var id = 0L
+        val db = mDbHelper.writableDatabase
+        val contentValues = ContentValues()
+        passwords.forEach {
+            contentValues.clear()
+            contentValues.put(Password.CREATE_DATE, it.createDate)
+            contentValues.put(Password.TITLE, it.title)
+            contentValues.put(Password.USERNAME, it.username)
+            if (Config.mKey!!.mode == Key.MODE_NO_KEY) {
+                contentValues.put(Password.PASSWORD, it.password)
+            } else {
+                contentValues.put(Password.PASSWORD, it.password.aesEncrypt(Config.mOriKey))
+            }
+            contentValues.put(Password.EMAIL, it.email)
+            contentValues.put(Password.NOTE, it.note)
+            contentValues.put(Password.IS_TOP, if (it.isTop) 1 else 0)
+            contentValues.put(Password.GROUP_NAME, it.groupName)
+            if (db.insert(DBInfo.Table.TB_PASSWORD, null, contentValues) == -1L) {
+                id = -1L
+            }
+        }
+        contentValues.clear()
+        db.close()
         return id
     }
 
@@ -67,27 +99,21 @@ class PasswordService(context: Context) {
             return -2
         }
         val db = mDbHelper.writableDatabase
-        try {
-            val contentValues = ContentValues()
-            contentValues.put(Password.TITLE, password.title)
-            contentValues.put(Password.USERNAME, password.username)
-            if (Config.mKey!!.mode == Key.MODE_NO_KEY) {
-                contentValues.put(Password.PASSWORD, password.password)
-            } else {
-                contentValues.put(Password.PASSWORD, password.password.aesEncrypt(Config.mOriKey))
-            }
-            contentValues.put(Password.EMAIL, password.email)
-            contentValues.put(Password.NOTE, password.note)
-            contentValues.put(Password.IS_TOP, if (password.isTop) 1 else 0)
-            contentValues.put(Password.GROUP_NAME, password.groupName)
-
-            result = db.update(DBInfo.Table.TB_PASSWORD, contentValues, "${Password.ID} = ?",
-                arrayOf(password.id.toString()))
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            db.close()
+        val contentValues = ContentValues()
+        contentValues.put(Password.TITLE, password.title)
+        contentValues.put(Password.USERNAME, password.username)
+        if (Config.mKey!!.mode == Key.MODE_NO_KEY) {
+            contentValues.put(Password.PASSWORD, password.password)
+        } else {
+            contentValues.put(Password.PASSWORD, password.password.aesEncrypt(Config.mOriKey))
         }
+        contentValues.put(Password.EMAIL, password.email)
+        contentValues.put(Password.NOTE, password.note)
+        contentValues.put(Password.IS_TOP, if (password.isTop) 1 else 0)
+        contentValues.put(Password.GROUP_NAME, password.groupName)
+        result = db.update(DBInfo.Table.TB_PASSWORD, contentValues, "${Password.ID} = ?",
+            arrayOf(password.id.toString()))
+        db.close()
         return result
     }
 
@@ -102,21 +128,15 @@ class PasswordService(context: Context) {
         if (keyLost()) {
             return null
         }
-        var password: Password = Password(-1L)
+        var password = Password(-1L)
         val db = mDbHelper.writableDatabase
-        var cursor: Cursor? = null
-        try {
-            cursor = db.query(DBInfo.Table.TB_PASSWORD, null, "${Password.ID} = ?", arrayOf(id.toString()), null, null, null)
+        val cursor = db.query(DBInfo.Table.TB_PASSWORD, null, "${Password.ID} = ?", arrayOf(id.toString()), null, null, null)
 
-            if (cursor!!.moveToNext()) {
-                password = mapPassword(cursor)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            cursor?.close()
-            db.close()
+        if (cursor.moveToNext()) {
+            password = mapPassword(cursor)
         }
+        cursor.close()
+        db.close()
         return password
     }
 
@@ -133,21 +153,14 @@ class PasswordService(context: Context) {
 
         val passwords = mutableListOf<Password>()
         val db = mDbHelper.writableDatabase
-        var cursor: Cursor? = null
+        val cursor = db.query(DBInfo.Table.TB_PASSWORD, null, null, null, null, null, null)
 
-        try {
-            cursor = db.query(DBInfo.Table.TB_PASSWORD, null, null, null, null, null, null)
-
-            while (cursor!!.moveToNext()) {
-                val password = mapPassword(cursor)
-                passwords.add(password)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            cursor?.close()
-            db.close()
+        while (cursor.moveToNext()) {
+            val password = mapPassword(cursor)
+            passwords.add(password)
         }
+        cursor.close()
+        db.close()
         return passwords
     }
 
@@ -160,7 +173,7 @@ class PasswordService(context: Context) {
      * whereClause.
      */
     fun deletePassword(id: Long): Int {
-        var result = -1
+        val result: Int
         val db = mDbHelper.writableDatabase
         result = db.delete(DBInfo.Table.TB_PASSWORD, "${Password.ID} = ?", arrayOf(id.toString()))
         db.close()
@@ -181,21 +194,14 @@ class PasswordService(context: Context) {
         val passwords = mutableListOf<Password>()
         val db = mDbHelper.writableDatabase
 
-        var cursor: Cursor? = null
+        val cursor = db.query(DBInfo.Table.TB_PASSWORD, null, "${Password.GROUP_NAME} = ?", arrayOf(groupName), null, null, null)
 
-        try {
-            cursor = db.query(DBInfo.Table.TB_PASSWORD, null, "${Password.GROUP_NAME} = ?", arrayOf(groupName), null, null, null)
-
-            while (cursor!!.moveToNext()) {
-                val password: Password = mapPassword(cursor)
-                passwords.add(password)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            cursor?.close()
-            db.close()
+        while (cursor.moveToNext()) {
+            val password: Password = mapPassword(cursor)
+            passwords.add(password)
         }
+        cursor.close()
+        db.close()
         return passwords
     }
 

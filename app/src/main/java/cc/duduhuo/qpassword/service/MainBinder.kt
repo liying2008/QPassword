@@ -29,6 +29,8 @@ class MainBinder(context: Context) : Binder() {
     private val mOnPasswordFailListeners = mutableListOf<OnPasswordFailListener>()
     /** 密码变化监听器 */
     private val mOnPasswordChangeListeners = mutableListOf<OnPasswordChangeListener>()
+    /** 密码列表变化监听器 */
+    private val mOnPasswordsChangeListeners = mutableListOf<OnPasswordsChangeListener>()
     /** 主密码变化监听器 */
     private val mOnKeyChangeListeners = mutableListOf<OnKeyChangeListener>()
     /** 分组变化监听器 */
@@ -48,6 +50,14 @@ class MainBinder(context: Context) : Binder() {
      */
     fun registerOnPasswordChangeListener(listener: OnPasswordChangeListener) {
         mOnPasswordChangeListeners.add(listener)
+    }
+
+    /**
+     * 注册密码列表变化监听器
+     * @param listener 密码列表变化监听器
+     */
+    fun registerOnPasswordsChangeListener(listener: OnPasswordsChangeListener) {
+        mOnPasswordsChangeListeners.add(listener)
     }
 
     /**
@@ -149,6 +159,18 @@ class MainBinder(context: Context) : Binder() {
         val task = InsertPasswordTask(password, mPasswordService, mGroupService)
         task.setOnGroupChangeListeners(mOnGroupChangeListeners)
         task.setOnPasswordChangeListeners(mOnPasswordChangeListeners)
+        task.setOnPasswordFailListeners(mOnPasswordFailListeners)
+        task.execute()
+    }
+
+    /**
+     * 添加新密码List
+     * @param password 新密码
+     */
+    fun insertPasswords(passwords: List<Password>) {
+        val task = InsertPasswordsTask(passwords, mPasswordService, mGroupService)
+        task.setOnGroupChangeListeners(mOnGroupChangeListeners)
+        task.setOnPasswordsChangeListeners(mOnPasswordsChangeListeners)
         task.setOnPasswordFailListeners(mOnPasswordFailListeners)
         task.execute()
     }

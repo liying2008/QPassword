@@ -1,15 +1,17 @@
 package cc.duduhuo.qpassword.ui.activity
 
+import android.annotation.SuppressLint
+import android.app.ProgressDialog
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Environment
 import android.os.IBinder
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
-import android.util.Log
 import android.widget.EditText
 import cc.duduhuo.applicationtoast.AppToast
 import cc.duduhuo.qpassword.R
@@ -20,7 +22,7 @@ import cc.duduhuo.qpassword.bean.Password
 import cc.duduhuo.qpassword.config.Config
 import cc.duduhuo.qpassword.service.MainBinder
 import cc.duduhuo.qpassword.service.MainService
-import cc.duduhuo.qpassword.service.listener.OnPasswordChangeListener
+import cc.duduhuo.qpassword.service.listener.OnPasswordsChangeListener
 import cc.duduhuo.qpassword.util.aesDecrypt
 import cc.duduhuo.qpassword.util.sha1Hex
 import cc.duduhuo.qpassword.widget.FileItemDecoration
@@ -37,14 +39,13 @@ import java.io.File
  * Remarks:
  * =======================================================
  */
-class ImportActivity : BaseActivity(), FileListAdapter.OnFileClickListener, OnPasswordChangeListener {
-    private var mPasswordCount = 0
-    private var mImportCount = 0
-    private var mImportDone = true
+class ImportActivity : BaseActivity(), FileListAdapter.OnFileClickListener, OnPasswordsChangeListener {
     private var mMainBinder: MainBinder? = null
     private var mAdapter: FileListAdapter? = null
+    private var mProgressDialog: ProgressDialog? = null
 
     companion object {
+        const val RESULT_CODE_IMPORT = 0x0010
         fun getIntent(context: Context): Intent {
             return Intent(context, ImportActivity::class.java)
         }
@@ -60,7 +61,7 @@ class ImportActivity : BaseActivity(), FileListAdapter.OnFileClickListener, OnPa
             if (mMainBinder != null) {
                 initViews()
                 // 注册密码变化监听器
-                mMainBinder?.registerOnPasswordChangeListener(this@ImportActivity)
+                mMainBinder?.registerOnPasswordsChangeListener(this@ImportActivity)
             }
         }
     }
@@ -91,7 +92,7 @@ class ImportActivity : BaseActivity(), FileListAdapter.OnFileClickListener, OnPa
         val extension = Config.EXPORT_FILE_EXTENSION.substring(1)
         for (dir in dirs) {
             dir.walk().maxDepth(1).filter { it.isFile }.filter { it.extension == extension }
-                .forEach { fileList.add(ImportFile(it.name, it.absolutePath)) }
+                .forEach { fileList.add(ImportFile(it.name, it.absolutePath, it.length())) }
         }
         return fileList
     }
@@ -111,44 +112,69 @@ class ImportActivity : BaseActivity(), FileListAdapter.OnFileClickListener, OnPa
     }
 
     override fun onFileClick(absolutePath: String) {
-        if (!mImportDone) {
-            AppToast.showToast(R.string.importing_please_wait)
-            return
-        }
-        mImportDone = false
-        val file = File(absolutePath)
-        try {
-            val export = JSON.parseObject(file.readText(), Export::class.java)
-            if (export.isEncrypted) {
-                val builder = AlertDialog.Builder(this)
-                val view = layoutInflater.inflate(R.layout.dialog_enter_key, null, false)
-                builder.setView(view)
-                val etKey = view.findViewById<EditText>(R.id.et_enter_key)
-                builder.setTitle(R.string.import_enter_key)
-                builder.setPositiveButton(R.string.ok, null)
-                val dialog = builder.create()
-                dialog.show()
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                    val oriKey = etKey.text.toString()
-                    if (oriKey.isEmpty()) {
-                        AppToast.showToast(R.string.import_key_can_not_be_empty)
-                        return@setOnClickListener
-                    }
-                    if (oriKey.sha1Hex() == export.key) {
-                        importPassword(export.passwords, oriKey)
-                        dialog.dismiss()
-                    } else {
-                        AppToast.showToast(R.string.import_key_wrong)
+        var export: Export? = null
+        mProgressDialog = ProgressDialog(this)
+        mProgressDialog!!.setMessage(getString(R.string.parsing_password_file))
+        mProgressDialog!!.setCanceledOnTouchOutside(false)
+        mProgressDialog!!.setCancelable(false)
+        mProgressDialog!!.show()
+        val readFileTask = @SuppressLint("StaticFieldLeak")
+        object : AsyncTask<Void, Void, Int>() {
+            override fun doInBackground(vararg params: Void?): Int {
+                try {
+                    export = JSON.parseObject(File(absolutePath).readText(), Export::class.java)
+                    return 0
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    return -1
+                }
+            }
+
+            override fun onPostExecute(result: Int?) {
+                super.onPostExecute(result)
+                mProgressDialog!!.dismiss()
+                if (result == -1) {
+                    AppToast.showToast(R.string.import_file_fail)
+                } else {
+                    if (export != null) {
+                        if (export!!.isEncrypted) {
+                            val builder = AlertDialog.Builder(this@ImportActivity)
+                            val view = layoutInflater.inflate(R.layout.dialog_enter_key, null, false)
+                            builder.setView(view)
+                            val etKey = view.findViewById<EditText>(R.id.et_enter_key)
+                            builder.setTitle(R.string.import_enter_key)
+                            builder.setPositiveButton(R.string.ok, null)
+                            builder.setNegativeButton(R.string.cancel, null)
+                            val dialog = builder.create()
+                            dialog.setCanceledOnTouchOutside(false)
+                            dialog.show()
+                            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener {
+                                dialog.dismiss()
+                            }
+                            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                                val oriKey = etKey.text.toString()
+                                if (oriKey.isEmpty()) {
+                                    AppToast.showToast(R.string.import_key_can_not_be_empty)
+                                    return@setOnClickListener
+                                }
+                                if (oriKey.sha1Hex() == export!!.key) {
+                                    importPassword(export!!.passwords, oriKey)
+                                    dialog.dismiss()
+                                    return@setOnClickListener
+                                } else {
+                                    AppToast.showToast(R.string.import_key_wrong)
+                                    return@setOnClickListener
+                                }
+                            }
+                        } else {
+                            importPassword(export!!.passwords)
+                        }
                     }
                 }
-
-            } else {
-                importPassword(export.passwords)
             }
-        } catch (e: Exception) {
-            AppToast.showToast(R.string.import_file_fail)
-            e.printStackTrace()
         }
+        registerAsyncTask(ImportActivity::class.java, readFileTask)
+        readFileTask.execute()
     }
 
     /**
@@ -157,40 +183,36 @@ class ImportActivity : BaseActivity(), FileListAdapter.OnFileClickListener, OnPa
      * @param oriKey 加密密钥
      */
     private fun importPassword(passwords: List<Password>, oriKey: String? = null) {
-        mPasswordCount = passwords.size
-        mImportCount = 0
-        if (mPasswordCount == 0) {
+        val passwordCount = passwords.size
+        if (passwordCount == 0) {
             AppToast.showToast(R.string.import_zero)
             return
         }
+        mProgressDialog!!.setMessage(getString(R.string.importing_passwords))
+        mProgressDialog!!.show()
         if (oriKey != null) {
             // 有密钥，先解密
-            for (i in 0 until mPasswordCount) {
+            for (i in 0 until passwordCount) {
                 passwords[i].password = passwords[i].password.aesDecrypt(oriKey)
             }
         }
         // 导入密码
-        passwords.map { mMainBinder?.insertPassword(it) }
+        mMainBinder?.insertPasswords(passwords)
     }
 
-    override fun onNewPassword(password: Password) {
-        mImportCount++
-        AppToast.showToast(getString(R.string.password_added, password.title))
-        if (mImportCount == mPasswordCount) {
-            mImportDone = true
-            AppToast.showToast(getString(R.string.imported, mPasswordCount))
-        }
+    override fun onNewPasswords(passwords: List<Password>) {
+        mProgressDialog!!.dismiss()
+        AppToast.showToast(getString(R.string.imported, passwords.size))
+        setResult(RESULT_CODE_IMPORT)
+        finish()
     }
 
-    override fun onDeletePassword(password: Password) {
-        // no op
-    }
-
-    override fun onUpdatePassword(newPassword: Password) {
+    override fun onDeletePasswords(passwords: List<Password>) {
         // no op
     }
 
     override fun onDestroy() {
+        unregisterAsyncTask(ImportActivity::class.java)
         super.onDestroy()
         unbindService(mServiceConnection)
     }

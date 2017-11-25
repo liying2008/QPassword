@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import cc.duduhuo.qpassword.R
 import cc.duduhuo.qpassword.bean.ImportFile
+import cc.duduhuo.qpassword.util.getFormatSize
 import kotlinx.android.synthetic.main.item_import_file.view.*
 
 /**
@@ -28,6 +29,7 @@ class FileListAdapter(private val mContext: Context,
         val file = mFileList[position]
         if (holder != null) {
             holder.itemView.tv_file.text = file.fileName
+            holder.itemView.tv_file_size.text = getFormatSize(file.fileSize)
             holder.itemView.setOnClickListener {
                 mFileClickListener?.onFileClick(file.absolutePath)
             }

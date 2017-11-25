@@ -2,7 +2,6 @@ package cc.duduhuo.qpassword.db
 
 import android.content.ContentValues
 import android.content.Context
-import android.database.Cursor
 import cc.duduhuo.qpassword.bean.Group
 import cc.duduhuo.qpassword.bean.Password
 
@@ -23,15 +22,11 @@ class GroupService(context: Context) {
      */
     fun addGroup(group: Group) {
         val db = mDbHelper.writableDatabase
-        try {
-            val contentValues = ContentValues()
-            contentValues.put(Group.NAME, group.name)
-            db.insert(DBInfo.Table.TB_GROUP, null, contentValues)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            db.close()
-        }
+        val contentValues = ContentValues()
+        contentValues.put(Group.NAME, group.name)
+        db.insert(DBInfo.Table.TB_GROUP, null, contentValues)
+        contentValues.clear()
+        db.close()
     }
 
     /**
@@ -42,21 +37,15 @@ class GroupService(context: Context) {
     fun getAllGroups(): List<Group> {
         val groups = mutableListOf<Group>()
         val db = mDbHelper.writableDatabase
-        var cursor: Cursor? = null
-        try {
-            cursor = db.query(DBInfo.Table.TB_GROUP, null, null, null, null, null, null)
+        val cursor = db.query(DBInfo.Table.TB_GROUP, null, null, null, null, null, null)
 
-            while (cursor!!.moveToNext()) {
-                val group = Group()
-                group.name = cursor.getString(cursor.getColumnIndex(Group.NAME))
-                groups.add(group)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            cursor?.close()
-            db.close()
+        while (cursor.moveToNext()) {
+            val group = Group()
+            group.name = cursor.getString(cursor.getColumnIndex(Group.NAME))
+            groups.add(group)
         }
+        cursor.close()
+        db.close()
         return groups
     }
 
@@ -69,25 +58,21 @@ class GroupService(context: Context) {
      */
     fun updateGroupName(oldGroupName: String, newGroupName: String, merge: Boolean) {
         val db = mDbHelper.writableDatabase
-        try {
-            if (merge) {
-                // 新的分组已经存在 直接删除旧的分组
-                db.delete(DBInfo.Table.TB_GROUP, "${Group.NAME} = ?", arrayOf(oldGroupName))
-            } else {
-                // 新的分组不存在， 更新旧的分组名称
-                val contentValues = ContentValues()
-                contentValues.put(Group.NAME, newGroupName)
-                db.update(DBInfo.Table.TB_GROUP, contentValues, "${Group.NAME} = ?", arrayOf(oldGroupName))
-            }
-
+        if (merge) {
+            // 新的分组已经存在 直接删除旧的分组
+            db.delete(DBInfo.Table.TB_GROUP, "${Group.NAME} = ?", arrayOf(oldGroupName))
+        } else {
+            // 新的分组不存在， 更新旧的分组名称
             val contentValues = ContentValues()
-            contentValues.put(Password.GROUP_NAME, newGroupName)
-            db.update(DBInfo.Table.TB_PASSWORD, contentValues, "${Password.GROUP_NAME} = ?", arrayOf(oldGroupName))
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            db.close()
+            contentValues.put(Group.NAME, newGroupName)
+            db.update(DBInfo.Table.TB_GROUP, contentValues, "${Group.NAME} = ?", arrayOf(oldGroupName))
+            contentValues.clear()
         }
+        val contentValues = ContentValues()
+        contentValues.put(Password.GROUP_NAME, newGroupName)
+        db.update(DBInfo.Table.TB_PASSWORD, contentValues, "${Password.GROUP_NAME} = ?", arrayOf(oldGroupName))
+        contentValues.clear()
+        db.close()
     }
 
     /**
