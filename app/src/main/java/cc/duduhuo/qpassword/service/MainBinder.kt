@@ -1,8 +1,8 @@
 package cc.duduhuo.qpassword.service
 
 import android.content.Context
+import android.os.AsyncTask
 import android.os.Binder
-import cc.duduhuo.qpassword.app.App
 import cc.duduhuo.qpassword.bean.Group
 import cc.duduhuo.qpassword.bean.Key
 import cc.duduhuo.qpassword.bean.Password
@@ -24,6 +24,8 @@ class MainBinder(context: Context) : Binder() {
     private val mKeyService: KeyService = KeyService(context)
     private val mPasswordService: PasswordService = PasswordService(context)
     private val mGroupService: GroupService = GroupService(context)
+    /** 存储 Binder 中所有异步任务 */
+    private val mTasks = mutableListOf<AsyncTask<*, *, *>>()
 
     /** 读取 / 更新 / 写入密码失败监听 */
     private val mOnPasswordFailListeners = mutableListOf<OnPasswordFailListener>()
@@ -84,6 +86,7 @@ class MainBinder(context: Context) : Binder() {
         val task = InsertKeyTask(key, mKeyService)
         task.setOnNewKeyListener(listener)
         task.execute()
+        mTasks.add(task)
     }
 
     /**
@@ -93,6 +96,7 @@ class MainBinder(context: Context) : Binder() {
     fun getKey(listener: OnGetKeyListener) {
         val task = GetKeyTask(listener, mKeyService)
         task.execute()
+        mTasks.add(task)
     }
 
     /**
@@ -106,6 +110,7 @@ class MainBinder(context: Context) : Binder() {
         val task = UpdateKeyTask(oldKey, oldOriKey, newKey, newOriKey, mKeyService)
         task.setOnKeyChangeListener(mOnKeyChangeListeners)
         task.execute()
+        mTasks.add(task)
     }
 
     /**
@@ -117,6 +122,7 @@ class MainBinder(context: Context) : Binder() {
         val task = GetPasswordsTask(listener, groupName, mPasswordService)
         task.setOnPasswordFailListeners(mOnPasswordFailListeners)
         task.execute()
+        mTasks.add(task)
     }
 
     /**
@@ -127,6 +133,7 @@ class MainBinder(context: Context) : Binder() {
         val task = DeletePasswordTask(password, mPasswordService)
         task.setOnPasswordChangeListeners(mOnPasswordChangeListeners)
         task.execute()
+        mTasks.add(task)
     }
 
     /**
@@ -138,6 +145,7 @@ class MainBinder(context: Context) : Binder() {
         val task = GetPasswordTask(id, listener, mPasswordService)
         task.setOnPasswordFailListeners(mOnPasswordFailListeners)
         task.execute()
+        mTasks.add(task)
     }
 
     /**
@@ -149,6 +157,7 @@ class MainBinder(context: Context) : Binder() {
         task.setOnPasswordChangeListeners(mOnPasswordChangeListeners)
         task.setOnPasswordFailListeners(mOnPasswordFailListeners)
         task.execute()
+        mTasks.add(task)
     }
 
     /**
@@ -161,6 +170,7 @@ class MainBinder(context: Context) : Binder() {
         task.setOnPasswordChangeListeners(mOnPasswordChangeListeners)
         task.setOnPasswordFailListeners(mOnPasswordFailListeners)
         task.execute()
+        mTasks.add(task)
     }
 
     /**
@@ -173,6 +183,7 @@ class MainBinder(context: Context) : Binder() {
         task.setOnPasswordsChangeListeners(mOnPasswordsChangeListeners)
         task.setOnPasswordFailListeners(mOnPasswordFailListeners)
         task.execute()
+        mTasks.add(task)
     }
 
     /**
@@ -183,6 +194,7 @@ class MainBinder(context: Context) : Binder() {
         val task = InsertGroupTask(group, mGroupService)
         task.setOnGroupChangeListeners(mOnGroupChangeListeners)
         task.execute()
+        mTasks.add(task)
     }
 
     /**
@@ -193,6 +205,7 @@ class MainBinder(context: Context) : Binder() {
         val task = DeleteGroupTask(groupName, mGroupService)
         task.setOnGroupChangeListeners(mOnGroupChangeListeners)
         task.execute()
+        mTasks.add(task)
     }
 
     /**
@@ -202,6 +215,7 @@ class MainBinder(context: Context) : Binder() {
     fun getAllGroups(listener: OnGetAllGroupsListener) {
         val task = GetAllGroupsTask(mGroupService, listener)
         task.execute()
+        mTasks.add(task)
     }
 
     /**
@@ -214,10 +228,20 @@ class MainBinder(context: Context) : Binder() {
         val task = UpdateGroupNameTask(oldName, newName, merge, mGroupService)
         task.setOnGroupChangeListeners(mOnGroupChangeListeners)
         task.execute()
+        mTasks.add(task)
     }
 
     fun onDestroy() {
         mOnGroupChangeListeners.clear()
         mOnPasswordChangeListeners.clear()
+
+        if (mTasks.isNotEmpty()) {
+            mTasks.forEach {
+                if (it != null && it.status != AsyncTask.Status.FINISHED) {
+                    it.cancel(true)
+                }
+            }
+            mTasks.clear()
+        }
     }
 }

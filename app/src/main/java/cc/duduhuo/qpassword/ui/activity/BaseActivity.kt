@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.MenuItem
+import cc.duduhuo.applicationtoast.AppToast
 import com.google.common.collect.ArrayListMultimap
 
 
@@ -50,6 +51,7 @@ open class BaseActivity : AppCompatActivity() {
      * 重启应用
      */
     protected fun restartApp() {
+        AppToast.showToast("Restart App...")
         sActivityList
             .filterNot { it.isFinishing }
             .forEach { it.finish() }

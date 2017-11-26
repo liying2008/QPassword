@@ -2,6 +2,7 @@ package cc.duduhuo.qpassword.adapter
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import cc.duduhuo.qpassword.R
 import cc.duduhuo.qpassword.bean.Group
 import cc.duduhuo.qpassword.model.*
 import kotlinx.android.synthetic.main.item_drawer_group.view.*
+import kotlinx.android.synthetic.main.item_drawer_header.view.*
 import kotlinx.android.synthetic.main.item_drawer_title.view.*
 
 
@@ -29,8 +31,10 @@ class DrawerItemAdapter(private val mContext: Context) : RecyclerView.Adapter<Dr
         private val TYPE_TITLE = 4
     }
 
+    private var mLastIndex = -1
     private var mListener: OnItemClickListener? = null
-
+    private var mCurrentGroup: String = ""
+    private var mPasswordCount = 0
     private val mDataList = mutableListOf<DrawerItem>()
 
     /**
@@ -106,6 +110,32 @@ class DrawerItemAdapter(private val mContext: Context) : RecyclerView.Adapter<Dr
         notifyItemChanged(index)
     }
 
+    /**
+     * 更新抽屉栏头部信息
+     * @param currentGroup 当前分组名称
+     * @param passwordCount 当前分组下密码个数
+     */
+    fun updateHeader(currentGroup: String?, passwordCount: Int) {
+        if (currentGroup == null) {
+            this.mCurrentGroup = mContext.getString(R.string.group_all)
+            notifyItemChanged(2)
+            notifyItemChanged(mLastIndex)
+            mLastIndex = 2
+        } else if (currentGroup == mContext.getString(R.string.search_result)) {
+            this.mCurrentGroup = mContext.getString(R.string.search_result)
+            notifyItemChanged(mLastIndex)
+            mLastIndex = -1
+        } else {
+            this.mCurrentGroup = currentGroup
+            val index = mDataList.filter { it is GroupDrawerItem }.indexOfFirst { (it as GroupDrawerItem).title == currentGroup }
+            notifyItemChanged(index + 2)
+            notifyItemChanged(mLastIndex)
+            mLastIndex = index + 2
+        }
+        this.mPasswordCount = passwordCount
+        notifyItemChanged(0)
+    }
+
     override fun getItemViewType(position: Int): Int {
         val drawerItem = mDataList[position]
         if (drawerItem is DividerDrawerItem) {
@@ -148,6 +178,12 @@ class DrawerItemAdapter(private val mContext: Context) : RecyclerView.Adapter<Dr
                 holder.itemView.iv_ic.setBackgroundResource(groupItem.iconRes)
                 holder.itemView.tv_title.text = groupItem.title
 
+                if (groupItem.title == mCurrentGroup) {
+                    holder.itemView.tv_title.setTextColor(mContext.resources.getColor(R.color.selected_group_color))
+                } else {
+                    holder.itemView.tv_title.setTextColor(mContext.resources.getColor(R.color.group_text_color))
+                }
+
                 holder.itemView.setOnClickListener {
                     mListener?.onGroupItemClick(groupItem)
                 }
@@ -166,7 +202,7 @@ class DrawerItemAdapter(private val mContext: Context) : RecyclerView.Adapter<Dr
                 }
             }
             TYPE_HEADER -> {
-
+                holder.itemView.tv_password_count.text = mContext.getString(R.string.group_password_count, mCurrentGroup, mPasswordCount)
             }
 
             TYPE_TITLE -> {

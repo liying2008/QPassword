@@ -13,6 +13,7 @@
     <string name="title_create_complex_key">创建复杂密码</string>
     <string name="title_pattern_unlock">图案密码解锁</string>
     <!--左侧抽屉菜单项-->
+    <string name="group_password_count">%1$s 密码个数：%2$d</string>
     <string name="menu_group">分组</string>
     <string name="menu_operation">操作</string>
     <string name="group_default">默认分组</string>
@@ -137,4 +138,11 @@
     <string name="importing_please_wait">请稍候操作…</string>
     <string name="parsing_password_file">正在解析文件…</string>
     <string name="importing_passwords">正在导入密码数据…</string>
+
+    <string name="search_passwords">搜索密码</string>
+    <string name="enter_search_keyword">请输入搜索关键字</string>
+    <string name="search">搜索</string>
+    <string name="search_keyword_can_not_be_empty">搜索关键词不可为空</string>
+    <string name="search_result">搜索结果</string>
+    <string name="search_result_is_empty">搜索结果空</string>
 </resources>

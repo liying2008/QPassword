@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/drawer_item_text_margin_left"
-        android:textColor="#FF000000"
+        android:textColor="@color/group_text_color"
         android:textSize="14sp"
         tools:text="默认分组"/>
 </LinearLayout>

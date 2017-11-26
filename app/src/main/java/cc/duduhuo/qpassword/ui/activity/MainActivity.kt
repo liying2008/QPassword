@@ -13,6 +13,7 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
+import android.view.WindowManager
 import android.widget.EditText
 import cc.duduhuo.applicationtoast.AppToast
 import cc.duduhuo.qpassword.R
@@ -36,9 +37,15 @@ import kotlin.properties.Delegates
 
 
 class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeListener, OnGroupChangeListener, OnGetAllGroupsListener, OnPasswordFailListener {
+    /** 当前是否是搜索模式 */
+    private var mSearchMode = false
+    /** 搜索关键词 */
+    private var mSearchKeyword = ""
     private var mMainBinder: MainBinder? = null
     private lateinit var mProgressDialog: ProgressDialog
+    /** 左侧抽屉列表适配器 */
     private lateinit var mMenuAdapter: DrawerItemAdapter
+    /** 密码列表适配器 */
     private lateinit var mPasswordAdapter: PasswordListAdapter
     private var mGroupList = mutableListOf<Group>()
 
@@ -49,10 +56,18 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
         }
     }
 
+    /** 执行搜索前，所在的分组 */
+    private var mBeforeSearchGroupName = ""
+    /** 当前的分组名称 */
     private var mGroupName: String by Delegates.observable("") { prop, old, new ->
         if (new != "") {
             if (new != old) {
-                PreferencesUtils.putString(this@MainActivity, Config.LAST_GROUP, new)
+                if (new != getString(R.string.search_result)) {
+                    PreferencesUtils.putString(this@MainActivity, Config.LAST_GROUP, new)
+                }
+                if (old != getString(R.string.search_result)) {
+                    mBeforeSearchGroupName = old
+                }
                 title = new
             }
         } else {
@@ -136,7 +151,37 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
         setSupportActionBar(toolbar)
 
         fab.setOnClickListener { view ->
+            // 搜索密码
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle(R.string.search_passwords)
+            val searchView = layoutInflater.inflate(R.layout.dialog_search_password, null, false)
+            builder.setView(searchView)
+            val etSearchKeyword = searchView.findViewById<EditText>(R.id.et_search_keyword)
+            builder.setPositiveButton(R.string.search, null)
+            val dialog = builder.create()
+            dialog.show()
+            // 弹出输入法面板
+            dialog.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE or WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
 
+            etSearchKeyword.setOnEditorActionListener { v, actionId, event ->
+                val keyword = etSearchKeyword.text.toString().trim()
+                if (keyword.isEmpty()) {
+                    AppToast.showToast(R.string.search_keyword_can_not_be_empty)
+                } else {
+                    searchPasswords(keyword)
+                    dialog.dismiss()
+                }
+                return@setOnEditorActionListener true
+            }
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                val keyword = etSearchKeyword.text.toString().trim()
+                if (keyword.isEmpty()) {
+                    AppToast.showToast(R.string.search_keyword_can_not_be_empty)
+                } else {
+                    searchPasswords(keyword)
+                    dialog.dismiss()
+                }
+            }
         }
         mProgressDialog = ProgressDialog(this@MainActivity)
         mProgressDialog.setMessage(getString(R.string.reading_passwords))
@@ -150,6 +195,17 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
             this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
+    }
+
+    /**
+     * 搜索密码
+     * @param keyword 搜索关键词
+     */
+    private fun searchPasswords(keyword: String) {
+        // 处于搜索模式
+        mSearchMode = true
+        mSearchKeyword = keyword
+        showGroup(null)
     }
 
     override fun onResume() {
@@ -188,7 +244,12 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
         if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
             drawer_layout.closeDrawer(GravityCompat.START)
         } else {
-            super.onBackPressed()
+            if (mSearchMode) {
+                mSearchMode = false
+                showGroup(mBeforeSearchGroupName)
+            } else {
+                super.onBackPressed()
+            }
         }
     }
 
@@ -231,6 +292,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
     inner class DrawerItemClickListener : DrawerItemAdapter.OnItemClickListener {
         override fun onGroupItemClick(groupDrawerItem: GroupDrawerItem) {
             // 切换分组
+            mSearchMode = false
             mGroupName = groupDrawerItem.title
             if (mGroupName == getString(R.string.group_all)) {
                 mMainBinder?.getPasswords(this@MainActivity, null)
@@ -282,8 +344,22 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
                 builder.setNegativeButton(R.string.cancel, null)
                 val dialog = builder.create()
                 dialog.show()
+                // 弹出输入法面板
+                dialog.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE or WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+                etGroup.setOnEditorActionListener { v, actionId, event ->
+                    val groupName = etGroup.text.toString().trim()
+                    if (groupName.isEmpty()) {
+                        AppToast.showToast(R.string.group_name_can_not_be_empty)
+                    } else if (groupName == getString(R.string.group_all) || mGroupList.contains(Group(groupName))) {
+                        AppToast.showToast(R.string.group_exists)
+                    } else {
+                        mMainBinder?.insertGroup(Group(groupName))
+                        dialog.dismiss()
+                    }
+                    return@setOnEditorActionListener true
+                }
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                    val groupName = etGroup.text.toString()
+                    val groupName = etGroup.text.toString().trim()
                     if (groupName.isEmpty()) {
                         AppToast.showToast(R.string.group_name_can_not_be_empty)
                     } else if (groupName == getString(R.string.group_all) || mGroupList.contains(Group(groupName))) {
@@ -352,8 +428,21 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
         updateBuilder.setNegativeButton(R.string.cancel, null)
         val updateDialog = updateBuilder.create()
         updateDialog.show()
+        // 弹出输入法面板
+        updateDialog.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE or WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+
+        etGroup.setOnEditorActionListener { v, actionId, event ->
+            val groupName = etGroup.text.toString().trim()
+            if (groupName == getString(R.string.group_all) || mGroupList.contains(Group(groupName))) {
+                AppToast.showToast(R.string.group_exists)
+            } else {
+                mMainBinder?.updateGroupName(oldName, groupName, false)
+                updateDialog.dismiss()
+            }
+            return@setOnEditorActionListener true
+        }
         updateDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-            val groupName = etGroup.text.toString()
+            val groupName = etGroup.text.toString().trim()
             if (groupName == getString(R.string.group_all) || mGroupList.contains(Group(groupName))) {
                 AppToast.showToast(R.string.group_exists)
             } else {
@@ -370,7 +459,20 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
 
     override fun onGetPasswords(groupName: String?, passwords: List<Password>) {
         mProgressDialog.dismiss()
-        mPasswordAdapter.setData(passwords.toMutableList())
+        if (mSearchMode) {
+            val resultPassword = passwords.filter { it.title.toLowerCase().contains(mSearchKeyword.toLowerCase()) || it.note.toLowerCase().contains(mSearchKeyword.toLowerCase()) }
+            mPasswordAdapter.setData(resultPassword.toMutableList())
+            mGroupName = getString(R.string.search_result)
+            val size = resultPassword.size
+            mMenuAdapter.updateHeader(getString(R.string.search_result), size)
+            if (size == 0) {
+                AppToast.showToast(R.string.search_result_is_empty)
+            }
+        } else {
+            mGroupName = groupName ?: getString(R.string.group_all)
+            mPasswordAdapter.setData(passwords.toMutableList())
+            mMenuAdapter.updateHeader(groupName, passwords.size)
+        }
     }
 
     override fun onNewPassword(password: Password) {
@@ -401,7 +503,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
         if (result) {
             mGroupList.remove(Group(groupName))
             if (mGroupName == groupName) {
-                showGroup(getString(R.string.group_all))
+                showGroup(null)
             }
         }
     }
@@ -429,12 +531,11 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
      * 显示某个分组密码
      * @param groupName 分组名称
      */
-    private fun showGroup(groupName: String) {
-        mGroupName = groupName
-        if (mGroupName == getString(R.string.group_all)) {
+    private fun showGroup(groupName: String?) {
+        if (groupName != null && groupName == getString(R.string.group_all)) {
             mMainBinder?.getPasswords(this, null)
         } else {
-            mMainBinder?.getPasswords(this, mGroupName)
+            mMainBinder?.getPasswords(this, groupName)
         }
         mProgressDialog.isShowing
         mProgressDialog.show()
