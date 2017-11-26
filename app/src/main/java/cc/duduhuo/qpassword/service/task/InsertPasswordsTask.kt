@@ -20,7 +20,7 @@ import cc.duduhuo.qpassword.service.listener.OnPasswordsChangeListener
 class InsertPasswordsTask(private val mPasswords: List<Password>,
                           private val mPasswordService: PasswordService,
                           private val mGroupService: GroupService) : AsyncTask<Void, Void, Void?>() {
-    private var mId: Long = 0L
+    private var mId: Int = 0
     private val mNewGroups: MutableList<Group> = mutableListOf()
     private lateinit var mPasswordsListeners: List<OnPasswordsChangeListener>
     private lateinit var mPasswordFailListeners: List<OnPasswordFailListener>
@@ -50,16 +50,13 @@ class InsertPasswordsTask(private val mPasswords: List<Password>,
             }
         }
 
-        val id = mPasswordService.insertPasswords(mPasswords)
-        mId = id
+        mId = mPasswordService.insertPasswords(mPasswords)
         return null
     }
 
     override fun onPostExecute(result: Void?) {
         super.onPostExecute(result)
-        if (mId == -1L) {
-            mPasswordFailListeners.map { it.onInsertFail() }
-        } else if (mId == -2L) {
+        if (mId == -2) {
             mPasswordFailListeners.map { it.onKeyLose() }
         } else {
             mNewGroups.map {

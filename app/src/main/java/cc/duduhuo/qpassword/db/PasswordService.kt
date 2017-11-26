@@ -54,14 +54,14 @@ class PasswordService(context: Context) {
     /**
      * 插入密码List
      * @param passwords 要插入的密码List
-     * @return 全部成功：返回0；如果插入失败：返回- 1L
-     * 如果 Config.mKey 不存在，返回 -2L
+     * @return 返回插入成功的数量
+     * 如果 Config.mKey 不存在，返回 -2
      */
-    fun insertPasswords(passwords: List<Password>): Long {
+    fun insertPasswords(passwords: List<Password>): Int {
         if (keyLost()) {
-            return -2L
+            return -2
         }
-        var id = 0L
+        var id = 0
         val db = mDbHelper.writableDatabase
         val contentValues = ContentValues()
         passwords.forEach {
@@ -78,8 +78,8 @@ class PasswordService(context: Context) {
             contentValues.put(Password.NOTE, it.note)
             contentValues.put(Password.IS_TOP, if (it.isTop) 1 else 0)
             contentValues.put(Password.GROUP_NAME, it.groupName)
-            if (db.insert(DBInfo.Table.TB_PASSWORD, null, contentValues) == -1L) {
-                id = -1L
+            if (db.insert(DBInfo.Table.TB_PASSWORD, null, contentValues) != -1L) {
+                id++
             }
         }
         contentValues.clear()
@@ -178,6 +178,19 @@ class PasswordService(context: Context) {
         result = db.delete(DBInfo.Table.TB_PASSWORD, "${Password.ID} = ?", arrayOf(id.toString()))
         db.close()
         return result
+    }
+
+    /**
+     * 删除多条密码数据
+     *
+     * @param passwords 要删除的密码 List
+     */
+    fun deletePasswords(passwords: List<Password>) {
+        val db = mDbHelper.writableDatabase
+        passwords.forEach {
+            db.delete(DBInfo.Table.TB_PASSWORD, "${Password.ID} = ?", arrayOf(it.id.toString()))
+        }
+        db.close()
     }
 
     /**

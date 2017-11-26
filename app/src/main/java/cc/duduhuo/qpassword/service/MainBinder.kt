@@ -137,6 +137,17 @@ class MainBinder(context: Context) : Binder() {
     }
 
     /**
+     * 删除密码
+     * @param passwords 要删除的密码 List
+     */
+    fun deletePasswords(passwords: List<Password>) {
+        val task = DeletePasswordsTask(passwords, mPasswordService)
+        task.setOnPasswordsChangeListeners(mOnPasswordsChangeListeners)
+        task.execute()
+        mTasks.add(task)
+    }
+
+    /**
      * 根据ID获取密码
      * @param listener
      * @param id ID

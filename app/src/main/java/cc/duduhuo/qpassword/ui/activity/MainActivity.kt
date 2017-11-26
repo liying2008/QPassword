@@ -27,6 +27,7 @@ import cc.duduhuo.qpassword.model.OperationDrawerItem
 import cc.duduhuo.qpassword.service.MainBinder
 import cc.duduhuo.qpassword.service.MainService
 import cc.duduhuo.qpassword.service.listener.*
+import cc.duduhuo.qpassword.ui.dialog.DistinctDialog
 import cc.duduhuo.qpassword.util.PreferencesUtils
 import cc.duduhuo.qpassword.util.copyText
 import cc.duduhuo.qpassword.util.keyLost
@@ -47,10 +48,12 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
     private lateinit var mMenuAdapter: DrawerItemAdapter
     /** 密码列表适配器 */
     private lateinit var mPasswordAdapter: PasswordListAdapter
+    /** 密码分组列表 */
     private var mGroupList = mutableListOf<Group>()
 
     companion object {
         private const val REQUEST_CODE_IMPORT = 0x0000
+
         fun getIntent(context: Context): Intent {
             return Intent(context, MainActivity::class.java)
         }
@@ -281,6 +284,31 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
             }
             R.id.action_distinct -> {
                 // 密码去重
+                val builder = AlertDialog.Builder(this)
+                builder.setTitle(R.string.action_distinct)
+                builder.setMessage(R.string.distinct_tip)
+                builder.setNegativeButton(R.string.cancel, null)
+                builder.setPositiveButton(R.string.start_distinct) { dialog, which ->
+                    val distinctDialog = DistinctDialog(this, mMainBinder!!)
+                    distinctDialog.show()
+                }
+                builder.create().show()
+            }
+            R.id.action_delete_all -> {
+                // 删除所有密码
+                val builder = AlertDialog.Builder(this)
+                builder.setTitle(R.string.delete_all_password)
+                builder.setMessage(R.string.delete_all_password_message)
+                builder.setNegativeButton(R.string.delete_passwords) { dialog, which ->
+                    mGroupList.forEach {
+                        mMainBinder?.deleteGroup(it.name)
+                    }
+
+                }
+                builder.setPositiveButton(R.string.export_passwords) { dialog, which ->
+                    startActivity(ExportActivity.getIntent(this))
+                }
+                builder.create().show()
             }
             R.id.action_about -> {
                 // 关于
@@ -499,11 +527,14 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
     }
 
     override fun onDeleteGroup(groupName: String) {
+        AppToast.showToast(getString(R.string.group_deleted, groupName))
         val result = mMenuAdapter.delData(groupName)
         if (result) {
             mGroupList.remove(Group(groupName))
-            if (mGroupName == groupName) {
+            if (mGroupName == getString(R.string.group_all)) {
                 showGroup(null)
+            } else if (mGroupName == groupName) {
+                showGroup(groupName)
             }
         }
     }
@@ -531,7 +562,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
      * 显示某个分组密码
      * @param groupName 分组名称
      */
-    private fun showGroup(groupName: String?) {
+    private fun showGroup(groupName: String? = null) {
         if (groupName != null && groupName == getString(R.string.group_all)) {
             mMainBinder?.getPasswords(this, null)
         } else {
@@ -553,12 +584,24 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
         restartApp()
     }
 
+    /**
+     * 刷新整个密码列表
+     */
+    fun refreshAll() {
+        if (mSearchMode) {
+            showGroup(null)
+        } else {
+            showGroup(mGroupName)
+        }
+
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_IMPORT) {
             if (resultCode == ImportActivity.RESULT_CODE_IMPORT) {
                 // 重新读取数据库中该分组下的密码数据
-                showGroup(mGroupName)
+                refreshAll()
             }
         }
     }
