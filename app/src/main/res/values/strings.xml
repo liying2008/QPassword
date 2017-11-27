@@ -31,6 +31,7 @@
     <string name="action_export">导出到存储卡</string>
     <string name="action_import">从存储卡导入</string>
     <string name="action_save">保存</string>
+    <string name="action_exit">退出</string>
 
     <!--Pattern Lock View-->
     <string name="please_connect_at_least_4_points">请连接至少 4 个点</string>
@@ -92,7 +93,7 @@
     <string name="delete_group">删除分组</string>
     <string name="group_deleted">“%s” 分组已删除</string>
     <string name="delete_group_message">将删除 “%s” 分组下的所有密码，而且无法恢复，确定要删除吗？</string>
-    <string name="group_name_has_been_update">分组名已更改为 %s</string>
+    <string name="group_name_has_been_update">分组名已更改为 “%s”</string>
     <string name="no_group_can_be_merge">没有分组可合并</string>
     <string name="group_merged">“%s” 分组已被合并到 “%s” 分组</string>
     <string name="password_added">“%s” 密码已添加</string>
@@ -100,7 +101,7 @@
     <string name="export_no_encrypted">以非加密方式导出</string>
     <string name="export_encrypted">以加密方式导出</string>
     <string name="export_no_encrypted_tip">导出的文件以文本形式保存，其内容不经过任何加密，请务必注意文件的安全。</string>
-    <string name="export_encrypted_tip">导出的文件以文本形式保存，其内容中的密码部分使用AES进行加密，请将加密密钥填写在下面。</string>
+    <string name="export_encrypted_tip">导出的文件以文本形式保存，其内容中的密码部分使用AES加密算法进行加密，请将密钥填写在下面。</string>
     <string name="export_key_hint">加密密钥</string>
     <string name="export_encrypted_warning">注意：请务必牢记此加密密钥，因为导入密码的时候需要你再次填写此密钥。</string>
     <string name="start_export">开始导出</string>
@@ -120,6 +121,7 @@
     <string name="key_no_lock">不创建主密码（不推荐）</string>
     <string name="no_key_message">如果不创建主密码，密码本中的密码将不会以加密的方式存储，你确定不需要创建主密码？</string>
     <string name="key_updated">主密码已更新</string>
+    <string name="applying_key_changes">正在应用更改…</string>
 
     <string name="key_length_can_not_too_short">主密码长度不可以小于 %d 位</string>
     <string name="please_enter_number_key">请输入 %1$d – %2$d 位的数字密码</string>
@@ -140,7 +142,7 @@
     <string name="import_zero">文件中无密码数据</string>
     <string name="importing_please_wait">请稍候操作…</string>
     <string name="parsing_password_file">正在解析文件…</string>
-    <string name="importing_passwords">正在导入密码数据…</string>
+    <string name="importing_passwords">%d 个密码正在导入…</string>
 
     <string name="search_passwords">搜索密码</string>
     <string name="enter_search_keyword">请输入搜索关键字</string>
@@ -149,7 +151,7 @@
     <string name="search_result">搜索结果</string>
     <string name="search_result_is_empty">搜索结果空</string>
 
-    <string name="distinct_tip">此操作将会删除重复的密码。\n\n注：只有当两个密码的标题、用户名、密码和邮箱均完全一致(区分大小写)时才会被认为是重复的密码。</string>
+    <string name="distinct_tip">此操作将会删除重复的密码。\n\n注：只有当两个密码的标题、用户名、密码、邮箱和备注均完全一致(区分大小写)时才会被认为是重复的密码。</string>
     <string name="start_distinct">开始去重</string>
     <string name="distincting">正在去重…</string>
     <string name="no_password_data">没有密码数据</string>
@@ -160,4 +162,5 @@
     <string name="delete_all_password_message">此操作将删除已保存的所有密码，不可恢复。\n为了避免密码丢失，你可以先将所有密码导出到存储卡保存。\n\n确定要删除吗？</string>
     <string name="export_passwords">导出密码</string>
     <string name="delete_passwords">删除密码</string>
+    <string name="press_again_to_exit">再按一次，退出应用</string>
 </resources>

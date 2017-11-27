@@ -243,6 +243,9 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
         mMainBinder?.getAllGroups(this)
     }
 
+    /** 上次点击Back键的时间  */
+    private var mLastBackKeyTime = 0L
+
     override fun onBackPressed() {
         if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
             drawer_layout.closeDrawer(GravityCompat.START)
@@ -251,7 +254,13 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
                 mSearchMode = false
                 showGroup(mBeforeSearchGroupName)
             } else {
-                super.onBackPressed()
+                val delay = Math.abs(System.currentTimeMillis() - mLastBackKeyTime)
+                if (delay > 2000) {
+                    AppToast.showToast(R.string.press_again_to_exit)
+                    mLastBackKeyTime = System.currentTimeMillis()
+                } else {
+                    exit()
+                }
             }
         }
     }
@@ -312,6 +321,10 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
             }
             R.id.action_about -> {
                 // 关于
+            }
+            R.id.action_exit -> {
+                // 退出
+                exit()
             }
         }
         return super.onOptionsItemSelected(item)
@@ -449,8 +462,8 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
         val view = layoutInflater.inflate(R.layout.dialog_update_group, null, false)
         updateBuilder.setView(view)
         val etGroup = view.findViewById<EditText>(R.id.et_update_group)
-        etGroup.setText(title)
-        etGroup.setSelection(title.length)
+        etGroup.setText(oldName)
+        etGroup.setSelection(oldName.length)
         updateBuilder.setTitle(R.string.update_group_name)
         updateBuilder.setPositiveButton(R.string.ok, null)
         updateBuilder.setNegativeButton(R.string.cancel, null)
@@ -531,10 +544,8 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
         val result = mMenuAdapter.delData(groupName)
         if (result) {
             mGroupList.remove(Group(groupName))
-            if (mGroupName == getString(R.string.group_all)) {
+            if (mGroupName == groupName) {
                 showGroup(null)
-            } else if (mGroupName == groupName) {
-                showGroup(groupName)
             }
         }
     }
@@ -604,6 +615,15 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
                 refreshAll()
             }
         }
+    }
+
+    /**
+     * 退出应用
+     */
+    private fun exit() {
+        Config.mKey = null
+        Config.mOriKey = Config.NO_PASSWORD
+        destroyAllActivities()
     }
 
     override fun onDestroy() {

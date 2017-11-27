@@ -188,7 +188,7 @@ class ImportActivity : BaseActivity(), FileListAdapter.OnFileClickListener, OnPa
             AppToast.showToast(R.string.import_zero)
             return
         }
-        mProgressDialog!!.setMessage(getString(R.string.importing_passwords))
+        mProgressDialog!!.setMessage(getString(R.string.importing_passwords, passwordCount))
         mProgressDialog!!.show()
         if (oriKey != null) {
             // 有密钥，先解密

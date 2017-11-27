@@ -2,7 +2,6 @@ package cc.duduhuo.qpassword.adapter
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -180,8 +179,10 @@ class DrawerItemAdapter(private val mContext: Context) : RecyclerView.Adapter<Dr
 
                 if (groupItem.title == mCurrentGroup) {
                     holder.itemView.tv_title.setTextColor(mContext.resources.getColor(R.color.selected_group_color))
+                    holder.itemView.iv_ic.setBackgroundResource(R.drawable.ic_group_selected)
                 } else {
                     holder.itemView.tv_title.setTextColor(mContext.resources.getColor(R.color.group_text_color))
+                    holder.itemView.iv_ic.setBackgroundResource(R.drawable.ic_group)
                 }
 
                 holder.itemView.setOnClickListener {

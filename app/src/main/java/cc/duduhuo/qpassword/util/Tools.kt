@@ -137,28 +137,28 @@ fun keyLost(): Boolean {
  * @return
  */
 fun getFormatSize(size: Long): String {
-    val kiloByte = size / 1024
-    if (kiloByte < 1) {
+    val kiloByte = size / 1024F
+    if (kiloByte < 1F) {
         return "${size}B"
     }
 
-    val megaByte = kiloByte / 1024
-    if (megaByte < 1) {
+    val megaByte = kiloByte / 1024F
+    if (megaByte < 1F) {
         val result1 = BigDecimal(kiloByte.toString())
         return result1.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "KB"
     }
 
-    val gigaByte = megaByte / 1024
-    if (gigaByte < 1) {
+    val gigaByte = megaByte / 1024F
+    if (gigaByte < 1F) {
         val result2 = BigDecimal(megaByte.toString())
         return result2.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "MB"
     }
 
-    val teraBytes = gigaByte / 1024
-    if (teraBytes < 1) {
+    val teraBytes = gigaByte / 1024F
+    if (teraBytes < 1F) {
         val result3 = BigDecimal(gigaByte.toString())
         return result3.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "GB"
     }
-    val result4 = BigDecimal(teraBytes)
+    val result4 = BigDecimal(teraBytes.toString())
     return result4.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "TB"
 }

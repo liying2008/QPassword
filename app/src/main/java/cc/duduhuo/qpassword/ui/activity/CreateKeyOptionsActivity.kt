@@ -113,6 +113,7 @@ class CreateKeyOptionsActivity : BaseActivity(), OnKeyChangeListener {
 
                     })
                 } else if (mMode == MODE_UPDATE) {
+                    AppToast.showToast(R.string.applying_key_changes)
                     mMainBinder?.updateKey(Config.mKey!!, Config.mOriKey, Key(Config.NO_PASSWORD, Key.MODE_NO_KEY), Config.NO_PASSWORD)
                 }
             }

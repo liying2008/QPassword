@@ -89,6 +89,7 @@ class DistinctDialog(private val mActivity: MainActivity,
                     hasFoundDuplicate = tempPasswords.any {
                         it.title == currPassword.title && it.username == currPassword.username
                             && it.password == currPassword.password && it.email == currPassword.email
+                            && it.note == currPassword.note
                     }
 
                     if (hasFoundDuplicate) {

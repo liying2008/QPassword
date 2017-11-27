@@ -138,6 +138,7 @@ class CreateNumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClick
                     }
                 })
             } else if (mMode == MODE_UPDATE) {
+                AppToast.showToast(R.string.applying_key_changes)
                 mMainBinder?.updateKey(Config.mKey!!, Config.mOriKey, Key(mKey.sha1Hex(), Key.MODE_NUMBER), mKey)
             }
         }
