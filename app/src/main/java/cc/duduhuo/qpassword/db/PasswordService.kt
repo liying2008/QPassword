@@ -63,27 +63,33 @@ class PasswordService(context: Context) {
         }
         var id = 0
         val db = mDbHelper.writableDatabase
+        db.beginTransaction()
         val contentValues = ContentValues()
-        passwords.forEach {
+        try {
+            passwords.forEach {
+                contentValues.clear()
+                contentValues.put(Password.CREATE_DATE, it.createDate)
+                contentValues.put(Password.TITLE, it.title)
+                contentValues.put(Password.USERNAME, it.username)
+                if (Config.mKey!!.mode == Key.MODE_NO_KEY) {
+                    contentValues.put(Password.PASSWORD, it.password)
+                } else {
+                    contentValues.put(Password.PASSWORD, it.password.aesEncrypt(Config.mOriKey))
+                }
+                contentValues.put(Password.EMAIL, it.email)
+                contentValues.put(Password.NOTE, it.note)
+                contentValues.put(Password.IS_TOP, if (it.isTop) 1 else 0)
+                contentValues.put(Password.GROUP_NAME, it.groupName)
+                if (db.insert(DBInfo.Table.TB_PASSWORD, null, contentValues) != -1L) {
+                    id++
+                }
+            }
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
             contentValues.clear()
-            contentValues.put(Password.CREATE_DATE, it.createDate)
-            contentValues.put(Password.TITLE, it.title)
-            contentValues.put(Password.USERNAME, it.username)
-            if (Config.mKey!!.mode == Key.MODE_NO_KEY) {
-                contentValues.put(Password.PASSWORD, it.password)
-            } else {
-                contentValues.put(Password.PASSWORD, it.password.aesEncrypt(Config.mOriKey))
-            }
-            contentValues.put(Password.EMAIL, it.email)
-            contentValues.put(Password.NOTE, it.note)
-            contentValues.put(Password.IS_TOP, if (it.isTop) 1 else 0)
-            contentValues.put(Password.GROUP_NAME, it.groupName)
-            if (db.insert(DBInfo.Table.TB_PASSWORD, null, contentValues) != -1L) {
-                id++
-            }
+            db.close()
         }
-        contentValues.clear()
-        db.close()
         return id
     }
 
@@ -153,14 +159,21 @@ class PasswordService(context: Context) {
 
         val passwords = mutableListOf<Password>()
         val db = mDbHelper.writableDatabase
-        val cursor = db.query(DBInfo.Table.TB_PASSWORD, null, null, null, null, null, null)
+        var cursor: Cursor? = null
+        db.beginTransaction()
+        try {
+            cursor = db.query(DBInfo.Table.TB_PASSWORD, null, null, null, null, null, null)
 
-        while (cursor.moveToNext()) {
-            val password = mapPassword(cursor)
-            passwords.add(password)
+            while (cursor.moveToNext()) {
+                val password = mapPassword(cursor)
+                passwords.add(password)
+            }
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
+            cursor?.close()
+            db.close()
         }
-        cursor.close()
-        db.close()
         return passwords
     }
 
@@ -187,10 +200,16 @@ class PasswordService(context: Context) {
      */
     fun deletePasswords(passwords: List<Password>) {
         val db = mDbHelper.writableDatabase
-        passwords.forEach {
-            db.delete(DBInfo.Table.TB_PASSWORD, "${Password.ID} = ?", arrayOf(it.id.toString()))
+        db.beginTransaction()
+        try {
+            passwords.forEach {
+                db.delete(DBInfo.Table.TB_PASSWORD, "${Password.ID} = ?", arrayOf(it.id.toString()))
+            }
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
+            db.close()
         }
-        db.close()
     }
 
     /**
@@ -206,15 +225,21 @@ class PasswordService(context: Context) {
         }
         val passwords = mutableListOf<Password>()
         val db = mDbHelper.writableDatabase
+        var cursor: Cursor? = null
+        db.beginTransaction()
+        try {
+            cursor = db.query(DBInfo.Table.TB_PASSWORD, null, "${Password.GROUP_NAME} = ?", arrayOf(groupName), null, null, null)
 
-        val cursor = db.query(DBInfo.Table.TB_PASSWORD, null, "${Password.GROUP_NAME} = ?", arrayOf(groupName), null, null, null)
-
-        while (cursor.moveToNext()) {
-            val password: Password = mapPassword(cursor)
-            passwords.add(password)
+            while (cursor.moveToNext()) {
+                val password: Password = mapPassword(cursor)
+                passwords.add(password)
+            }
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
+            cursor?.close()
+            db.close()
         }
-        cursor.close()
-        db.close()
         return passwords
     }
 

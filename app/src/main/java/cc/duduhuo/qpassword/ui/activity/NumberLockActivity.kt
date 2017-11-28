@@ -99,6 +99,8 @@ class NumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClickListen
         if (mKey.length < mMinKeyLength) {
             AppToast.showToast(getString(R.string.key_length_can_not_too_short, mMinKeyLength))
         } else {
+            view.isEnabled = false
+            view.setTextColor(resources.getColorStateList(R.color.disable_text_color))
             if (mKey.sha1Hex() == mRealKey) {
                 Config.mOriKey = mKey
                 startActivity(MainActivity.getIntent(this@NumberLockActivity))
@@ -107,9 +109,12 @@ class NumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClickListen
                 mWrongCount++
                 if (mWrongCount >= 5) {
                     view.isEnabled = false
+                    view.setTextColor(resources.getColorStateList(R.color.disable_text_color))
                     AppToast.showToast(getString(R.string.key_wrong_try_again_later, 30))
                     countDown(view)
                 } else {
+                    view.isEnabled = true
+                    view.setTextColor(resources.getColorStateList(android.R.color.black))
                     tv_number_info.text = getString(R.string.key_wrong_try_again, 5 - mWrongCount)
                 }
             }

@@ -4,6 +4,7 @@ import android.content.*
 import android.os.Bundle
 import android.os.IBinder
 import android.support.v7.app.AlertDialog
+import android.view.MenuItem
 import android.view.View
 import cc.duduhuo.applicationtoast.AppToast
 import cc.duduhuo.qpassword.R
@@ -24,9 +25,11 @@ import kotlinx.android.synthetic.main.activity_create_key_options.*
  * Remarks:
  * =======================================================
  */
-class CreateKeyOptionsActivity : BaseActivity(), OnKeyChangeListener {
+class CreateKeyOptionsActivity : BaseActivity() {
     private var mMainBinder: MainBinder? = null
     private var mMode: Int = MODE_CREATE
+    /** 是否正在更改主密码（期间不允许finish Activity） */
+    private var mUpdating = false
 
     companion object {
         private const val MODE = "mode"
@@ -47,7 +50,6 @@ class CreateKeyOptionsActivity : BaseActivity(), OnKeyChangeListener {
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
             mMainBinder = service as MainBinder
             if (mMainBinder != null) {
-                mMainBinder?.registerOnKeyChangeListener(this@CreateKeyOptionsActivity)
                 initViews()
             }
         }
@@ -68,6 +70,8 @@ class CreateKeyOptionsActivity : BaseActivity(), OnKeyChangeListener {
             setTitle(R.string.title_create_key)
         } else if (mMode == MODE_UPDATE) {
             setTitle(R.string.title_update_key)
+            val actionBar = supportActionBar
+            actionBar?.setDisplayHomeAsUpEnabled(true)
         }
         // 绑定服务
         val intent = MainService.getIntent(this)
@@ -114,21 +118,25 @@ class CreateKeyOptionsActivity : BaseActivity(), OnKeyChangeListener {
                     })
                 } else if (mMode == MODE_UPDATE) {
                     AppToast.showToast(R.string.applying_key_changes)
-                    mMainBinder?.updateKey(Config.mKey!!, Config.mOriKey, Key(Config.NO_PASSWORD, Key.MODE_NO_KEY), Config.NO_PASSWORD)
+                    mMainBinder?.updateKey(Config.mKey!!, Config.mOriKey, Key(Config.NO_PASSWORD, Key.MODE_NO_KEY), Config.NO_PASSWORD, mOnKeyChangeListener)
+                    mUpdating = true
                 }
             }
             .create().show()
     }
 
-    override fun onUpdateKey(oldKey: Key, newKey: Key) {
-        Config.mKey = newKey
-        Config.mOriKey = Config.NO_PASSWORD
-        if (oldKey.key != newKey.key) {
-            AppToast.showToast(R.string.key_updated)
-            destroyAllActivities()
-            startActivity(MainActivity.getIntent(this))
-        } else {
-            this@CreateKeyOptionsActivity.finish()
+    private val mOnKeyChangeListener = object : OnKeyChangeListener {
+        override fun onUpdateKey(oldKey: Key, newKey: Key) {
+            Config.mKey = newKey
+            Config.mOriKey = Config.NO_PASSWORD
+            if (oldKey.key != newKey.key || oldKey.mode != newKey.mode) {
+                AppToast.showToast(R.string.key_updated)
+                destroyAllActivities()
+                startActivity(MainActivity.getIntent(this@CreateKeyOptionsActivity))
+            } else {
+                this@CreateKeyOptionsActivity.finish()
+            }
+            mUpdating = false
         }
     }
 
@@ -141,8 +149,33 @@ class CreateKeyOptionsActivity : BaseActivity(), OnKeyChangeListener {
         }
     }
 
+    /**
+     * 点击ActionBar返回图标回到上一个Activity
+     * @param item
+     * @return
+     */
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            if (mUpdating) {
+                AppToast.showToast(R.string.updating_please_wait)
+            } else {
+                finish()
+            }
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun onBackPressed() {
+        if (mUpdating) {
+            AppToast.showToast(R.string.updating_please_wait)
+        } else {
+            super.onBackPressed()
+        }
+    }
+
     override fun onDestroy() {
-        super.onDestroy()
         unbindService(mServiceConnection)
+        super.onDestroy()
     }
 }

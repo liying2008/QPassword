@@ -6,6 +6,8 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
+import android.util.Log
+import android.view.MenuItem
 import android.widget.TextView
 import cc.duduhuo.applicationtoast.AppToast
 import cc.duduhuo.qpassword.R
@@ -30,12 +32,14 @@ import kotlinx.android.synthetic.main.activity_create_pattern_lock.*
  * Remarks:
  * =======================================================
  */
-class CreatePatternLockActivity : BaseActivity(), OnKeyChangeListener {
+class CreatePatternLockActivity : BaseActivity() {
     private var mMode: Int = MODE_CREATE
     private var mKey: String? = null
     private var mMainBinder: MainBinder? = null
     private lateinit var mPatternLockView: PatternLockView
     private lateinit var mTvInfo: TextView
+    /** 是否正在更改主密码（期间不允许finish Activity） */
+    private var mUpdating = false
 
     companion object {
         private const val MODE = "mode"
@@ -57,7 +61,6 @@ class CreatePatternLockActivity : BaseActivity(), OnKeyChangeListener {
             mMainBinder = service as MainBinder
             if (mMainBinder != null) {
                 initViews()
-                mMainBinder?.registerOnKeyChangeListener(this@CreatePatternLockActivity)
             }
         }
     }
@@ -88,7 +91,8 @@ class CreatePatternLockActivity : BaseActivity(), OnKeyChangeListener {
                     })
                 } else if (mMode == MODE_UPDATE) {
                     AppToast.showToast(R.string.applying_key_changes)
-                    mMainBinder?.updateKey(Config.mKey!!, Config.mOriKey, Key(mKey!!.sha1Hex(), Key.MODE_PATTERN), mKey!!)
+                    mMainBinder?.updateKey(Config.mKey!!, Config.mOriKey, Key(mKey!!.sha1Hex(), Key.MODE_PATTERN), mKey!!, mOnKeyChangeListener)
+                    mUpdating = true
                 }
             } else {
                 AppToast.showToast(R.string.connect_at_least_4_points)
@@ -129,6 +133,11 @@ class CreatePatternLockActivity : BaseActivity(), OnKeyChangeListener {
         setContentView(R.layout.activity_create_pattern_lock)
         mMode = intent.getIntExtra(MODE, MODE_CREATE)
         setTitle(R.string.title_create_pattern_key)
+        if (mMode == MODE_UPDATE) {
+            val actionBar = supportActionBar
+            actionBar?.setDisplayHomeAsUpEnabled(true)
+        }
+
         mPatternLockView = findViewById(R.id.pattern_lock_view)
         mTvInfo = findViewById(R.id.tv_info)
         mPatternLockView.addPatternLockListener(mPatternLockViewListener)
@@ -136,7 +145,6 @@ class CreatePatternLockActivity : BaseActivity(), OnKeyChangeListener {
         // 绑定服务
         val intent = MainService.getIntent(this)
         this.bindService(intent, mServiceConnection, BIND_AUTO_CREATE)
-
     }
 
     override fun onResume() {
@@ -148,20 +156,48 @@ class CreatePatternLockActivity : BaseActivity(), OnKeyChangeListener {
         }
     }
 
-    override fun onUpdateKey(oldKey: Key, newKey: Key) {
-        Config.mKey = newKey
-        Config.mOriKey = mKey!!
-        if (oldKey.key != newKey.key) {
-            AppToast.showToast(R.string.key_updated)
-            destroyAllActivities()
-            startActivity(MainActivity.getIntent(this))
+    /**
+     * 点击ActionBar返回图标回到上一个Activity
+     * @param item
+     * @return
+     */
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            if (mUpdating) {
+                AppToast.showToast(R.string.updating_please_wait)
+            } else {
+                finish()
+            }
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun onBackPressed() {
+        if (mUpdating) {
+            AppToast.showToast(R.string.updating_please_wait)
         } else {
-            finish()
+            super.onBackPressed()
+        }
+    }
+
+    private val mOnKeyChangeListener = object : OnKeyChangeListener {
+        override fun onUpdateKey(oldKey: Key, newKey: Key) {
+            Config.mKey = newKey
+            Config.mOriKey = mKey!!
+            if (oldKey.key != newKey.key || oldKey.mode != newKey.mode) {
+                AppToast.showToast(R.string.key_updated)
+                destroyAllActivities()
+                startActivity(MainActivity.getIntent(this@CreatePatternLockActivity))
+            } else {
+                finish()
+            }
+            mUpdating = false
         }
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         unbindService(mServiceConnection)
+        super.onDestroy()
     }
 }

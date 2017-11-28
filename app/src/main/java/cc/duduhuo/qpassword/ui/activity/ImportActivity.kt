@@ -12,6 +12,7 @@ import android.os.Environment
 import android.os.IBinder
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
+import android.view.MenuItem
 import android.widget.EditText
 import cc.duduhuo.applicationtoast.AppToast
 import cc.duduhuo.qpassword.R
@@ -53,7 +54,10 @@ class ImportActivity : BaseActivity(), FileListAdapter.OnFileClickListener, OnPa
 
     private val mServiceConnection = object : ServiceConnection {
         override fun onServiceDisconnected(name: ComponentName) {
-            mMainBinder = null
+            if (mMainBinder != null) {
+                mMainBinder!!.unregisterOnPasswordsChangeListener(this@ImportActivity)
+                mMainBinder = null
+            }
         }
 
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
@@ -61,7 +65,7 @@ class ImportActivity : BaseActivity(), FileListAdapter.OnFileClickListener, OnPa
             if (mMainBinder != null) {
                 initViews()
                 // 注册密码变化监听器
-                mMainBinder?.registerOnPasswordsChangeListener(this@ImportActivity)
+                mMainBinder!!.registerOnPasswordsChangeListener(this@ImportActivity)
             }
         }
     }
@@ -211,10 +215,24 @@ class ImportActivity : BaseActivity(), FileListAdapter.OnFileClickListener, OnPa
         // no op
     }
 
+    /**
+     * 点击ActionBar返回图标回到上一个Activity
+     * @param item
+     * @return
+     */
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            finish()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     override fun onDestroy() {
         unregisterAsyncTask(ImportActivity::class.java)
-        super.onDestroy()
         unbindService(mServiceConnection)
+        mProgressDialog?.dismiss()
+        super.onDestroy()
     }
 
 }

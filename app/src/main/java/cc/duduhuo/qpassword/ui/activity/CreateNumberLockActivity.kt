@@ -7,6 +7,7 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.support.v7.widget.GridLayoutManager
+import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import cc.duduhuo.applicationtoast.AppToast
@@ -30,7 +31,7 @@ import kotlinx.android.synthetic.main.activity_create_number_lock.*
  * Remarks:
  * =======================================================
  */
-class CreateNumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClickListener, OnKeyChangeListener {
+class CreateNumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClickListener {
     private var mMode: Int = MODE_CREATE
     /** 最小主密码长度 */
     private var mMinKeyLength: Int = 0
@@ -39,6 +40,8 @@ class CreateNumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClick
     private var mKey: String = ""
     private var mMainBinder: MainBinder? = null
     private var mAdapter: NumberGridAdapter? = null
+    /** 是否正在更改主密码（期间不允许finish Activity） */
+    private var mUpdating = false
 
     companion object {
         private const val MODE = "mode"
@@ -60,7 +63,6 @@ class CreateNumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClick
             mMainBinder = service as MainBinder
             if (mMainBinder != null) {
                 initViews()
-                mMainBinder?.registerOnKeyChangeListener(this@CreateNumberLockActivity)
             }
         }
     }
@@ -70,6 +72,10 @@ class CreateNumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClick
         setContentView(R.layout.activity_create_number_lock)
         mMode = intent.getIntExtra(MODE, MODE_CREATE)
         setTitle(R.string.title_create_number_key)
+        if (mMode == MODE_UPDATE) {
+            val actionBar = supportActionBar
+            actionBar?.setDisplayHomeAsUpEnabled(true)
+        }
 
         mMaxKeyLength = resources.getInteger(R.integer.max_key_length)
         mMinKeyLength = resources.getInteger(R.integer.min_key_length)
@@ -128,6 +134,7 @@ class CreateNumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClick
             AppToast.showToast(getString(R.string.key_length_can_not_too_short, mMinKeyLength))
         } else {
             view.isEnabled = false
+            view.setTextColor(resources.getColorStateList(R.color.disable_text_color))
             if (mMode == MODE_CREATE) {
                 mMainBinder?.insertKey(Key(mKey.sha1Hex(), Key.MODE_NUMBER), object : OnNewKeyListener {
                     override fun onNewKey(key: Key) {
@@ -139,25 +146,54 @@ class CreateNumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClick
                 })
             } else if (mMode == MODE_UPDATE) {
                 AppToast.showToast(R.string.applying_key_changes)
-                mMainBinder?.updateKey(Config.mKey!!, Config.mOriKey, Key(mKey.sha1Hex(), Key.MODE_NUMBER), mKey)
+                mMainBinder?.updateKey(Config.mKey!!, Config.mOriKey, Key(mKey.sha1Hex(), Key.MODE_NUMBER), mKey, mOnKeyChangeListener)
+                mUpdating = true
             }
         }
     }
 
-    override fun onUpdateKey(oldKey: Key, newKey: Key) {
-        Config.mKey = newKey
-        Config.mOriKey = mKey
-        if (oldKey.key != newKey.key) {
-            AppToast.showToast(R.string.key_updated)
-            destroyAllActivities()
-            startActivity(MainActivity.getIntent(this))
+    private val mOnKeyChangeListener = object : OnKeyChangeListener {
+        override fun onUpdateKey(oldKey: Key, newKey: Key) {
+            Config.mKey = newKey
+            Config.mOriKey = mKey
+            if (oldKey.key != newKey.key || oldKey.mode != newKey.mode) {
+                AppToast.showToast(R.string.key_updated)
+                destroyAllActivities()
+                startActivity(MainActivity.getIntent(this@CreateNumberLockActivity))
+            } else {
+                finish()
+            }
+            mUpdating = false
+        }
+    }
+
+    /**
+     * 点击ActionBar返回图标回到上一个Activity
+     * @param item
+     * @return
+     */
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            if (mUpdating) {
+                AppToast.showToast(R.string.updating_please_wait)
+            } else {
+                finish()
+            }
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun onBackPressed() {
+        if (mUpdating) {
+            AppToast.showToast(R.string.updating_please_wait)
         } else {
-            finish()
+            super.onBackPressed()
         }
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         unbindService(mServiceConnection)
+        super.onDestroy()
     }
 }

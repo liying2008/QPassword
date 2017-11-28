@@ -17,6 +17,7 @@
     <color name="tip_text_color">#8e8e8e</color>
     <color name="warning_text_color">#f78e10</color>
     <color name="func_text_color">#979aa6</color>
+    <color name="disable_text_color">#787878</color>
 
     <!--Pattern Lock View-->
     <color name="pattern_normal_color">#949bff</color>

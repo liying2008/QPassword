@@ -2,6 +2,7 @@ package cc.duduhuo.qpassword.db
 
 import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import cc.duduhuo.qpassword.bean.Group
 import cc.duduhuo.qpassword.bean.Password
 
@@ -37,15 +38,22 @@ class GroupService(context: Context) {
     fun getAllGroups(): List<Group> {
         val groups = mutableListOf<Group>()
         val db = mDbHelper.writableDatabase
-        val cursor = db.query(DBInfo.Table.TB_GROUP, null, null, null, null, null, null)
+        var cursor: Cursor? = null
+        db.beginTransaction()
+        try {
+            cursor = db.query(DBInfo.Table.TB_GROUP, null, null, null, null, null, null)
 
-        while (cursor.moveToNext()) {
-            val group = Group()
-            group.name = cursor.getString(cursor.getColumnIndex(Group.NAME))
-            groups.add(group)
+            while (cursor.moveToNext()) {
+                val group = Group()
+                group.name = cursor.getString(cursor.getColumnIndex(Group.NAME))
+                groups.add(group)
+            }
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
+            cursor?.close()
+            db.close()
         }
-        cursor.close()
-        db.close()
         return groups
     }
 
@@ -58,21 +66,27 @@ class GroupService(context: Context) {
      */
     fun updateGroupName(oldGroupName: String, newGroupName: String, merge: Boolean) {
         val db = mDbHelper.writableDatabase
-        if (merge) {
-            // 新的分组已经存在 直接删除旧的分组
-            db.delete(DBInfo.Table.TB_GROUP, "${Group.NAME} = ?", arrayOf(oldGroupName))
-        } else {
-            // 新的分组不存在， 更新旧的分组名称
+        db.beginTransaction()
+        try {
+            if (merge) {
+                // 新的分组已经存在 直接删除旧的分组
+                db.delete(DBInfo.Table.TB_GROUP, "${Group.NAME} = ?", arrayOf(oldGroupName))
+            } else {
+                // 新的分组不存在， 更新旧的分组名称
+                val contentValues = ContentValues()
+                contentValues.put(Group.NAME, newGroupName)
+                db.update(DBInfo.Table.TB_GROUP, contentValues, "${Group.NAME} = ?", arrayOf(oldGroupName))
+                contentValues.clear()
+            }
             val contentValues = ContentValues()
-            contentValues.put(Group.NAME, newGroupName)
-            db.update(DBInfo.Table.TB_GROUP, contentValues, "${Group.NAME} = ?", arrayOf(oldGroupName))
+            contentValues.put(Password.GROUP_NAME, newGroupName)
+            db.update(DBInfo.Table.TB_PASSWORD, contentValues, "${Password.GROUP_NAME} = ?", arrayOf(oldGroupName))
             contentValues.clear()
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
+            db.close()
         }
-        val contentValues = ContentValues()
-        contentValues.put(Password.GROUP_NAME, newGroupName)
-        db.update(DBInfo.Table.TB_PASSWORD, contentValues, "${Password.GROUP_NAME} = ?", arrayOf(oldGroupName))
-        contentValues.clear()
-        db.close()
     }
 
     /**

@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.IBinder
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.MenuItem
 import android.view.View
 import cc.duduhuo.applicationtoast.AppToast
 import cc.duduhuo.qpassword.R
@@ -29,7 +30,7 @@ import kotlinx.android.synthetic.main.activity_create_complex_lock.*
  * Remarks:
  * =======================================================
  */
-class CreateComplexLockActivity : BaseActivity(), OnKeyChangeListener {
+class CreateComplexLockActivity : BaseActivity() {
     private var mMode: Int = MODE_CREATE
     /** 最小主密码长度 */
     private var mMinKeyLength: Int = 0
@@ -37,6 +38,8 @@ class CreateComplexLockActivity : BaseActivity(), OnKeyChangeListener {
     private var mMaxKeyLength: Int = 0
     private var mMainBinder: MainBinder? = null
     private var mKey: String = ""
+    /** 是否正在更改主密码（期间不允许finish Activity） */
+    private var mUpdating = false
 
     companion object {
         private const val MODE = "mode"
@@ -58,7 +61,6 @@ class CreateComplexLockActivity : BaseActivity(), OnKeyChangeListener {
             mMainBinder = service as MainBinder
             if (mMainBinder != null) {
                 initViews()
-                mMainBinder?.registerOnKeyChangeListener(this@CreateComplexLockActivity)
             }
         }
     }
@@ -68,6 +70,10 @@ class CreateComplexLockActivity : BaseActivity(), OnKeyChangeListener {
         setContentView(R.layout.activity_create_complex_lock)
         mMode = intent.getIntExtra(MODE, MODE_CREATE)
         setTitle(R.string.title_create_complex_key)
+        if (mMode == MODE_UPDATE) {
+            val actionBar = supportActionBar
+            actionBar?.setDisplayHomeAsUpEnabled(true)
+        }
 
         mMaxKeyLength = resources.getInteger(R.integer.max_key_length)
         mMinKeyLength = resources.getInteger(R.integer.min_key_length)
@@ -118,26 +124,55 @@ class CreateComplexLockActivity : BaseActivity(), OnKeyChangeListener {
                 })
             } else if (mMode == MODE_UPDATE) {
                 AppToast.showToast(R.string.applying_key_changes)
-                mMainBinder?.updateKey(Config.mKey!!, Config.mOriKey, Key(mKey.sha1Hex(), Key.MODE_COMPLEX), mKey)
+                mMainBinder?.updateKey(Config.mKey!!, Config.mOriKey, Key(mKey.sha1Hex(), Key.MODE_COMPLEX), mKey, mOnKeyChangeListener)
+                mUpdating = true
             }
         }
     }
 
-    override fun onUpdateKey(oldKey: Key, newKey: Key) {
-        Config.mKey = newKey
-        Config.mOriKey = mKey
-        if (oldKey.key != newKey.key) {
-            AppToast.showToast(R.string.key_updated)
-            destroyAllActivities()
-            startActivity(MainActivity.getIntent(this))
+    private val mOnKeyChangeListener = object : OnKeyChangeListener {
+        override fun onUpdateKey(oldKey: Key, newKey: Key) {
+            Config.mKey = newKey
+            Config.mOriKey = mKey
+            if (oldKey.key != newKey.key || oldKey.mode != newKey.mode) {
+                AppToast.showToast(R.string.key_updated)
+                destroyAllActivities()
+                startActivity(MainActivity.getIntent(this@CreateComplexLockActivity))
+            } else {
+                finish()
+            }
+            mUpdating = false
+        }
+    }
+
+    /**
+     * 点击ActionBar返回图标回到上一个Activity
+     * @param item
+     * @return
+     */
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            if (mUpdating) {
+                AppToast.showToast(R.string.updating_please_wait)
+            } else {
+                finish()
+            }
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun onBackPressed() {
+        if (mUpdating) {
+            AppToast.showToast(R.string.updating_please_wait)
         } else {
-            finish()
+            super.onBackPressed()
         }
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         unbindService(mServiceConnection)
+        super.onDestroy()
     }
 
     inner class PasswordTextWatcher : TextWatcher {

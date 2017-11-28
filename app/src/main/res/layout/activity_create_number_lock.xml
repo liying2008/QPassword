@@ -48,7 +48,7 @@
         android:layout_marginTop="20dp"
         android:background="@drawable/selector_clear_btn_bg"
         android:clickable="true"
-        android:focusable="false"
+        android:focusable="true"
         android:visibility="gone"/>
 
     <android.support.v7.widget.RecyclerView

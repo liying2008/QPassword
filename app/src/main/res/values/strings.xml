@@ -12,6 +12,7 @@
     <string name="title_create_number_key">创建数字密码</string>
     <string name="title_create_complex_key">创建复杂密码</string>
     <string name="title_pattern_unlock">图案密码解锁</string>
+    <string name="title_about">关于</string>
     <!--左侧抽屉菜单项-->
     <string name="group_password_count">%1$s 密码个数：%2$d</string>
     <string name="menu_group">分组</string>
@@ -122,6 +123,7 @@
     <string name="no_key_message">如果不创建主密码，密码本中的密码将不会以加密的方式存储，你确定不需要创建主密码？</string>
     <string name="key_updated">主密码已更新</string>
     <string name="applying_key_changes">正在应用更改…</string>
+    <string name="updating_please_wait">正在更新密码数据，请稍等片刻…</string>
 
     <string name="key_length_can_not_too_short">主密码长度不可以小于 %d 位</string>
     <string name="please_enter_number_key">请输入 %1$d – %2$d 位的数字密码</string>
@@ -163,4 +165,13 @@
     <string name="export_passwords">导出密码</string>
     <string name="delete_passwords">删除密码</string>
     <string name="press_again_to_exit">再按一次，退出应用</string>
+
+    <string name="about_declare">应用部分界面参考了开源项目： zengdexing/MyPassword</string>
+    <string name="open_source_url">开源地址</string>
+    <string name="share_app">分享应用</string>
+    <string name="feedback">意见反馈</string>
+    <string name="about_author">关于作者</string>
+    <string name="about_github_url">liying2008/QPassword</string>
+    <string name="about_email">liruoer2008@yeah.net</string>
+    <string name="about_author_name">\@独毒火</string>
 </resources>

@@ -48,11 +48,13 @@
         android:layout_marginTop="20dp"
         android:background="@drawable/selector_clear_btn_bg"
         android:clickable="true"
+        android:focusable="true"
         android:visibility="gone"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_number_grid"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true"
+        android:overScrollMode="never"/>
 </RelativeLayout>

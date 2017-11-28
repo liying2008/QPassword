@@ -71,7 +71,7 @@ class SplashActivity : BaseActivity(), SplashLoadDataTask.OnLoadKeyListener {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         unbindService(mServiceConnection)
+        super.onDestroy()
     }
 }

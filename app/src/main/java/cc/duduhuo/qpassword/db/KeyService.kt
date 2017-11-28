@@ -44,19 +44,28 @@ class KeyService(context: Context) {
      * @return true: 主密码已更新；false: 新旧密码一致，无需更新
      */
     fun updateKey(oldKey: Key, oldOriKey: String, newKey: Key, newOriKey: String): Boolean {
-        if (oldOriKey == newOriKey) {
+        if (oldOriKey == newOriKey && oldKey.mode == newKey.mode) {
             return false
         }
         val db = mDbHelper.writableDatabase
-        val contentValues = ContentValues()
-        contentValues.put(Key.KEY, newKey.key)
-        contentValues.put(Key.MODE, newKey.mode)
-        db.update(DBInfo.Table.TB_KEY, contentValues, "${Key.KEY} = ?", arrayOf(oldKey.key))
-        // 更新全部密码（重新加密）
-        updatePassword(db, oldKey, oldOriKey, newKey, newOriKey)
-        contentValues.clear()
-        db.close()
-        return true
+        db.beginTransaction()
+        try {
+            val contentValues = ContentValues()
+            contentValues.put(Key.KEY, newKey.key)
+            contentValues.put(Key.MODE, newKey.mode)
+            db.update(DBInfo.Table.TB_KEY, contentValues, "${Key.KEY} = ?", arrayOf(oldKey.key))
+            // 更新全部密码（重新加密）
+            updatePassword(db, oldKey, oldOriKey, newKey, newOriKey)
+            contentValues.clear()
+            db.setTransactionSuccessful()
+            return true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return false
+        } finally {
+            db.endTransaction()
+            db.close()
+        }
     }
 
     /**

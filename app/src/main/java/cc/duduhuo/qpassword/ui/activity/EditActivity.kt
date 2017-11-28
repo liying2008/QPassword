@@ -55,12 +55,14 @@ class EditActivity : BaseActivity(), OnGetPasswordListener, OnGetPasswordsListen
 
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
             mMainBinder = service as MainBinder
-            if (mMode == MODE_MODIFY) {
-                mMainBinder?.getPassword(this@EditActivity, mId)
+            if (mMainBinder != null) {
+                if (mMode == MODE_MODIFY) {
+                    mMainBinder!!.getPassword(this@EditActivity, mId)
+                }
+                // 获得所有密码、用户名，用于自动完成
+                mMainBinder!!.getPasswords(this@EditActivity)
+                mMainBinder!!.getAllGroups(this@EditActivity)
             }
-            // 获得所有密码、用户名，用于自动完成
-            mMainBinder?.getPasswords(this@EditActivity)
-            mMainBinder?.getAllGroups(this@EditActivity)
         }
     }
 
@@ -102,6 +104,10 @@ class EditActivity : BaseActivity(), OnGetPasswordListener, OnGetPasswordsListen
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                return true
+            }
             R.id.action_save -> {
                 if (mMainBinder != null) {
                     savePassword()
@@ -206,7 +212,7 @@ class EditActivity : BaseActivity(), OnGetPasswordListener, OnGetPasswordsListen
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         this.unbindService(mServiceConnection)
+        super.onDestroy()
     }
 }

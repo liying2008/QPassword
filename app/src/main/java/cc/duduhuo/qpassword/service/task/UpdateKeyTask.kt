@@ -18,10 +18,10 @@ class UpdateKeyTask(private val mOldKey: Key,
                     private val mNewKey: Key,
                     private val mNewOriKey: String,
                     private val mKeyService: KeyService) : AsyncTask<Void, Void, Boolean>() {
-    private lateinit var mListeners: List<OnKeyChangeListener>
+    private lateinit var mListener: OnKeyChangeListener
 
-    fun setOnKeyChangeListener(listeners: List<OnKeyChangeListener>) {
-        this.mListeners = listeners
+    fun setOnKeyChangeListener(listener: OnKeyChangeListener) {
+        this.mListener = listener
     }
 
     override fun doInBackground(vararg params: Void?): Boolean {
@@ -30,6 +30,6 @@ class UpdateKeyTask(private val mOldKey: Key,
 
     override fun onPostExecute(update: Boolean) {
         super.onPostExecute(update)
-        mListeners.map { it.onUpdateKey(mOldKey, mNewKey) }
+        mListener.onUpdateKey(mOldKey, mNewKey)
     }
 }

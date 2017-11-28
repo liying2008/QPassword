@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.IBinder
 import android.support.v7.app.AlertDialog
+import android.view.MenuItem
 import android.view.View
 import cc.duduhuo.applicationtoast.AppToast
 import cc.duduhuo.qpassword.R
@@ -118,7 +119,7 @@ class ExportActivity : BaseActivity() {
      */
     private fun exportPassword(export: Export, oriKey: String? = null) {
         val progressDialog = ProgressDialog(this@ExportActivity)
-        progressDialog.setCanceledOnTouchOutside(false)
+        progressDialog.setCancelable(false)
         progressDialog.setMessage(getString(R.string.exporting))
         progressDialog.show()
 
@@ -192,8 +193,21 @@ class ExportActivity : BaseActivity() {
         dialog.show()
     }
 
+    /**
+     * 点击ActionBar返回图标回到上一个Activity
+     * @param item
+     * @return
+     */
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            finish()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     override fun onDestroy() {
-        super.onDestroy()
         unbindService(mServiceConnection)
+        super.onDestroy()
     }
 }

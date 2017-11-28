@@ -43,7 +43,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
     /** 搜索关键词 */
     private var mSearchKeyword = ""
     private var mMainBinder: MainBinder? = null
-    private lateinit var mProgressDialog: ProgressDialog
+    private var mProgressDialog: ProgressDialog? = null
     /** 左侧抽屉列表适配器 */
     private lateinit var mMenuAdapter: DrawerItemAdapter
     /** 密码列表适配器 */
@@ -79,19 +79,26 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
     }
     private val mServiceConnection = object : ServiceConnection {
         override fun onServiceDisconnected(name: ComponentName) {
+            if (mMainBinder != null) {
+                mMainBinder!!.unregisterOnGroupChangeListener(this@MainActivity)
+                mMainBinder!!.unregisterOnPasswordChangeListener(this@MainActivity)
+                mMainBinder!!.unregisterOnPasswordFailListener(this@MainActivity)
+            }
             mMainBinder = null
         }
 
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
             mMainBinder = service as MainBinder
-            // 注册分组变化监听器
-            mMainBinder?.registerOnGroupChangeListener(this@MainActivity)
-            // 注册密码变化监听器
-            mMainBinder?.registerOnPasswordChangeListener(this@MainActivity)
-            // 注册读取 / 更新 / 写入密码失败监听器
-            mMainBinder?.registerOnPasswordFailListener(this@MainActivity)
+            if (mMainBinder != null) {
+                // 注册分组变化监听器
+                mMainBinder!!.registerOnGroupChangeListener(this@MainActivity)
+                // 注册密码变化监听器
+                mMainBinder!!.registerOnPasswordChangeListener(this@MainActivity)
+                // 注册读取 / 更新 / 写入密码失败监听器
+                mMainBinder!!.registerOnPasswordFailListener(this@MainActivity)
 
-            initData()
+                initData()
+            }
         }
     }
 
@@ -187,8 +194,8 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
             }
         }
         mProgressDialog = ProgressDialog(this@MainActivity)
-        mProgressDialog.setMessage(getString(R.string.reading_passwords))
-        mProgressDialog.setCanceledOnTouchOutside(false)
+        mProgressDialog!!.setMessage(getString(R.string.reading_passwords))
+        mProgressDialog!!.setCanceledOnTouchOutside(false)
 
         // 绑定服务
         val intent = MainService.getIntent(this)
@@ -220,7 +227,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
 
     private fun initData() {
         // 显示 ProgressDialog
-        mProgressDialog.show()
+        mProgressDialog?.show()
         setupDrawer()
 
         mPasswordAdapter = PasswordListAdapter(this)
@@ -321,6 +328,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
             }
             R.id.action_about -> {
                 // 关于
+                startActivity(AboutActivity.getIntent(this))
             }
             R.id.action_exit -> {
                 // 退出
@@ -340,7 +348,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
             } else {
                 mMainBinder?.getPasswords(this@MainActivity, mGroupName)
             }
-            mProgressDialog.show()
+            mProgressDialog?.show()
             drawer_layout.closeDrawer(GravityCompat.START)
         }
 
@@ -499,7 +507,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
     }
 
     override fun onGetPasswords(groupName: String?, passwords: List<Password>) {
-        mProgressDialog.dismiss()
+        mProgressDialog?.dismiss()
         if (mSearchMode) {
             val resultPassword = passwords.filter { it.title.toLowerCase().contains(mSearchKeyword.toLowerCase()) || it.note.toLowerCase().contains(mSearchKeyword.toLowerCase()) }
             mPasswordAdapter.setData(resultPassword.toMutableList())
@@ -579,8 +587,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
         } else {
             mMainBinder?.getPasswords(this, groupName)
         }
-        mProgressDialog.isShowing
-        mProgressDialog.show()
+        mProgressDialog?.show()
     }
 
     override fun onInsertFail() {
@@ -627,7 +634,8 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         unbindService(mServiceConnection)
+        mProgressDialog?.dismiss()
+        super.onDestroy()
     }
 }

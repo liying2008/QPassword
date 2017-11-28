@@ -33,8 +33,6 @@ class MainBinder(context: Context) : Binder() {
     private val mOnPasswordChangeListeners = mutableListOf<OnPasswordChangeListener>()
     /** 密码列表变化监听器 */
     private val mOnPasswordsChangeListeners = mutableListOf<OnPasswordsChangeListener>()
-    /** 主密码变化监听器 */
-    private val mOnKeyChangeListeners = mutableListOf<OnKeyChangeListener>()
     /** 分组变化监听器 */
     private val mOnGroupChangeListeners = mutableListOf<OnGroupChangeListener>()
 
@@ -47,11 +45,27 @@ class MainBinder(context: Context) : Binder() {
     }
 
     /**
+     * 取消注册读取 / 更新 / 写入密码失败监听器
+     * @param listener 读取 / 更新 / 写入密码失败监听器
+     */
+    fun unregisterOnPasswordFailListener(listener: OnPasswordFailListener) {
+        mOnPasswordFailListeners.remove(listener)
+    }
+
+    /**
      * 注册密码变化监听器
      * @param listener 密码变化监听器
      */
     fun registerOnPasswordChangeListener(listener: OnPasswordChangeListener) {
         mOnPasswordChangeListeners.add(listener)
+    }
+
+    /**
+     * 取消注册密码变化监听器
+     * @param listener 密码变化监听器
+     */
+    fun unregisterOnPasswordChangeListener(listener: OnPasswordChangeListener) {
+        mOnPasswordChangeListeners.remove(listener)
     }
 
     /**
@@ -63,11 +77,11 @@ class MainBinder(context: Context) : Binder() {
     }
 
     /**
-     * 注册主密码变化监听器
-     * @param listener 主密码变化监听器
+     * 取消注册密码列表变化监听器
+     * @param listener 密码列表变化监听器
      */
-    fun registerOnKeyChangeListener(listener: OnKeyChangeListener) {
-        mOnKeyChangeListeners.add(listener)
+    fun unregisterOnPasswordsChangeListener(listener: OnPasswordsChangeListener) {
+        mOnPasswordsChangeListeners.remove(listener)
     }
 
     /**
@@ -76,6 +90,14 @@ class MainBinder(context: Context) : Binder() {
      */
     fun registerOnGroupChangeListener(listener: OnGroupChangeListener) {
         mOnGroupChangeListeners.add(listener)
+    }
+
+    /**
+     * 取消注册分组变化监听器
+     * @param listener 分组变化监听器
+     */
+    fun unregisterOnGroupChangeListener(listener: OnGroupChangeListener) {
+        mOnGroupChangeListeners.remove(listener)
     }
 
     /**
@@ -105,10 +127,11 @@ class MainBinder(context: Context) : Binder() {
      * @param oldOriKey 旧主密码（未SHA-1加密）
      * @param newKey 新主密码对象
      * @param newOriKey 新主密码（未SHA-1加密）
+     * @param onKeyChangeListener 主密码变化监听
      */
-    fun updateKey(oldKey: Key, oldOriKey: String, newKey: Key, newOriKey: String) {
+    fun updateKey(oldKey: Key, oldOriKey: String, newKey: Key, newOriKey: String, onKeyChangeListener: OnKeyChangeListener) {
         val task = UpdateKeyTask(oldKey, oldOriKey, newKey, newOriKey, mKeyService)
-        task.setOnKeyChangeListener(mOnKeyChangeListeners)
+        task.setOnKeyChangeListener(onKeyChangeListener)
         task.execute()
         mTasks.add(task)
     }

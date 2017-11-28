@@ -35,19 +35,6 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     /**
-     * 点击ActionBar返回图标回到上一个Activity
-     * @param item
-     * @return
-     */
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
-            finish()
-            return true
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
-    /**
      * 重启应用
      */
     protected fun restartApp() {
