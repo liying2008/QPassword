@@ -87,8 +87,17 @@
 
             <Spinner
                 android:id="@+id/sp_group"
-                android:layout_width="match_parent"
-                android:layout_height="38dp"/>
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_weight="1"/>
+
+            <ImageButton
+                android:id="@+id/ib_create_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/selector_create_group"
+                android:contentDescription="@string/create_new_group"/>
         </LinearLayout>
 
         <LinearLayout

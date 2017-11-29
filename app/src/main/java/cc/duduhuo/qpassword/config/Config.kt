@@ -29,4 +29,6 @@ object Config {
     var mKey: Key? = null
     /** 未经 SHA-1加密的主密码 */
     var mOriKey: String = NO_PASSWORD
+    /** 用来标识应用是否正在重启，防止多次重启应用 */
+    var mIsAllFinishing = false
 }

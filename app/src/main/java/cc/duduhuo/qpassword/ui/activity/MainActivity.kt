@@ -194,6 +194,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
             }
         }
         mProgressDialog = ProgressDialog(this@MainActivity)
+        mProgressDialog!!.setCancelable(false)
         mProgressDialog!!.setMessage(getString(R.string.reading_passwords))
         mProgressDialog!!.setCanceledOnTouchOutside(false)
 
@@ -319,7 +320,9 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
                     mGroupList.forEach {
                         mMainBinder?.deleteGroup(it.name)
                     }
-
+                    if (mGroupName == getString(R.string.group_all)) {
+                        refreshAll()
+                    }
                 }
                 builder.setPositiveButton(R.string.export_passwords) { dialog, which ->
                     startActivity(ExportActivity.getIntent(this))

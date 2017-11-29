@@ -60,6 +60,8 @@ class SplashActivity : BaseActivity(), SplashLoadDataTask.OnLoadKeyListener {
     }
 
     private fun start(intent: Intent) {
+        Config.mIsAllFinishing = false
+
         Handler().postDelayed({
             startActivity(intent)
             this.finish()

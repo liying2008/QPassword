@@ -84,6 +84,7 @@
     <string name="alert_delete_message">删除后不可恢复，确定删除？</string>
     <string name="ok">确定</string>
     <string name="cancel">取消</string>
+    <string name="create_new_group">创建新分组</string>
     <string name="enter_new_group_name">输入新分组名称</string>
     <string name="group_exists">分组名称已存在</string>
     <string name="group_name_can_not_be_empty">分组名不可为空</string>
@@ -124,6 +125,7 @@
     <string name="key_updated">主密码已更新</string>
     <string name="applying_key_changes">正在应用更改…</string>
     <string name="updating_please_wait">正在更新密码数据，请稍等片刻…</string>
+    <string name="restarting_app">Restarting App&#8230;</string>
 
     <string name="key_length_can_not_too_short">主密码长度不可以小于 %d 位</string>
     <string name="please_enter_number_key">请输入 %1$d – %2$d 位的数字密码</string>

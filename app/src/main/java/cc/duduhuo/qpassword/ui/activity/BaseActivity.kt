@@ -1,13 +1,13 @@
 package cc.duduhuo.qpassword.ui.activity
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.view.MenuItem
 import cc.duduhuo.applicationtoast.AppToast
+import cc.duduhuo.qpassword.R
+import cc.duduhuo.qpassword.config.Config
 import com.google.common.collect.ArrayListMultimap
 
 
@@ -24,8 +24,8 @@ open class BaseActivity : AppCompatActivity() {
     /** 存储所有Activity中的异步任务，便于统一删除  */
     private val mTasks = ArrayListMultimap.create<Class<out BaseActivity>, AsyncTask<*, *, *>>()
 
-    /** 打开的 Activity 列表 */
     companion object {
+        /** 打开的 Activity 列表 */
         private val sActivityList = mutableListOf<BaseActivity>()
     }
 
@@ -38,22 +38,24 @@ open class BaseActivity : AppCompatActivity() {
      * 重启应用
      */
     protected fun restartApp() {
-        AppToast.showToast("Restart App...")
-        sActivityList
-            .filterNot { it.isFinishing }
-            .forEach { it.finish() }
-        val intent = packageManager.getLaunchIntentForPackage(packageName)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        startActivity(intent)
+        if (!Config.mIsAllFinishing) {
+            AppToast.showToast(R.string.restarting_app)
+            destroyAllActivities()
+            val intent = packageManager.getLaunchIntentForPackage(packageName)
+            startActivity(intent)
+        }
     }
 
     /**
      * 关闭所有 Activity
      */
     protected fun destroyAllActivities() {
-        sActivityList
-            .filterNot { it.isFinishing }
-            .forEach { it.finish() }
+        if (!Config.mIsAllFinishing) {
+            Config.mIsAllFinishing = true
+            sActivityList
+                .filterNot { it.isFinishing }
+                .forEach { it.finish() }
+        }
     }
 
     /**
