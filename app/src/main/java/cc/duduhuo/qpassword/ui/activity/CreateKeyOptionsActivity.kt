@@ -132,6 +132,7 @@ class CreateKeyOptionsActivity : BaseActivity() {
             if (oldKey.key != newKey.key || oldKey.mode != newKey.mode) {
                 AppToast.showToast(R.string.key_updated)
                 destroyAllActivities()
+                Config.mIsAllFinishing = false
                 startActivity(MainActivity.getIntent(this@CreateKeyOptionsActivity))
             } else {
                 this@CreateKeyOptionsActivity.finish()

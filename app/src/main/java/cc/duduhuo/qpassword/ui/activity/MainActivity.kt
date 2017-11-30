@@ -547,7 +547,9 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
         mGroupList.add(group)
         mMenuAdapter.addData(group)
         AppToast.showToast(getString(R.string.group_added, group.name))
-        showGroup(group.name)
+        if (!mSearchMode) {
+            showGroup(group.name)
+        }
     }
 
     override fun onDeleteGroup(groupName: String) {

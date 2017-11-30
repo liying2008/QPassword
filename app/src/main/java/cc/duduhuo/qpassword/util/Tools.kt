@@ -4,13 +4,12 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Environment
-import cc.duduhuo.applicationtoast.AppToast
 import cc.duduhuo.qpassword.R
 import cc.duduhuo.qpassword.bean.Key
 import cc.duduhuo.qpassword.bean.Password
 import cc.duduhuo.qpassword.config.Config
-import java.lang.Double
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.*
@@ -94,8 +93,9 @@ fun copyText(context: Context, text: String) {
  *
  * @param context
  * @param text    分享的文本
+ * @return true：成功打开分享面板；false：无法分享
  */
-fun shareText(context: Context, text: String) {
+fun shareText(context: Context, text: String): Boolean {
     val shareIntent = Intent()
     shareIntent.action = Intent.ACTION_SEND
     shareIntent.type = "text/*"
@@ -103,8 +103,51 @@ fun shareText(context: Context, text: String) {
     val componentName = shareIntent.resolveActivity(context.packageManager)
     if (componentName != null) {
         context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.share_to)))
+        return true
     } else {
-        AppToast.showToast(R.string.can_not_share)
+        return false
+    }
+}
+
+/**
+ * 打开浏览器
+ *
+ * @param context
+ * @param url     浏览器加载的网址
+ * @return true: 成功打开浏览器（或浏览器选择界面）；false：未安装浏览器
+ */
+fun openBrowser(context: Context, url: String): Boolean {
+    val uri = Uri.parse(url)
+    val intent = Intent(Intent.ACTION_VIEW, uri)
+    val componentName = intent.resolveActivity(context.packageManager)
+    if (componentName != null) {
+        context.startActivity(intent)
+        return true
+    } else {
+        return false
+    }
+}
+
+/**
+ * 发送邮件
+ *
+ * @param context
+ * @param email     邮件发送的地址
+ * @param subject 邮件主题
+ * @param text 邮件预置正文
+ * @return true: 成功打开邮件应用，false：未安装邮件应用
+ */
+fun sendEmail(context: Context, email: String, subject: String, text: String): Boolean {
+    val mailIntent = Intent(Intent.ACTION_SENDTO)
+    mailIntent.data = Uri.parse("mailto:" + email)
+    mailIntent.putExtra(Intent.EXTRA_SUBJECT, subject)
+    mailIntent.putExtra(Intent.EXTRA_TEXT, text)
+    val componentName = mailIntent.resolveActivity(context.packageManager)
+    if (componentName != null) {
+        context.startActivity(mailIntent)
+        return true
+    } else {
+        return false
     }
 }
 

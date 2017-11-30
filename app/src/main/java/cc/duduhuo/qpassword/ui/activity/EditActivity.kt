@@ -34,8 +34,6 @@ class EditActivity : BaseActivity(), OnGetPasswordListener, OnGetPasswordsListen
     private var mMode = MODE_ADD
     /** 修改密码的ID */
     private var mId: Long = 0
-    /** 密码分组列表 */
-    private var mGroupList = mutableListOf<Group>()
     /** 分组名称列表 */
     private var mGroupNameArray = mutableListOf<String>()
     private var mSpinnerAdapter: ArrayAdapter<String>? = null
@@ -131,7 +129,7 @@ class EditActivity : BaseActivity(), OnGetPasswordListener, OnGetPasswordsListen
             val groupName = etGroup.text.toString().trim()
             if (groupName.isEmpty()) {
                 AppToast.showToast(R.string.group_name_can_not_be_empty)
-            } else if (groupName == getString(R.string.group_all) || mGroupList.contains(Group(groupName))) {
+            } else if (groupName == getString(R.string.group_all) || mGroupNameArray.contains(groupName)) {
                 AppToast.showToast(R.string.group_exists)
             } else {
                 mMainBinder?.insertGroup(Group(groupName))
@@ -143,7 +141,7 @@ class EditActivity : BaseActivity(), OnGetPasswordListener, OnGetPasswordsListen
             val groupName = etGroup.text.toString().trim()
             if (groupName.isEmpty()) {
                 AppToast.showToast(R.string.group_name_can_not_be_empty)
-            } else if (groupName == getString(R.string.group_all) || mGroupList.contains(Group(groupName))) {
+            } else if (groupName == getString(R.string.group_all) || mGroupNameArray.contains(groupName)) {
                 AppToast.showToast(R.string.group_exists)
             } else {
                 mMainBinder?.insertGroup(Group(groupName))
@@ -234,8 +232,6 @@ class EditActivity : BaseActivity(), OnGetPasswordListener, OnGetPasswordsListen
     }
 
     override fun onGetAllGroups(groups: List<Group>) {
-        mGroupList = groups.toMutableList()
-        mGroupNameArray = mutableListOf<String>()
         val size = groups.size
         (0 until size)
             .map { groups[it] }

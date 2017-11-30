@@ -188,6 +188,7 @@ class CreatePatternLockActivity : BaseActivity() {
             if (oldKey.key != newKey.key || oldKey.mode != newKey.mode) {
                 AppToast.showToast(R.string.key_updated)
                 destroyAllActivities()
+                Config.mIsAllFinishing = false
                 startActivity(MainActivity.getIntent(this@CreatePatternLockActivity))
             } else {
                 finish()

@@ -2,6 +2,7 @@
     <string name="app_name">七圈密码</string>
     <string name="slogan">简单、安全、易用的密码记录本</string>
     <string name="copyright">Copyright 2017 LiYing. All Rights Reserved.</string>
+    <string name="version">当前版本：v%s</string>
     <string name="title_add_password">添加密码</string>
     <string name="title_edit_password">修改密码</string>
     <string name="title_export_password">导出密码</string>
@@ -176,4 +177,25 @@
     <string name="about_github_url">liying2008/QPassword</string>
     <string name="about_email">liruoer2008@yeah.net</string>
     <string name="about_author_name">\@独毒火</string>
+    <string name="author_weibo_name">\@独毒火</string>
+    <string name="author_weibo_url">http://weibo.com/neuliying</string>
+    <string name="github">GitHub</string>
+    <string name="author_github">https://github.com/liying2008</string>
+    <string name="jianshu">简书</string>
+    <string name="author_jianshu_url">http://www.jianshu.com/u/14ab91761183</string>
+    <string name="csdn">CSDN</string>
+    <string name="author_csdn_url">http://blog.csdn.net/u012939909</string>
+    <string name="personal_website">个人网站</string>
+    <string name="personal_website_url">http://duduhuo.cc/</string>
+    <string name="browser_not_found">未安装浏览器</string>
+    <string name="open_url">https://github.com/liying2008/QPassword</string>
+    <string name="copy_url">复制地址</string>
+    <string name="open_in_browser">在浏览器中打开</string>
+    <string name="url_copied">URL已复制</string>
+    <string name="share_description">“%1$s” 是一款用来保存你的各类账号及密码的软件，你只需要记住一个主密码即可轻松管理保存的所有密码，大大减轻了记忆负担。\n\n下载地址：%2$s 。</string>
+    <string name="email_subject">%s - 用户反馈</string>
+    <string name="email_app_not_found">你没有安装邮件类应用，已将作者邮箱地址复制到剪贴板</string>
+    <string name="email_pre_text">%s（以上数据由应用自动收集，发送邮件时请不要删除）。</string>
+    <string name="author_email">作者邮箱</string>
+    <string name="author_weibo">作者微博</string>
 </resources>
