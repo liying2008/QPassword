@@ -33,32 +33,43 @@
             android:id="@+id/btn_pattern_key"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/selector_button_green"
             android:enabled="false"
             android:onClick="createPatternKey"
-            android:text="@string/key_pattern_lock"/>
+            android:text="@string/key_pattern_lock"
+            android:textColor="@color/button_text_color"/>
 
         <Button
             android:id="@+id/btn_number_key"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/selector_button_green"
             android:enabled="false"
             android:onClick="createNumberKey"
-            android:text="@string/key_number_lock"/>
+            android:text="@string/key_number_lock"
+            android:textColor="@color/button_text_color"/>
 
         <Button
             android:id="@+id/btn_complex_key"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/selector_button_green"
             android:enabled="false"
             android:onClick="createComplexKey"
-            android:text="@string/key_complex_lock"/>
+            android:text="@string/key_complex_lock"
+            android:textColor="@color/button_text_color"/>
 
         <Button
             android:id="@+id/btn_no_key"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/selector_button_red"
             android:enabled="false"
             android:onClick="createNoKey"
-            android:text="@string/key_no_lock"/>
+            android:text="@string/key_no_lock"
+            android:textColor="@color/button_text_color"/>
     </LinearLayout>
 </ScrollView>

@@ -107,14 +107,11 @@ class AboutActivity : BaseActivity() {
      */
     fun aboutMe(v: View) {
         val builder = AlertDialog.Builder(this)
+        builder.setTitle(R.string.about_author)
         val view = layoutInflater.inflate(R.layout.dialog_about_me, null, false)
-        val btnOk = view.findViewById<Button>(R.id.btn_ok)
         builder.setView(view)
-        val dialog = builder.create()
-        btnOk.setOnClickListener {
-            dialog.dismiss()
-        }
-        dialog.show()
+        builder.setPositiveButton(R.string.ok, null)
+        builder.create().show()
     }
 
     /**

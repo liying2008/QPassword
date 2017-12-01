@@ -84,7 +84,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/rg_export"
             android:layout_marginTop="16dp"
+            android:background="@drawable/selector_button_green"
             android:enabled="false"
-            android:text="@string/start_export"/>
+            android:text="@string/start_export"
+            android:textColor="@color/button_text_color"/>
     </RelativeLayout>
 </ScrollView>

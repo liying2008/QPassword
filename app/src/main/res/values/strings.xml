@@ -127,6 +127,7 @@
     <string name="applying_key_changes">正在应用更改…</string>
     <string name="updating_please_wait">正在更新密码数据，请稍等片刻…</string>
     <string name="restarting_app">Restarting App&#8230;</string>
+    <string name="clear_input">清除</string>
 
     <string name="key_length_can_not_too_short">主密码长度不可以小于 %d 位</string>
     <string name="please_enter_number_key">请输入 %1$d – %2$d 位的数字密码</string>
@@ -177,7 +178,6 @@
     <string name="about_github_url">liying2008/QPassword</string>
     <string name="about_email">liruoer2008@yeah.net</string>
     <string name="about_author_name">\@独毒火</string>
-    <string name="author_weibo_name">\@独毒火</string>
     <string name="author_weibo_url">http://weibo.com/neuliying</string>
     <string name="github">GitHub</string>
     <string name="author_github">https://github.com/liying2008</string>
@@ -196,6 +196,6 @@
     <string name="email_subject">%s - 用户反馈</string>
     <string name="email_app_not_found">你没有安装邮件类应用，已将作者邮箱地址复制到剪贴板</string>
     <string name="email_pre_text">%s（以上数据由应用自动收集，发送邮件时请不要删除）。</string>
-    <string name="author_email">作者邮箱</string>
-    <string name="author_weibo">作者微博</string>
+    <string name="author_email">邮箱</string>
+    <string name="author_weibo">微博</string>
 </resources>

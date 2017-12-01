@@ -3,7 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
     android:orientation="vertical">
 
     <EditText
@@ -12,9 +13,9 @@
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
         android:hint="@string/enter_new_group_name"
-        android:singleLine="true"
-        android:maxLength="40"
         android:imeOptions="actionDone"
+        android:maxLength="40"
+        android:singleLine="true"
         android:textColor="@android:color/black"
         android:textSize="14sp"
         tools:text="@string/app_name"/>

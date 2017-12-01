@@ -50,7 +50,8 @@
         android:layout_marginTop="20dp"
         android:background="@drawable/selector_clear_btn_bg"
         android:clickable="true"
-        android:focusable="false"
+        android:contentDescription="@string/clear_input"
+        android:focusable="true"
         android:visibility="gone"/>
 
     <Button
@@ -61,6 +62,8 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginTop="20dp"
+        android:background="@drawable/selector_button_green"
         android:onClick="ok"
-        android:text="@string/ok"/>
+        android:text="@string/ok"
+        android:textColor="@color/button_text_color"/>
 </RelativeLayout>

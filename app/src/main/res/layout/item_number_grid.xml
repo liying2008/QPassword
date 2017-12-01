@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/tv_number_btn"
     android:layout_width="match_parent"
-    android:layout_height="50dp"
+    android:layout_height="56dp"
     android:gravity="center"
     android:clickable="true"
     android:background="@drawable/selector_number_btn_bg"

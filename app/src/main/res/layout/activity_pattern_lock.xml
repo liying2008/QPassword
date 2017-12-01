@@ -13,7 +13,7 @@
         android:layout_height="280dp"
         android:layout_centerInParent="true"
         app:correctStateColor="@color/pattern_correct_color"
-        app:dotNormalSize="12dp"
+        app:dotNormalSize="16dp"
         app:dotSelectedSize="18dp"
         app:normalStateColor="@color/pattern_normal_color"
         app:wrongStateColor="@color/pattern_wrong_color"/>
