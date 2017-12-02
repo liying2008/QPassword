@@ -29,6 +29,6 @@ class InsertGroupTask(private val mGroup: Group,
 
     override fun onPostExecute(result: Group) {
         super.onPostExecute(result)
-        mGroupListeners.map { it.onNewGroup(result) }
+        mGroupListeners.filter { it.isAlive() }.forEach { it.onNewGroup(result) }
     }
 }

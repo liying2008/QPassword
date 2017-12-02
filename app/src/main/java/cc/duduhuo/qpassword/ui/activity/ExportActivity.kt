@@ -1,10 +1,14 @@
 package cc.duduhuo.qpassword.ui.activity
 
+import android.Manifest
 import android.app.ProgressDialog
 import android.content.*
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.os.IBinder
+import android.support.design.widget.Snackbar
 import android.support.v7.app.AlertDialog
 import android.view.MenuItem
 import android.view.View
@@ -16,10 +20,7 @@ import cc.duduhuo.qpassword.config.Config
 import cc.duduhuo.qpassword.service.MainBinder
 import cc.duduhuo.qpassword.service.MainService
 import cc.duduhuo.qpassword.service.listener.OnGetPasswordsListener
-import cc.duduhuo.qpassword.util.PreferencesUtils
-import cc.duduhuo.qpassword.util.aesEncrypt
-import cc.duduhuo.qpassword.util.isExistSDCard
-import cc.duduhuo.qpassword.util.sha1Hex
+import cc.duduhuo.qpassword.util.*
 import com.alibaba.fastjson.JSON
 import kotlinx.android.synthetic.main.activity_export.*
 import java.io.File
@@ -28,13 +29,16 @@ import java.util.*
 
 class ExportActivity : BaseActivity() {
     private var mMainBinder: MainBinder? = null
+    private var mProgressDialog: ProgressDialog? = null
     private var mExportType = EXPORT_NO_ENCRYPTED
 
     companion object {
         /** 以非加密方式导出 */
-        const val EXPORT_NO_ENCRYPTED = 0
+        private const val EXPORT_NO_ENCRYPTED = 0
         /** 以加密方式导出 */
-        const val EXPORT_ENCRYPTED = 1
+        private const val EXPORT_ENCRYPTED = 1
+        private const val PERMISSION = Manifest.permission.WRITE_EXTERNAL_STORAGE
+        private const val REQUEST_PERMISSION = 0x0000
 
         fun getIntent(context: Context): Intent {
             return Intent(context, ExportActivity::class.java)
@@ -79,22 +83,25 @@ class ExportActivity : BaseActivity() {
             }
         }
 
-        btn_export.setOnClickListener {
-            // 保存导出类型
-            PreferencesUtils.putInt(this, Config.LAST_EXPORT, mExportType)
-            val export = Export()
-            if (mExportType == EXPORT_NO_ENCRYPTED) {
-                export.isEncrypted = false
-                exportPassword(export)
-            } else if (mExportType == EXPORT_ENCRYPTED) {
-                val key = et_key.text.toString().trim()
-                if (key == "") {
-                    AppToast.showToast(R.string.key_can_not_be_empty)
-                    return@setOnClickListener
+        btn_export.setOnClickListener { view ->
+            // 检查权限
+            if (Build.VERSION.SDK_INT >= 23) {
+                if (isPermissionGranted(PERMISSION)) {
+                    startExport()
+                } else {
+                    // 申请权限
+                    if (shouldShowPermissionRationale(PERMISSION)) {
+                        Snackbar.make(view, R.string.permission_write_rationale,
+                            Snackbar.LENGTH_INDEFINITE)
+                            .setAction(R.string.ok, {
+                                requestPermission(PERMISSION, REQUEST_PERMISSION)
+                            }).show()
+                    } else {
+                        requestPermission(PERMISSION, REQUEST_PERMISSION)
+                    }
                 }
-                export.isEncrypted = true
-                export.key = key.sha1Hex()
-                exportPassword(export, key)
+            } else {
+                startExport()
             }
         }
     }
@@ -113,16 +120,34 @@ class ExportActivity : BaseActivity() {
     }
 
     /**
+     * 开始导出
+     */
+    private fun startExport() {
+        // 保存导出类型
+        PreferencesUtils.putInt(this, Config.LAST_EXPORT, mExportType)
+        val export = Export()
+        if (mExportType == EXPORT_NO_ENCRYPTED) {
+            export.isEncrypted = false
+            exportPassword(export)
+        } else if (mExportType == EXPORT_ENCRYPTED) {
+            val key = et_key.text.toString().trim()
+            if (key == "") {
+                AppToast.showToast(R.string.key_can_not_be_empty)
+                return
+            }
+            export.isEncrypted = true
+            export.key = key.sha1Hex()
+            exportPassword(export, key)
+        }
+    }
+
+    /**
      * 导出密码
      * @param export 用于导出的数据实体
      * @param oriKey 加密种子
      */
     private fun exportPassword(export: Export, oriKey: String? = null) {
-        val progressDialog = ProgressDialog(this@ExportActivity)
-        progressDialog.setCancelable(false)
-        progressDialog.setMessage(getString(R.string.exporting))
-        progressDialog.show()
-
+        AppToast.showToast(R.string.fetching_all_password)
         mMainBinder?.getPasswords(object : OnGetPasswordsListener {
             override fun onGetPasswords(groupName: String?, passwords: List<Password>) {
                 if (export.isEncrypted) {
@@ -137,16 +162,15 @@ class ExportActivity : BaseActivity() {
                         Config.WORK_DIR + File.separator + Config.EXPORT_DIR
                     val dir = File(path)
                     if (dir.exists() && dir.isDirectory) {
-                        writeFile(path, export, progressDialog)
+                        writeFile(path, export)
                     } else {
                         dir.mkdirs()
                     }
                 } else {
                     // 不存在存储卡
-                    writeFile(null, export, progressDialog)
+                    writeFile(null, export)
                 }
             }
-
         })
     }
 
@@ -167,9 +191,10 @@ class ExportActivity : BaseActivity() {
      * 将密码信息写入文件
      * @param dir 写入外部存储卡的目录
      * @param export
-     * @param progressDialog
      */
-    private fun writeFile(dir: String?, export: Export, progressDialog: ProgressDialog) {
+    private fun writeFile(dir: String?, export: Export) {
+        showProgressDialog()
+
         val jsonString = JSON.toJSONString(export)
         val fileName = SimpleDateFormat(Config.EXPORT_FILENAME_FORMAT, Locale.getDefault()).format(Date()) +
             Config.EXPORT_FILE_EXTENSION
@@ -181,7 +206,7 @@ class ExportActivity : BaseActivity() {
         }
         file.writeText(jsonString)
         // 关闭进度对话框
-        progressDialog.dismiss()
+        dismissProgressDialog()
         // 显示导出成功提醒对话框
         val builder = AlertDialog.Builder(this@ExportActivity)
         builder.setMessage(getString(R.string.export_success, fileName))
@@ -204,6 +229,48 @@ class ExportActivity : BaseActivity() {
             return true
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (requestCode == REQUEST_PERMISSION) {
+            if (grantResults.containsOnly(PackageManager.PERMISSION_GRANTED)) {
+                startExport()
+            } else {
+                Snackbar.make(main_layout, R.string.write_permission_not_granted, Snackbar.LENGTH_SHORT).show()
+            }
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        }
+    }
+
+    /**
+     * 显示 ProgressDialog
+     */
+    private fun showProgressDialog() {
+        if (isFinishing) {
+            return
+        }
+        if (mProgressDialog == null) {
+            mProgressDialog = ProgressDialog(this)
+            mProgressDialog!!.setCancelable(false)
+        }
+        mProgressDialog!!.setMessage(getString(R.string.exporting))
+        mProgressDialog!!.show()
+    }
+
+    /**
+     * 取消 ProgressDialog
+     */
+    private fun dismissProgressDialog() {
+        if (isFinishing) {
+            return
+        }
+        if (mProgressDialog != null) {
+            if (mProgressDialog!!.isShowing) {
+                mProgressDialog!!.dismiss()
+            }
+            mProgressDialog = null
+        }
     }
 
     override fun onDestroy() {

@@ -6,6 +6,9 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Environment
+import android.support.annotation.StringRes
+import android.support.design.widget.Snackbar
+import android.view.View
 import cc.duduhuo.qpassword.R
 import cc.duduhuo.qpassword.bean.Key
 import cc.duduhuo.qpassword.bean.Password
@@ -74,6 +77,14 @@ val mComparator = Comparator<Password> { lhs, rhs ->
         value == 0L -> 0
         else -> -1
     }
+}
+
+fun showSnackbar(view: View, @StringRes resId: Int, duration: Int = Snackbar.LENGTH_SHORT) {
+    Snackbar.make(view, resId, duration).show()
+}
+
+fun showSnackbar(view: View, text: CharSequence, duration: Int = Snackbar.LENGTH_SHORT) {
+    Snackbar.make(view, text, duration).show()
 }
 
 /**

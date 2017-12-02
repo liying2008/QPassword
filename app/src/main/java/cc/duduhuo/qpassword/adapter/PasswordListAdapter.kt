@@ -58,12 +58,18 @@ class PasswordListAdapter(private val mContext: Context) : RecyclerView.Adapter<
      * 更新一条数据
      * @param newPassword 新密码数据
      * @param curGroup 当前所处分组
+     *
+     * @return false：适配器数据空
      */
-    fun updateData(newPassword: Password, curGroup: String) {
+    fun updateData(newPassword: Password, curGroup: String): Boolean {
         var curPassword: Password
-        var needSort = false
         val size = mPasswords.size
+        if (size == 0) {
+            return false
+        }
+
         var index = -1
+        var needSort = false
         var needRemove = false
         for (i in 0 until size) {
             curPassword = mPasswords[i]
@@ -95,6 +101,7 @@ class PasswordListAdapter(private val mContext: Context) : RecyclerView.Adapter<
                 notifyItemChanged(index)
             }
         }
+        return true
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {

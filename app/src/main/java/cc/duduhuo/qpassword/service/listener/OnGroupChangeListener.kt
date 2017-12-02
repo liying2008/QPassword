@@ -10,7 +10,7 @@ import cc.duduhuo.qpassword.bean.Group
  * Remarks:
  * =======================================================
  */
-interface OnGroupChangeListener {
+interface OnGroupChangeListener : BaseListener {
     /**
      * 增加了新分组
      * @param group

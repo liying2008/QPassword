@@ -2,29 +2,14 @@ package cc.duduhuo.qpassword.ui.activity
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Point
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.view.MenuItem
 import android.view.View
 import cc.duduhuo.qpassword.R
-import android.content.pm.PackageManager
-import android.R.attr.versionName
-import android.content.DialogInterface
-import android.content.pm.PackageInfo
-import android.support.v7.app.AlertDialog
-import cc.duduhuo.applicationtoast.AppToast
-import cc.duduhuo.qpassword.util.copyText
-import cc.duduhuo.qpassword.util.openBrowser
-import cc.duduhuo.qpassword.util.shareText
+import cc.duduhuo.qpassword.util.*
 import kotlinx.android.synthetic.main.activity_about.*
-import android.content.ClipData
-import android.content.ComponentName
-import android.graphics.Point
-import android.net.Uri
-import android.opengl.ETC1.getHeight
-import android.opengl.ETC1.getWidth
-import android.view.Display
-import android.widget.Button
-import cc.duduhuo.qpassword.util.sendEmail
 
 
 class AboutActivity : BaseActivity() {
@@ -52,16 +37,15 @@ class AboutActivity : BaseActivity() {
         val openUrl = getString(R.string.open_url)
         val items = arrayOf(getString(R.string.copy_url), getString(R.string.open_in_browser))
         val builder = AlertDialog.Builder(this)
-        builder.setTitle(openUrl)
         builder.setItems(items) { dialog, which ->
             when (which) {
                 0 -> {
                     copyText(this, openUrl)
-                    AppToast.showToast(R.string.url_copied)
+                    showSnackbar(view, R.string.url_copied)
                 }
                 1 -> {
                     if (!openBrowser(this, openUrl)) {
-                        AppToast.showToast(R.string.browser_not_found)
+                        showSnackbar(view, R.string.browser_not_found)
                     }
                 }
             }
@@ -75,7 +59,7 @@ class AboutActivity : BaseActivity() {
     fun shareApp(view: View) {
         val shareText = getString(R.string.share_description, getString(R.string.app_name), getString(R.string.open_url))
         if (!shareText(this, shareText)) {
-            AppToast.showToast(R.string.can_not_share)
+            showSnackbar(view, R.string.can_not_share)
         }
     }
 
@@ -98,7 +82,7 @@ class AboutActivity : BaseActivity() {
         if (!sendEmail(this, email, subject, presetText)) {
             // 复制邮箱地址
             copyText(this, email)
-            AppToast.showToast(R.string.email_app_not_found)
+            showSnackbar(view, R.string.email_app_not_found)
         }
     }
 

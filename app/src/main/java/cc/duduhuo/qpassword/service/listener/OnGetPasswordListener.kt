@@ -10,7 +10,7 @@ import cc.duduhuo.qpassword.bean.Password
  * Remarks:
  * =======================================================
  */
-interface OnGetPasswordListener {
+interface OnGetPasswordListener : BaseListener {
     /**
      * 根据ID获取密码
      * @param password 密码

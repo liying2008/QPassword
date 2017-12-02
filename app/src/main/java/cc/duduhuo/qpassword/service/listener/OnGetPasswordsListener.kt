@@ -10,7 +10,7 @@ import cc.duduhuo.qpassword.bean.Password
  * Remarks:
  * =======================================================
  */
-interface OnGetPasswordsListener {
+interface OnGetPasswordsListener : BaseListener {
     /**
      * 根据分组名称获取密码（如果分组名称为 null， 则获取所有密码）
      * @param groupName 分组名称

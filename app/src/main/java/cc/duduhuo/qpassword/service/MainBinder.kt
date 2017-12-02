@@ -1,8 +1,12 @@
 package cc.duduhuo.qpassword.service
 
+import android.app.Activity
+import android.app.Dialog
+import android.app.ProgressDialog
 import android.content.Context
 import android.os.AsyncTask
 import android.os.Binder
+import android.support.v7.app.AppCompatActivity
 import cc.duduhuo.qpassword.bean.Group
 import cc.duduhuo.qpassword.bean.Key
 import cc.duduhuo.qpassword.bean.Password
@@ -11,6 +15,7 @@ import cc.duduhuo.qpassword.db.KeyService
 import cc.duduhuo.qpassword.db.PasswordService
 import cc.duduhuo.qpassword.service.listener.*
 import cc.duduhuo.qpassword.service.task.*
+import cc.duduhuo.qpassword.ui.activity.BaseActivity
 
 /**
  * =======================================================
@@ -35,6 +40,7 @@ class MainBinder(context: Context) : Binder() {
     private val mOnPasswordsChangeListeners = mutableListOf<OnPasswordsChangeListener>()
     /** 分组变化监听器 */
     private val mOnGroupChangeListeners = mutableListOf<OnGroupChangeListener>()
+
 
     /**
      * 注册读取 / 更新 / 写入密码失败监听器

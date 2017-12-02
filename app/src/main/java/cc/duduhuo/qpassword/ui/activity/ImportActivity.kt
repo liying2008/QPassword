@@ -1,15 +1,15 @@
 package cc.duduhuo.qpassword.ui.activity
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.os.AsyncTask
-import android.os.Bundle
-import android.os.Environment
-import android.os.IBinder
+import android.content.pm.PackageManager
+import android.os.*
+import android.support.design.widget.Snackbar
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.view.MenuItem
@@ -24,8 +24,7 @@ import cc.duduhuo.qpassword.config.Config
 import cc.duduhuo.qpassword.service.MainBinder
 import cc.duduhuo.qpassword.service.MainService
 import cc.duduhuo.qpassword.service.listener.OnPasswordsChangeListener
-import cc.duduhuo.qpassword.util.aesDecrypt
-import cc.duduhuo.qpassword.util.sha1Hex
+import cc.duduhuo.qpassword.util.*
 import cc.duduhuo.qpassword.widget.FileItemDecoration
 import com.alibaba.fastjson.JSON
 import kotlinx.android.synthetic.main.activity_import.*
@@ -47,6 +46,9 @@ class ImportActivity : BaseActivity(), FileListAdapter.OnFileClickListener, OnPa
 
     companion object {
         const val RESULT_CODE_IMPORT = 0x0010
+        @SuppressLint("InlinedApi")
+        private const val PERMISSION = Manifest.permission.READ_EXTERNAL_STORAGE
+        private const val REQUEST_PERMISSION = 0x0000
         fun getIntent(context: Context): Intent {
             return Intent(context, ImportActivity::class.java)
         }
@@ -63,15 +65,39 @@ class ImportActivity : BaseActivity(), FileListAdapter.OnFileClickListener, OnPa
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
             mMainBinder = service as MainBinder
             if (mMainBinder != null) {
-                initViews()
                 // 注册密码变化监听器
                 mMainBinder!!.registerOnPasswordsChangeListener(this@ImportActivity)
+                initViews()
             }
         }
     }
 
     private fun initViews() {
         tv_import_msg.text = getString(R.string.import_password_tip, Config.EXPORT_FILE_EXTENSION, Config.WORK_DIR + "/" + Config.EXPORT_DIR)
+        // 检查权限
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (isPermissionGranted(PERMISSION)) {
+                initData()
+            } else {
+                // 申请权限
+                if (shouldShowPermissionRationale(PERMISSION)) {
+                    Snackbar.make(main_layout, R.string.permission_read_rationale,
+                        Snackbar.LENGTH_INDEFINITE)
+                        .setAction(R.string.ok, {
+                            requestPermission(PERMISSION, REQUEST_PERMISSION)
+                        })
+                        .show()
+                } else {
+                    requestPermission(PERMISSION, REQUEST_PERMISSION)
+                }
+            }
+        } else {
+            initData()
+        }
+
+    }
+
+    private fun initData() {
         val sdPath = Environment.getExternalStorageDirectory().absolutePath
         val exportPath = sdPath + File.separator + Config.WORK_DIR + File.separator + Config.EXPORT_DIR
         val files = getFiles(File(exportPath), File(sdPath))
@@ -117,11 +143,8 @@ class ImportActivity : BaseActivity(), FileListAdapter.OnFileClickListener, OnPa
 
     override fun onFileClick(absolutePath: String) {
         var export: Export? = null
-        mProgressDialog = ProgressDialog(this)
-        mProgressDialog!!.setMessage(getString(R.string.parsing_password_file))
-        mProgressDialog!!.setCanceledOnTouchOutside(false)
-        mProgressDialog!!.setCancelable(false)
-        mProgressDialog!!.show()
+        showProgressDialog(getString(R.string.parsing_password_file))
+
         val readFileTask = @SuppressLint("StaticFieldLeak")
         object : AsyncTask<Void, Void, Int>() {
             override fun doInBackground(vararg params: Void?): Int {
@@ -136,7 +159,8 @@ class ImportActivity : BaseActivity(), FileListAdapter.OnFileClickListener, OnPa
 
             override fun onPostExecute(result: Int?) {
                 super.onPostExecute(result)
-                mProgressDialog!!.dismiss()
+                dismissProgressDialog()
+
                 if (result == -1) {
                     AppToast.showToast(R.string.import_file_fail)
                 } else {
@@ -192,8 +216,7 @@ class ImportActivity : BaseActivity(), FileListAdapter.OnFileClickListener, OnPa
             AppToast.showToast(R.string.import_zero)
             return
         }
-        mProgressDialog!!.setMessage(getString(R.string.importing_passwords, passwordCount))
-        mProgressDialog!!.show()
+        showProgressDialog(getString(R.string.importing_passwords, passwordCount))
         if (oriKey != null) {
             // 有密钥，先解密
             for (i in 0 until passwordCount) {
@@ -205,7 +228,8 @@ class ImportActivity : BaseActivity(), FileListAdapter.OnFileClickListener, OnPa
     }
 
     override fun onNewPasswords(passwords: List<Password>) {
-        mProgressDialog!!.dismiss()
+        dismissProgressDialog()
+
         AppToast.showToast(getString(R.string.imported, passwords.size))
         setResult(RESULT_CODE_IMPORT)
         finish()
@@ -228,10 +252,53 @@ class ImportActivity : BaseActivity(), FileListAdapter.OnFileClickListener, OnPa
         return super.onOptionsItemSelected(item)
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (requestCode == REQUEST_PERMISSION) {
+            if (grantResults.containsOnly(PackageManager.PERMISSION_GRANTED)) {
+                initData()
+            } else {
+                Snackbar.make(main_layout, R.string.read_permission_not_granted, Snackbar.LENGTH_SHORT).show()
+            }
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        }
+    }
+
+    /**
+     * 显示 ProgressDialog
+     * @param message 显示的信息
+     */
+    private fun showProgressDialog(message: CharSequence) {
+        if (isFinishing) {
+            return
+        }
+        if (mProgressDialog == null) {
+            mProgressDialog = ProgressDialog(this)
+            mProgressDialog!!.setCancelable(false)
+        }
+        mProgressDialog!!.setMessage(message)
+        mProgressDialog!!.show()
+    }
+
+    /**
+     * 取消 ProgressDialog
+     */
+    private fun dismissProgressDialog() {
+        if (isFinishing) {
+            return
+        }
+        if (mProgressDialog != null) {
+            if (mProgressDialog!!.isShowing) {
+                mProgressDialog!!.dismiss()
+            }
+            mProgressDialog = null
+        }
+    }
+
     override fun onDestroy() {
         unregisterAsyncTask(ImportActivity::class.java)
         unbindService(mServiceConnection)
-        mProgressDialog?.dismiss()
+        dismissProgressDialog()
         super.onDestroy()
     }
 

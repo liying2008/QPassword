@@ -8,6 +8,7 @@ import cc.duduhuo.qpassword.db.PasswordService
 import cc.duduhuo.qpassword.service.listener.OnGroupChangeListener
 import cc.duduhuo.qpassword.service.listener.OnPasswordChangeListener
 import cc.duduhuo.qpassword.service.listener.OnPasswordFailListener
+import cc.duduhuo.qpassword.ui.activity.BaseActivity
 
 /**
  * =======================================================
@@ -60,16 +61,16 @@ class InsertPasswordTask(private val mPassword: Password,
     override fun onPostExecute(password: Password) {
         super.onPostExecute(password)
         if (mId == -1L) {
-            mPasswordFailListeners.map { it.onInsertFail() }
+            mPasswordFailListeners.filter { it.isAlive() }.forEach { it.onInsertFail() }
         } else if (mId == -2L) {
-            mPasswordFailListeners.map { it.onKeyLose() }
+            mPasswordFailListeners.filter { it.isAlive() }.forEach { it.onKeyLose() }
         } else {
             if (mIsNew) {
                 val group = Group()
                 group.name = password.groupName
-                mGroupListeners.map { it.onNewGroup(group) }
+                mGroupListeners.filter { it.isAlive() }.forEach { it.onNewGroup(group) }
             }
-            mPasswordListeners.map { it.onNewPassword(password) }
+            mPasswordListeners.filter { it.isAlive() }.forEach { it.onNewPassword(password) }
         }
     }
 }

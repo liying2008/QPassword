@@ -1,11 +1,11 @@
 package cc.duduhuo.qpassword.util
 
-
 /**
  * =======================================================
  * Author: liying - liruoer2008@yeah.net
- * Datetime: 2017/11/11 22:34
- * Description: 一些 View 相关的扩展方法
+ * Datetime: 2017/12/2 11:35
+ * Description:
  * Remarks:
  * =======================================================
  */
+fun IntArray.containsOnly(num: Int): Boolean = filter { it == num }.isNotEmpty()

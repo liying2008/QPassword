@@ -21,6 +21,7 @@ import cc.duduhuo.qpassword.service.listener.OnKeyChangeListener
 import cc.duduhuo.qpassword.service.listener.OnNewKeyListener
 import cc.duduhuo.qpassword.util.keyLost
 import cc.duduhuo.qpassword.util.sha1Hex
+import cc.duduhuo.qpassword.util.showSnackbar
 import kotlinx.android.synthetic.main.activity_create_number_lock.*
 
 /**
@@ -114,7 +115,7 @@ class CreateNumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClick
             mKey += number
             tv_number_lock.text = mKey
         } else {
-            AppToast.showToast(getString(R.string.key_max_length_tip, mMaxKeyLength))
+            showSnackbar(main_layout, getString(R.string.key_max_length_tip, mMaxKeyLength))
         }
     }
 
@@ -131,7 +132,7 @@ class CreateNumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClick
 
     override fun onClickOk(view: TextView) {
         if (mKey.length < mMinKeyLength) {
-            AppToast.showToast(getString(R.string.key_length_can_not_too_short, mMinKeyLength))
+            showSnackbar(main_layout, getString(R.string.key_length_can_not_too_short, mMinKeyLength))
         } else {
             view.isEnabled = false
             view.setTextColor(resources.getColorStateList(R.color.disable_text_color))

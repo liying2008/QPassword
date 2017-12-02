@@ -21,6 +21,8 @@ class GetKeyTask(private val mListener: OnGetKeyListener,
 
     override fun onPostExecute(result: Key?) {
         super.onPostExecute(result)
-        mListener.onGetKey(result)
+        if (mListener.isAlive()) {
+            mListener.onGetKey(result)
+        }
     }
 }

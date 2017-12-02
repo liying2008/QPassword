@@ -27,6 +27,6 @@ class DeletePasswordsTask(private val mPasswords: List<Password>,
 
     override fun onPostExecute(result: Void?) {
         super.onPostExecute(result)
-        mListeners.map { it.onDeletePasswords(mPasswords) }
+        mListeners.filter { it.isAlive() }.forEach { it.onDeletePasswords(mPasswords) }
     }
 }

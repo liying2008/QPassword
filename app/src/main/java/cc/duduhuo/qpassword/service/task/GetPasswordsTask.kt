@@ -34,9 +34,11 @@ class GetPasswordsTask(private val mListener: OnGetPasswordsListener,
     override fun onPostExecute(passwords: List<Password>?) {
         super.onPostExecute(passwords)
         if (passwords == null) {
-            mPasswordFailListeners.map { it.onKeyLose() }
+            mPasswordFailListeners.filter { it.isAlive() }.forEach { it.onKeyLose() }
         } else {
-            mListener.onGetPasswords(mGroupName, passwords)
+            if (mListener.isAlive()) {
+                mListener.onGetPasswords(mGroupName, passwords)
+            }
         }
     }
 }

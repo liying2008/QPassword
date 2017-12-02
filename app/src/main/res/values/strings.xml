@@ -82,6 +82,7 @@
     <string name="copy_email_done">已复制邮箱到剪贴板</string>
     <string name="copy_note">复制 备注 到剪贴板</string>
     <string name="copy_note_done">已复制备注到剪贴板</string>
+    <string name="nothing_to_copy">无需复制</string>
     <string name="alert_delete_message">删除后不可恢复，确定删除？</string>
     <string name="ok">确定</string>
     <string name="cancel">取消</string>
@@ -115,6 +116,10 @@
     <string name="reading_passwords">正在读取密码…</string>
     <string name="insert_password_fail">插入密码失败</string>
     <string name="read_password_fail">读取密码失败</string>
+    <string name="permission_write_rationale">导出密码需要有写存储空间的权限</string>
+    <string name="write_permission_not_granted">请求权限被拒绝，导出失败</string>
+    <string name="permission_read_rationale">导入密码需要有读存储空间的权限</string>
+    <string name="read_permission_not_granted">请求权限被拒绝，无法导入</string>
 
     <string name="create_key_options">请选择主密码类型</string>
     <string name="create_key_tip">&#160;&#160;&#160;&#160;主密码是进入密码本的唯一凭据，请务必牢记，丢失之后无法找回。同时，为了你的密码数据的安全，推荐使用复杂密码作为主密码。</string>
@@ -168,6 +173,7 @@
     <string name="delete_all_password_message">此操作将删除已保存的所有密码，不可恢复。\n为了避免密码丢失，你可以先将所有密码导出到存储卡保存。\n\n确定要删除吗？</string>
     <string name="export_passwords">导出密码</string>
     <string name="delete_passwords">删除密码</string>
+    <string name="fetching_all_password">正在获取全部密码…</string>
     <string name="press_again_to_exit">再按一次，退出应用</string>
 
     <string name="about_declare">应用部分界面参考了开源项目： zengdexing/MyPassword</string>

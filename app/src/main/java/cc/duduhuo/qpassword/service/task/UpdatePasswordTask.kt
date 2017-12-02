@@ -35,9 +35,9 @@ class UpdatePasswordTask(private val mPassword: Password,
     override fun onPostExecute(password: Password) {
         super.onPostExecute(password)
         if (mId == -2) {
-            mPasswordFailListeners.map { it.onKeyLose() }
+            mPasswordFailListeners.filter { it.isAlive() }.forEach { it.onKeyLose() }
         } else {
-            mListeners.map { it.onUpdatePassword(password) }
+            mListeners.filter { it.isAlive() }.forEach { it.onUpdatePassword(password) }
         }
     }
 }

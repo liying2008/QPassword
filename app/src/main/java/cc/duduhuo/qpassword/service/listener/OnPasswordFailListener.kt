@@ -8,7 +8,7 @@ package cc.duduhuo.qpassword.service.listener
  * Remarks:
  * =======================================================
  */
-interface OnPasswordFailListener {
+interface OnPasswordFailListener : BaseListener {
     /** 插入密码失败 */
     fun onInsertFail()
 

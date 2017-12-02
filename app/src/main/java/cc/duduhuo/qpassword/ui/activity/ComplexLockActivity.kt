@@ -7,10 +7,10 @@ import android.os.CountDownTimer
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import cc.duduhuo.applicationtoast.AppToast
 import cc.duduhuo.qpassword.R
 import cc.duduhuo.qpassword.config.Config
 import cc.duduhuo.qpassword.util.sha1Hex
+import cc.duduhuo.qpassword.util.showSnackbar
 import kotlinx.android.synthetic.main.activity_complex_lock.*
 
 /**
@@ -66,7 +66,7 @@ class ComplexLockActivity : BaseActivity() {
     fun ok(view: View) {
         val oriKey = et_complex_lock.text.toString()
         if (oriKey.length < mMinKeyLength) {
-            AppToast.showToast(getString(R.string.key_length_can_not_too_short, mMinKeyLength))
+            showSnackbar(view, getString(R.string.key_length_can_not_too_short, mMinKeyLength))
         } else {
             if (oriKey.sha1Hex() == mRealKey) {
                 Config.mOriKey = oriKey
@@ -76,7 +76,7 @@ class ComplexLockActivity : BaseActivity() {
                 mWrongCount++
                 if (mWrongCount >= 5) {
                     view.isEnabled = false
-                    AppToast.showToast(getString(R.string.key_wrong_try_again_later, 30))
+                    showSnackbar(view, getString(R.string.key_wrong_try_again_later, 30))
                     countDown(view)
                 } else {
                     tv_complex_info.text = getString(R.string.key_wrong_try_again, 5 - mWrongCount)

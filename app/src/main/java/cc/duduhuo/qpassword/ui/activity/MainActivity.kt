@@ -31,6 +31,7 @@ import cc.duduhuo.qpassword.ui.dialog.DistinctDialog
 import cc.duduhuo.qpassword.util.PreferencesUtils
 import cc.duduhuo.qpassword.util.copyText
 import cc.duduhuo.qpassword.util.keyLost
+import cc.duduhuo.qpassword.util.showSnackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -104,32 +105,46 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
 
     private val mActionListener = object : PasswordListAdapter.OnPasswordActionListener {
         override fun onCopy(password: Password) {
-            val items = arrayOf<String>(getString(R.string.copy_username),
-                getString(R.string.copy_password),
-                getString(R.string.copy_email),
-                getString(R.string.copy_note))
+            val items = mutableListOf<String>()
+            if (password.username.isNotEmpty()) {
+                items.add(getString(R.string.copy_username))
+            }
+            if (password.password.isNotEmpty()) {
+                items.add(getString(R.string.copy_password))
+            }
+            if (password.email.isNotEmpty()) {
+                items.add(getString(R.string.copy_email))
+            }
+            if (password.note.isNotEmpty()) {
+                items.add(getString(R.string.copy_note))
+            }
+            if (items.isEmpty()) {
+                showSnackbar(fab, R.string.nothing_to_copy)
+                return
+            }
+
             val builder = AlertDialog.Builder(this@MainActivity)
-            builder.setItems(items) { dialog, which ->
-                when (which) {
-                    0 -> {
+            builder.setItems(items.toTypedArray()) { dialog, which ->
+                when (items[which]) {
+                    getString(R.string.copy_username) -> {
                         // 复制用户名
                         copyText(this@MainActivity, password.username)
-                        AppToast.showToast(R.string.copy_username_done)
+                        showSnackbar(fab, R.string.copy_username_done)
                     }
-                    1 -> {
+                    getString(R.string.copy_password) -> {
                         // 复制密码
                         copyText(this@MainActivity, password.password)
-                        AppToast.showToast(R.string.copy_password_done)
+                        showSnackbar(fab, R.string.copy_password_done)
                     }
-                    2 -> {
+                    getString(R.string.copy_email) -> {
                         // 复制邮箱
                         copyText(this@MainActivity, password.email)
-                        AppToast.showToast(R.string.copy_email_done)
+                        showSnackbar(fab, R.string.copy_email_done)
                     }
-                    3 -> {
+                    getString(R.string.copy_note) -> {
                         // 复制备注
                         copyText(this@MainActivity, password.note)
-                        AppToast.showToast(R.string.copy_note_done)
+                        showSnackbar(fab, R.string.copy_note_done)
                     }
                 }
             }
@@ -193,10 +208,6 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
                 }
             }
         }
-        mProgressDialog = ProgressDialog(this@MainActivity)
-        mProgressDialog!!.setCancelable(false)
-        mProgressDialog!!.setMessage(getString(R.string.reading_passwords))
-        mProgressDialog!!.setCanceledOnTouchOutside(false)
 
         // 绑定服务
         val intent = MainService.getIntent(this)
@@ -228,7 +239,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
 
     private fun initData() {
         // 显示 ProgressDialog
-        mProgressDialog?.show()
+        showProgressDialog()
         setupDrawer()
 
         mPasswordAdapter = PasswordListAdapter(this)
@@ -264,7 +275,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
             } else {
                 val delay = Math.abs(System.currentTimeMillis() - mLastBackKeyTime)
                 if (delay > 2000) {
-                    AppToast.showToast(R.string.press_again_to_exit)
+                    showSnackbar(fab, R.string.press_again_to_exit)
                     mLastBackKeyTime = System.currentTimeMillis()
                 } else {
                     exit()
@@ -351,7 +362,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
             } else {
                 mMainBinder?.getPasswords(this@MainActivity, mGroupName)
             }
-            mProgressDialog?.show()
+            showProgressDialog()
             drawer_layout.closeDrawer(GravityCompat.START)
         }
 
@@ -510,7 +521,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
     }
 
     override fun onGetPasswords(groupName: String?, passwords: List<Password>) {
-        mProgressDialog?.dismiss()
+        dismissProgressDialog()
         if (mSearchMode) {
             val resultPassword = passwords.filter { it.title.toLowerCase().contains(mSearchKeyword.toLowerCase()) || it.note.toLowerCase().contains(mSearchKeyword.toLowerCase()) }
             mPasswordAdapter.setData(resultPassword.toMutableList())
@@ -518,7 +529,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
             val size = resultPassword.size
             mMenuAdapter.updateHeader(getString(R.string.search_result), size)
             if (size == 0) {
-                AppToast.showToast(R.string.search_result_is_empty)
+                showSnackbar(fab, R.string.search_result_is_empty)
             }
         } else {
             mGroupName = groupName ?: getString(R.string.group_all)
@@ -540,7 +551,11 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
 
     override fun onUpdatePassword(newPassword: Password) {
         AppToast.showToast(getString(R.string.password_updated, newPassword.title))
-        mPasswordAdapter.updateData(newPassword, mGroupName)
+        val adapterNotEmpty = mPasswordAdapter.updateData(newPassword, mGroupName)
+        // 修改密码时更改了密码分组，并且该分组是新创建的时候会执行下面的代码
+        if (!adapterNotEmpty && newPassword.groupName == mGroupName) {
+            showGroup(mGroupName)
+        }
     }
 
     override fun onNewGroup(group: Group) {
@@ -592,7 +607,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
         } else {
             mMainBinder?.getPasswords(this, groupName)
         }
-        mProgressDialog?.show()
+        showProgressDialog()
     }
 
     override fun onInsertFail() {
@@ -630,6 +645,36 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
     }
 
     /**
+     * 显示 ProgressDialog
+     */
+    private fun showProgressDialog() {
+        if (isFinishing) {
+            return
+        }
+        if (mProgressDialog == null) {
+            mProgressDialog = ProgressDialog(this)
+            mProgressDialog!!.setCancelable(false)
+        }
+        mProgressDialog!!.setMessage(getString(R.string.reading_passwords))
+        mProgressDialog!!.show()
+    }
+
+    /**
+     * 取消 ProgressDialog
+     */
+    private fun dismissProgressDialog() {
+        if (isFinishing) {
+            return
+        }
+        if (mProgressDialog != null) {
+            if (mProgressDialog!!.isShowing) {
+                mProgressDialog!!.dismiss()
+            }
+            mProgressDialog = null
+        }
+    }
+
+    /**
      * 退出应用
      */
     private fun exit() {
@@ -640,7 +685,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
 
     override fun onDestroy() {
         unbindService(mServiceConnection)
-        mProgressDialog?.dismiss()
+        dismissProgressDialog()
         super.onDestroy()
     }
 }

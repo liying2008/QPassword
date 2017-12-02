@@ -57,12 +57,12 @@ class InsertPasswordsTask(private val mPasswords: List<Password>,
     override fun onPostExecute(result: Void?) {
         super.onPostExecute(result)
         if (mId == -2) {
-            mPasswordFailListeners.map { it.onKeyLose() }
+            mPasswordFailListeners.filter { it.isAlive() }.forEach { it.onKeyLose() }
         } else {
-            mNewGroups.map {
-                mGroupListeners.map { listener -> listener.onNewGroup(it) }
+            mNewGroups.forEach {
+                mGroupListeners.filter { listener -> listener.isAlive() }.forEach { listener -> listener.onNewGroup(it) }
             }
-            mPasswordsListeners.map { it.onNewPasswords(mPasswords) }
+            mPasswordsListeners.filter { it.isAlive() }.forEach { it.onNewPasswords(mPasswords) }
         }
     }
 }

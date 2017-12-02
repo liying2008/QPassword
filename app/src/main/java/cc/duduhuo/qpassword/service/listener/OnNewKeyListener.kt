@@ -10,7 +10,7 @@ import cc.duduhuo.qpassword.bean.Key
  * Remarks:
  * =======================================================
  */
-interface OnNewKeyListener {
+interface OnNewKeyListener : BaseListener {
     /**
      * 创建主密码
      * @param key 主密码的 SHA-1 值

@@ -28,6 +28,8 @@ class InsertKeyTask(private val mKey: Key,
 
     override fun onPostExecute(result: Void?) {
         super.onPostExecute(result)
-        mListener?.onNewKey(mKey)
+        if (mListener != null && mListener!!.isAlive()) {
+            mListener!!.onNewKey(mKey)
+        }
     }
 }

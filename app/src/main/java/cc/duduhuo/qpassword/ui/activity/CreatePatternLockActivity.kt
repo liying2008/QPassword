@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import android.util.Log
 import android.view.MenuItem
 import android.widget.TextView
 import cc.duduhuo.applicationtoast.AppToast
@@ -19,6 +18,7 @@ import cc.duduhuo.qpassword.service.listener.OnKeyChangeListener
 import cc.duduhuo.qpassword.service.listener.OnNewKeyListener
 import cc.duduhuo.qpassword.util.keyLost
 import cc.duduhuo.qpassword.util.sha1Hex
+import cc.duduhuo.qpassword.util.showSnackbar
 import com.andrognito.patternlockview.PatternLockView
 import com.andrognito.patternlockview.listener.PatternLockViewListener
 import com.andrognito.patternlockview.utils.PatternLockUtils
@@ -75,7 +75,7 @@ class CreatePatternLockActivity : BaseActivity() {
             btn_done.isEnabled = false
         }
 
-        btn_done.setOnClickListener {
+        btn_done.setOnClickListener { view ->
             if (mKey != null && mKey!!.length >= 4) {
                 btn_done.isEnabled = false
                 btn_redraw.isEnabled = false
@@ -95,7 +95,7 @@ class CreatePatternLockActivity : BaseActivity() {
                     mUpdating = true
                 }
             } else {
-                AppToast.showToast(R.string.connect_at_least_4_points)
+                showSnackbar(view, R.string.connect_at_least_4_points)
             }
         }
     }

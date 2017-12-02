@@ -10,6 +10,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.MenuItem
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import cc.duduhuo.applicationtoast.AppToast
 import cc.duduhuo.qpassword.R
 import cc.duduhuo.qpassword.bean.Key
@@ -20,6 +21,7 @@ import cc.duduhuo.qpassword.service.listener.OnKeyChangeListener
 import cc.duduhuo.qpassword.service.listener.OnNewKeyListener
 import cc.duduhuo.qpassword.util.keyLost
 import cc.duduhuo.qpassword.util.sha1Hex
+import cc.duduhuo.qpassword.util.showSnackbar
 import kotlinx.android.synthetic.main.activity_create_complex_lock.*
 
 /**
@@ -108,9 +110,12 @@ class CreateComplexLockActivity : BaseActivity() {
      * @param view
      */
     fun ok(view: View) {
+        // 隐藏输入法面板
+        (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(currentFocus.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
+
         mKey = et_complex_lock.text.toString()
         if (mKey.length < mMinKeyLength) {
-            AppToast.showToast(getString(R.string.key_length_can_not_too_short, mMinKeyLength))
+            showSnackbar(view, getString(R.string.key_length_can_not_too_short, mMinKeyLength))
         } else {
             btn_ok.isEnabled = false
             if (mMode == MODE_CREATE) {

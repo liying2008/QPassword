@@ -3,6 +3,7 @@ package cc.duduhuo.qpassword.service.task
 import android.os.AsyncTask
 import cc.duduhuo.qpassword.db.GroupService
 import cc.duduhuo.qpassword.service.listener.OnGroupChangeListener
+import cc.duduhuo.qpassword.ui.activity.BaseActivity
 
 /**
  * =======================================================
@@ -26,7 +27,7 @@ class DeleteGroupTask(private val mGroupName: String,
     override fun onPostExecute(result: Int) {
         super.onPostExecute(result)
         if (result > 0) {
-            mGroupListeners.map { it.onDeleteGroup(mGroupName) }
+            mGroupListeners.filter { it.isAlive() }.forEach { it.onDeleteGroup(mGroupName) }
         }
     }
 }

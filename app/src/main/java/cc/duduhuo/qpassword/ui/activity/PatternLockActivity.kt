@@ -43,7 +43,7 @@ class PatternLockActivity : BaseActivity() {
 
     private val mPatternLockViewListener = object : PatternLockViewListener {
         override fun onStarted() {
-            // no op
+            mHandler.removeCallbacks(mClearPatternRunnable)
         }
 
         override fun onProgress(progressPattern: List<PatternLockView.Dot>) {
@@ -100,7 +100,7 @@ class PatternLockActivity : BaseActivity() {
      * 30s倒计时
      */
     private fun countDown() {
-        object : CountDownTimer(30000, 1000) {
+        val timer = object : CountDownTimer(30000, 1000) {
 
             override fun onTick(millisUntilFinished: Long) {
                 mTvInfo.text = getString(R.string.please_try_again_later, millisUntilFinished / 1000)
@@ -111,7 +111,8 @@ class PatternLockActivity : BaseActivity() {
                 mPatternLockView.isInputEnabled = true
                 mWrongCount = 0
             }
-        }.start()
+        }
+        timer.start()
     }
 
 }

@@ -10,7 +10,7 @@ import cc.duduhuo.qpassword.bean.Key
  * Remarks:
  * =======================================================
  */
-interface OnKeyChangeListener {
+interface OnKeyChangeListener : BaseListener {
     /**
      * 更新了主密码
      * @param oldKey 旧主密码

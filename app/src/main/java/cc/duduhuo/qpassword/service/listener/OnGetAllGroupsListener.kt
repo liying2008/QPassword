@@ -10,7 +10,7 @@ import cc.duduhuo.qpassword.bean.Group
  * Remarks:
  * =======================================================
  */
-interface OnGetAllGroupsListener {
+interface OnGetAllGroupsListener : BaseListener {
     /**
      * 获取所有密码
      * @param groups 密码列表

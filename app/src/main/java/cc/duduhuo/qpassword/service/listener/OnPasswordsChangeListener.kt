@@ -10,7 +10,7 @@ import cc.duduhuo.qpassword.bean.Password
  * Remarks:
  * =======================================================
  */
-interface OnPasswordsChangeListener {
+interface OnPasswordsChangeListener : BaseListener {
     /**
      * 增加了新密码
      * @param passwords 增加的密码

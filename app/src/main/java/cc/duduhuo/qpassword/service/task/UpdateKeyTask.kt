@@ -30,6 +30,8 @@ class UpdateKeyTask(private val mOldKey: Key,
 
     override fun onPostExecute(update: Boolean) {
         super.onPostExecute(update)
-        mListener.onUpdateKey(mOldKey, mNewKey)
+        if (mListener.isAlive()) {
+            mListener.onUpdateKey(mOldKey, mNewKey)
+        }
     }
 }

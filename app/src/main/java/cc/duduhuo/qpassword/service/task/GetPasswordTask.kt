@@ -31,11 +31,13 @@ class GetPasswordTask(private val mId: Long,
     override fun onPostExecute(password: Password?) {
         super.onPostExecute(password)
         if (password == null) {
-            mPasswordFailListeners.map { it.onKeyLose() }
+            mPasswordFailListeners.filter { it.isAlive() }.forEach { it.onKeyLose() }
         } else if (password.id == -1L) {
-            mPasswordFailListeners.map { it.onReadFail() }
+            mPasswordFailListeners.filter { it.isAlive() }.forEach { it.onReadFail() }
         } else {
-            mListener.onGetPassword(password)
+            if (mListener.isAlive()) {
+                mListener.onGetPassword(password)
+            }
         }
     }
 

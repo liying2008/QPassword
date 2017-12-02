@@ -28,6 +28,6 @@ class UpdateGroupNameTask(private val mOldName: String,
 
     override fun onPostExecute(result: Void?) {
         super.onPostExecute(result)
-        mGroupListeners.map { it.onUpdateGroupName(mOldName, mNewName, mMerge) }
+        mGroupListeners.filter { it.isAlive() }.forEach { it.onUpdateGroupName(mOldName, mNewName, mMerge) }
     }
 }

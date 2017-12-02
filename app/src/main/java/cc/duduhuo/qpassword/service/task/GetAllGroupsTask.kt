@@ -22,6 +22,8 @@ class GetAllGroupsTask(private val mGroupService: GroupService,
 
     override fun onPostExecute(result: List<Group>) {
         super.onPostExecute(result)
-        mListener.onGetAllGroups(result)
+        if (mListener.isAlive()) {
+            mListener.onGetAllGroups(result)
+        }
     }
 }
