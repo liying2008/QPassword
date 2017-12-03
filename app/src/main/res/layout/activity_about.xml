@@ -1,0 +1,153 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/main_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".ui.activity.AboutActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="20dp">
+
+            <ImageView
+                android:id="@+id/iv_icon"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_gravity="center"
+                android:background="@drawable/icon"
+                android:contentDescription="@string/app_name"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:gravity="center"
+                android:text="@string/app_name"
+                android:textColor="#cc000000"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/tv_slogan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="16dp"
+                android:text="@string/slogan"
+                android:textColor="#333333"
+                android:textSize="12sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/tv_version"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/app_name"
+                android:textColor="#cc262626"
+                android:textSize="12sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/about_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="30dp"
+            android:orientation="vertical">
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/selector_item_top"
+                android:clickable="true"
+                android:focusable="true"
+                android:onClick="openSource">
+
+                <TextView
+                    style="@style/AboutItemLeftText"
+                    android:text="@string/open_source_url"/>
+
+                <TextView
+                    android:id="@+id/tvVersion"
+                    style="@style/AboutItemRightText"
+                    android:text="@string/about_github_url"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="-1dp"
+                android:background="@drawable/selector_item_middle"
+                android:clickable="true"
+                android:focusable="true"
+                android:onClick="shareApp">
+
+                <TextView
+                    style="@style/AboutItemLeftText"
+                    android:text="@string/share_app"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="-1dp"
+                android:background="@drawable/selector_item_middle"
+                android:clickable="true"
+                android:focusable="true"
+                android:onClick="feedback">
+
+                <TextView
+                    style="@style/AboutItemLeftText"
+                    android:text="@string/feedback"/>
+
+                <TextView
+                    android:id="@+id/tv_email"
+                    style="@style/AboutItemRightText"
+                    android:text="@string/about_email"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="-1dp"
+                android:background="@drawable/selector_item_bottom"
+                android:clickable="true"
+                android:focusable="true"
+                android:onClick="aboutMe">
+
+                <TextView
+                    style="@style/AboutItemLeftText"
+                    android:text="@string/about_author"/>
+
+                <TextView
+                    android:id="@+id/tv_author_name"
+                    style="@style/AboutItemRightText"
+                    android:text="@string/about_author_name"/>
+
+            </RelativeLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_declare"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:padding="16dp"
+            android:text="@string/about_declare"
+            android:textColor="#999999"
+            android:textSize="12sp"/>
+    </LinearLayout>
+</ScrollView>

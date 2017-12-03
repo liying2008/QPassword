@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/main_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp"
+            tools:context="cc.duduhuo.qpassword.ui.activity.ExportActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioGroup
+            android:id="@+id/rg_export"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RadioButton
+                android:id="@+id/rb_no_encrypted"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/export_no_encrypted"
+                android:textColor="@color/title_text_color"
+                android:textSize="16sp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="6dp"
+                android:text="@string/export_no_encrypted_tip"
+                android:textColor="@color/tip_text_color"
+                android:textSize="14sp"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/separation_line_color"/>
+
+            <RadioButton
+                android:id="@+id/rb_encrypted"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/export_encrypted"
+                android:textColor="@color/title_text_color"
+                android:textSize="16sp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="6dp"
+                android:text="@string/export_encrypted_tip"
+                android:textColor="@color/tip_text_color"
+                android:textSize="14sp"/>
+
+            <EditText
+                android:id="@+id/et_key"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/export_key_hint"
+                android:maxLength="@integer/max_key_length"
+                android:singleLine="true"
+                android:textColor="@color/main_text_color"
+                android:textSize="14sp"
+                android:visibility="gone"
+                tools:text="@string/app_name"/>
+
+            <TextView
+                android:id="@+id/tv_export_warning"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="6dp"
+                android:text="@string/export_encrypted_warning"
+                android:textColor="@color/warning_text_color"
+                android:textSize="14sp"
+                android:visibility="gone"/>
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/btn_export"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rg_export"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/selector_button_green"
+            android:enabled="false"
+            android:text="@string/start_export"
+            android:textColor="@color/button_text_color"/>
+    </RelativeLayout>
+</ScrollView>

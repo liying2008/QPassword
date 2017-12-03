@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--最小主密码长度-->
+    <integer name="min_key_length">4</integer>
+    <!--最大主密码长度-->
+    <integer name="max_key_length">16</integer>
+</resources>

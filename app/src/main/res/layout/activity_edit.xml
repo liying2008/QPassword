@@ -1,0 +1,236 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/main_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".ui.activity.EditActivity">
+
+    <LinearLayout
+        android:id="@+id/ll_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:background="@drawable/common_card_background"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:baselineAligned="true"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:text="@string/title"
+                android:textColor="@color/title_color"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
+
+            <EditText
+                android:id="@+id/et_title"
+                android:layout_width="0dp"
+                android:layout_height="42dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:hint="@string/add_password_title_hint"
+                android:imeOptions="actionNext"
+                android:inputType="text"
+                android:maxLines="1"
+                android:nextFocusForward="@id/et_username"
+                android:textColor="@color/title_color"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
+
+            <CheckBox
+                android:id="@+id/cb_is_top"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_marginLeft="8dp"
+                android:checked="false"
+                android:text="@string/isTop"
+                android:textColor="@color/main_text_color"
+                android:textSize="12sp"/>
+        </LinearLayout>
+
+        <View
+            android:id="@+id/main_item_line"
+            android:layout_width="match_parent"
+            android:layout_height="0.6dp"
+            android:background="@color/separation_line_color"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:baselineAligned="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:maxLength="50"
+                android:maxLines="1"
+                android:text="@string/group"
+                android:textColor="@color/colorPrimary"
+                android:textSize="14sp"/>
+
+            <Spinner
+                android:id="@+id/sp_group"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_weight="1"/>
+
+            <ImageButton
+                android:id="@+id/ib_create_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/selector_create_group"
+                android:contentDescription="@string/create_new_group"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:baselineAligned="true"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:text="@string/username"
+                android:textColor="@color/colorPrimary"
+                android:textSize="14sp"/>
+
+            <AutoCompleteTextView
+                android:id="@+id/et_username"
+                android:layout_width="match_parent"
+                android:layout_height="38dp"
+                android:completionThreshold="1"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:hint="@string/add_password_name_hint"
+                android:imeOptions="actionNext"
+                android:inputType="text"
+                android:maxLength="50"
+                android:maxLines="1"
+                android:nextFocusForward="@id/et_password"
+                android:textColor="@color/main_text_color"
+                android:textSize="14sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:baselineAligned="true"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:maxLength="50"
+                android:maxLines="1"
+                android:text="@string/password"
+                android:textColor="@color/colorPrimary"
+                android:textSize="14sp"/>
+
+            <AutoCompleteTextView
+                android:id="@+id/et_password"
+                android:layout_width="match_parent"
+                android:layout_height="38dp"
+                android:completionThreshold="1"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:hint="@string/add_password_password_hint"
+                android:imeOptions="actionNext"
+                android:inputType="textVisiblePassword"
+                android:maxLines="1"
+                android:nextFocusForward="@id/et_email"
+                android:textColor="@color/main_text_color"
+                android:textSize="14sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:baselineAligned="true"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:maxLength="50"
+                android:maxLines="1"
+                android:text="@string/email"
+                android:textColor="@color/colorPrimary"
+                android:textSize="14sp"/>
+
+            <AutoCompleteTextView
+                android:id="@+id/et_email"
+                android:layout_width="match_parent"
+                android:layout_height="38dp"
+                android:completionThreshold="1"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:hint="@string/add_password_email_hint"
+                android:imeOptions="actionNext"
+                android:inputType="textEmailAddress"
+                android:maxLines="1"
+                android:nextFocusForward="@id/et_note"
+                android:textColor="@color/main_text_color"
+                android:textSize="14sp"/>
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/fl_note_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/note_background"
+            android:visibility="visible">
+
+            <EditText
+                android:id="@+id/et_note"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:hint="@string/add_password_note_hint"
+                android:inputType="textMultiLine"
+                android:maxLength="200"
+                android:textColor="@color/main_text_color"
+                android:textColorHint="#aaaaaa"
+                android:textSize="14sp"/>
+        </FrameLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="8dp"/>
+    </LinearLayout>
+
+</ScrollView>

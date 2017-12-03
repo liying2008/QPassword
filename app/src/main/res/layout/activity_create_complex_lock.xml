@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="cc.duduhuo.qpassword.ui.activity.CreateComplexLockActivity">
+
+    <TextView
+        android:id="@+id/tv_complex_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:padding="10dp"
+        android:textColor="@color/title_text_color"
+        android:textSize="14sp"
+        tools:text="@string/please_enter_complex_key"/>
+
+    <EditText
+        android:id="@+id/et_complex_lock"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_complex_info"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/key_input_bg"
+        android:focusable="true"
+        android:inputType="textVisiblePassword"
+        android:maxLength="@integer/max_key_length"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="40dp"
+        android:paddingTop="10dp"
+        android:scrollHorizontally="true"
+        android:singleLine="true"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        tools:text="1"/>
+
+    <ImageView
+        android:id="@+id/iv_clear_btn"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignRight="@id/et_complex_lock"
+        android:layout_below="@id/tv_complex_info"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/selector_clear_btn_bg"
+        android:clickable="true"
+        android:contentDescription="@string/clear_input"
+        android:focusable="true"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/btn_ok"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/et_complex_lock"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/selector_button_green"
+        android:onClick="ok"
+        android:text="@string/ok"
+        android:textColor="@color/button_text_color"/>
+</RelativeLayout>

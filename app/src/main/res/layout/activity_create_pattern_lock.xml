@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    tools:context="cc.duduhuo.qpassword.ui.activity.CreatePatternLockActivity">
+
+    <com.andrognito.patternlockview.PatternLockView
+        android:id="@+id/pattern_lock_view"
+        android:layout_width="280dp"
+        android:layout_height="280dp"
+        android:layout_centerInParent="true"
+        app:correctStateColor="@color/pattern_correct_color"
+        app:dotNormalSize="16dp"
+        app:dotSelectedSize="18dp"
+        app:normalStateColor="@color/pattern_normal_color"
+        app:wrongStateColor="@color/pattern_wrong_color"/>
+
+    <TextView
+        android:id="@+id/tv_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/pattern_lock_view"
+        android:layout_marginBottom="30dp"
+        android:gravity="center"
+        android:text="@string/please_connect_at_least_4_points"
+        android:textColor="@color/pomegranate"
+        android:textSize="14sp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_redraw"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/selector_button_green"
+            android:enabled="false"
+            android:text="@string/pattern_redraw"
+            android:textColor="@color/button_text_color"/>
+
+        <Button
+            android:id="@+id/btn_done"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/selector_button_green"
+            android:enabled="false"
+            android:text="@string/done"
+            android:textColor="@color/button_text_color"/>
+    </LinearLayout>
+</RelativeLayout>

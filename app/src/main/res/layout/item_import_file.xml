@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_file"
+    android:layout_width="match_parent"
+    android:layout_height="52dp"
+    android:background="@drawable/selector_item_function"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/tv_file"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:lines="1"
+        android:paddingLeft="16dp"
+        android:textColor="@color/title_text_color"
+        android:textSize="16sp"
+        tools:text="@string/app_name"/>
+
+    <TextView
+        android:id="@+id/tv_file_size"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:paddingRight="16dp"
+        android:textColor="@color/tip_text_color"
+        android:textSize="14sp"
+        tools:text="12.45MB"/>
+</LinearLayout>

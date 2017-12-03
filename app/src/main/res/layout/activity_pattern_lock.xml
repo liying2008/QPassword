@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="cc.duduhuo.qpassword.ui.activity.PatternLockActivity">
+
+    <com.andrognito.patternlockview.PatternLockView
+        android:id="@+id/pattern_lock_view"
+        android:layout_width="280dp"
+        android:layout_height="280dp"
+        android:layout_centerInParent="true"
+        app:correctStateColor="@color/pattern_correct_color"
+        app:dotNormalSize="16dp"
+        app:dotSelectedSize="18dp"
+        app:normalStateColor="@color/pattern_normal_color"
+        app:wrongStateColor="@color/pattern_wrong_color"/>
+
+    <TextView
+        android:id="@+id/tv_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/pattern_lock_view"
+        android:layout_marginBottom="30dp"
+        android:gravity="center"
+        android:text="@string/please_draw_unlock_pattern"
+        android:textColor="@color/lock_msg_tip"
+        android:textSize="14sp"/>
+</RelativeLayout>
