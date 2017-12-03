@@ -19,7 +19,7 @@ interface OnPasswordsChangeListener : BaseListener {
 
     /**
      * 删除了密码
-     * @param password 删除的密码
+     * @param passwords 删除的密码
      */
     fun onDeletePasswords(passwords: List<Password>)
 }

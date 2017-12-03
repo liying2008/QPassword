@@ -37,7 +37,7 @@ class AboutActivity : BaseActivity() {
         val openUrl = getString(R.string.open_url)
         val items = arrayOf(getString(R.string.copy_url), getString(R.string.open_in_browser))
         val builder = AlertDialog.Builder(this)
-        builder.setItems(items) { dialog, which ->
+        builder.setItems(items) { _, which ->
             when (which) {
                 0 -> {
                     copyText(this, openUrl)

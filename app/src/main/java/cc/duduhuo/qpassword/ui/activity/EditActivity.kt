@@ -125,7 +125,7 @@ class EditActivity : BaseActivity(), OnGetPasswordListener, OnGetPasswordsListen
         dialog.show()
         // 弹出输入法面板
         dialog.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE or WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
-        etGroup.setOnEditorActionListener { textView, actionId, event ->
+        etGroup.setOnEditorActionListener { _, _, _ ->
             val groupName = etGroup.text.toString().trim()
             if (groupName.isEmpty()) {
                 AppToast.showToast(R.string.group_name_can_not_be_empty)

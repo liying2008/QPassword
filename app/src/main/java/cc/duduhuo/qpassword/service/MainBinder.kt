@@ -111,8 +111,7 @@ class MainBinder(context: Context) : Binder() {
      * @param key 主密码
      */
     fun insertKey(key: Key, listener: OnNewKeyListener) {
-        val task = InsertKeyTask(key, mKeyService)
-        task.setOnNewKeyListener(listener)
+        val task = InsertKeyTask(key, mKeyService, listener)
         task.execute()
         mTasks.add(task)
     }

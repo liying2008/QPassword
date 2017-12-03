@@ -104,7 +104,7 @@ class CreateKeyOptionsActivity : BaseActivity() {
         AlertDialog.Builder(this)
             .setMessage(R.string.no_key_message)
             .setPositiveButton(R.string.cancel, null)
-            .setNegativeButton(R.string.ok) { dialog, which ->
+            .setNegativeButton(R.string.ok) { _, _ ->
                 btn_pattern_key.isEnabled = false
                 btn_number_key.isEnabled = false
                 btn_complex_key.isEnabled = false

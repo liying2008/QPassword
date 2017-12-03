@@ -59,8 +59,8 @@ class InsertPasswordsTask(private val mPasswords: List<Password>,
         if (mId == -2) {
             mPasswordFailListeners.filter { it.isAlive() }.forEach { it.onKeyLose() }
         } else {
-            mNewGroups.forEach {
-                mGroupListeners.filter { listener -> listener.isAlive() }.forEach { listener -> listener.onNewGroup(it) }
+            mNewGroups.forEach { group ->
+                mGroupListeners.filter { it.isAlive() }.forEach { it.onNewGroup(group) }
             }
             mPasswordsListeners.filter { it.isAlive() }.forEach { it.onNewPasswords(mPasswords) }
         }

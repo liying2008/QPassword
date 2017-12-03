@@ -1,6 +1,5 @@
 package cc.duduhuo.qpassword.ui.activity
 
-import android.app.ProgressDialog
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -13,6 +12,7 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.view.WindowManager
 import android.widget.EditText
 import cc.duduhuo.applicationtoast.AppToast
@@ -44,7 +44,6 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
     /** 搜索关键词 */
     private var mSearchKeyword = ""
     private var mMainBinder: MainBinder? = null
-    private var mProgressDialog: ProgressDialog? = null
     /** 左侧抽屉列表适配器 */
     private lateinit var mMenuAdapter: DrawerItemAdapter
     /** 密码列表适配器 */
@@ -63,7 +62,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
     /** 执行搜索前，所在的分组 */
     private var mBeforeSearchGroupName = ""
     /** 当前的分组名称 */
-    private var mGroupName: String by Delegates.observable("") { prop, old, new ->
+    private var mGroupName: String by Delegates.observable("") { _, old, new ->
         if (new != "") {
             if (new != old) {
                 if (new != getString(R.string.search_result)) {
@@ -124,7 +123,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
             }
 
             val builder = AlertDialog.Builder(this@MainActivity)
-            builder.setItems(items.toTypedArray()) { dialog, which ->
+            builder.setItems(items.toTypedArray()) { _, which ->
                 when (items[which]) {
                     getString(R.string.copy_username) -> {
                         // 复制用户名
@@ -155,7 +154,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
             val builder = AlertDialog.Builder(this@MainActivity)
             builder.setTitle(password.title)
             builder.setMessage(R.string.alert_delete_message)
-            builder.setNegativeButton(R.string.delete) { dialog, which ->
+            builder.setNegativeButton(R.string.delete) { _, _ ->
                 mMainBinder?.deletePassword(password)
             }
             builder.setPositiveButton(R.string.cancel, null)
@@ -175,7 +174,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        fab.setOnClickListener { view ->
+        fab.setOnClickListener {
             // 搜索密码
             val builder = AlertDialog.Builder(this)
             builder.setTitle(R.string.search_passwords)
@@ -188,7 +187,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
             // 弹出输入法面板
             dialog.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE or WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
 
-            etSearchKeyword.setOnEditorActionListener { v, actionId, event ->
+            etSearchKeyword.setOnEditorActionListener { _, _, _ ->
                 val keyword = etSearchKeyword.text.toString().trim()
                 if (keyword.isEmpty()) {
                     AppToast.showToast(R.string.search_keyword_can_not_be_empty)
@@ -209,14 +208,26 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
             }
         }
 
-        // 绑定服务
-        val intent = MainService.getIntent(this)
-        this.bindService(intent, mServiceConnection, BIND_AUTO_CREATE)
-
         val toggle = ActionBarDrawerToggle(
             this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
+
+        // 绑定服务
+        val intent = MainService.getIntent(this)
+        this.bindService(intent, mServiceConnection, BIND_AUTO_CREATE)
+
+        mPasswordAdapter = PasswordListAdapter(this)
+        rv_password.layoutManager = LinearLayoutManager(this)
+        rv_password.adapter = mPasswordAdapter
+        mPasswordAdapter.setOnPasswordActionListener(mActionListener)
+        // 得到上次选中的分组名称
+        mGroupName = PreferencesUtils.getString(this, Config.LAST_GROUP, getString(R.string.group_default))
+
+        mMenuAdapter = DrawerItemAdapter(this)
+        rv_left_menu.layoutManager = LinearLayoutManager(this)
+        mMenuAdapter.setOnItemClickListener(DrawerItemClickListener())
+        rv_left_menu.adapter = mMenuAdapter
     }
 
     /**
@@ -238,28 +249,14 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
     }
 
     private fun initData() {
-        // 显示 ProgressDialog
-        showProgressDialog()
-        setupDrawer()
+        showProgressBar()
 
-        mPasswordAdapter = PasswordListAdapter(this)
-        rv_password.adapter = mPasswordAdapter
-        mPasswordAdapter.setOnPasswordActionListener(mActionListener)
-        // 得到上次选中的分组名称
-        mGroupName = PreferencesUtils.getString(this, Config.LAST_GROUP, getString(R.string.group_default))
+        mMainBinder?.getAllGroups(this)
         if (mGroupName == getString(R.string.group_all)) {
             mMainBinder?.getPasswords(this, null)
         } else {
             mMainBinder?.getPasswords(this, mGroupName)
         }
-    }
-
-    private fun setupDrawer() {
-        mMenuAdapter = DrawerItemAdapter(this)
-        rv_left_menu.layoutManager = LinearLayoutManager(this)
-        mMenuAdapter.setOnItemClickListener(DrawerItemClickListener())
-        rv_left_menu.adapter = mMenuAdapter
-        mMainBinder?.getAllGroups(this)
     }
 
     /** 上次点击Back键的时间  */
@@ -316,7 +313,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
                 builder.setTitle(R.string.action_distinct)
                 builder.setMessage(R.string.distinct_tip)
                 builder.setNegativeButton(R.string.cancel, null)
-                builder.setPositiveButton(R.string.start_distinct) { dialog, which ->
+                builder.setPositiveButton(R.string.start_distinct) { _, _ ->
                     val distinctDialog = DistinctDialog(this, mMainBinder!!)
                     distinctDialog.show()
                 }
@@ -327,7 +324,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
                 val builder = AlertDialog.Builder(this)
                 builder.setTitle(R.string.delete_all_password)
                 builder.setMessage(R.string.delete_all_password_message)
-                builder.setNegativeButton(R.string.delete_passwords) { dialog, which ->
+                builder.setNegativeButton(R.string.delete_passwords) { _, _ ->
                     mGroupList.forEach {
                         mMainBinder?.deleteGroup(it.name)
                     }
@@ -335,7 +332,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
                         refreshAll()
                     }
                 }
-                builder.setPositiveButton(R.string.export_passwords) { dialog, which ->
+                builder.setPositiveButton(R.string.export_passwords) { _, _ ->
                     startActivity(ExportActivity.getIntent(this))
                 }
                 builder.create().show()
@@ -362,7 +359,8 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
             } else {
                 mMainBinder?.getPasswords(this@MainActivity, mGroupName)
             }
-            showProgressDialog()
+
+            showProgressBar()
             drawer_layout.closeDrawer(GravityCompat.START)
         }
 
@@ -374,7 +372,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
             } else {
                 val builder = AlertDialog.Builder(this@MainActivity)
                 val items = arrayOf(getString(R.string.update_group_name), getString(R.string.merge_group), getString(R.string.delete_group))
-                builder.setItems(items) { dialog, which ->
+                builder.setItems(items) { _, which ->
                     when (which) {
                         0 -> {
                             // 修改分组名
@@ -409,7 +407,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
                 dialog.show()
                 // 弹出输入法面板
                 dialog.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE or WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
-                etGroup.setOnEditorActionListener { v, actionId, event ->
+                etGroup.setOnEditorActionListener { _, _, _ ->
                     val groupName = etGroup.text.toString().trim()
                     if (groupName.isEmpty()) {
                         AppToast.showToast(R.string.group_name_can_not_be_empty)
@@ -452,7 +450,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
             .map { it.name }
 
         val mergeBuilder = AlertDialog.Builder(this)
-        mergeBuilder.setItems(items.toTypedArray()) { dialog, which ->
+        mergeBuilder.setItems(items.toTypedArray()) { _, which ->
             val newGroupName = items[which]
             mMainBinder?.updateGroupName(groupName, newGroupName, true)
         }
@@ -469,7 +467,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
         delBuilder.setTitle(R.string.delete_group)
         delBuilder.setMessage(getString(R.string.delete_group_message, title))
         delBuilder.setPositiveButton(R.string.cancel, null)
-        delBuilder.setNegativeButton(R.string.delete) { dialog, which ->
+        delBuilder.setNegativeButton(R.string.delete) { _, _ ->
             mMainBinder?.deleteGroup(groupName)
         }
         delBuilder.create().show()
@@ -494,7 +492,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
         // 弹出输入法面板
         updateDialog.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE or WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
 
-        etGroup.setOnEditorActionListener { v, actionId, event ->
+        etGroup.setOnEditorActionListener { _, _, _ ->
             val groupName = etGroup.text.toString().trim()
             if (groupName == getString(R.string.group_all) || mGroupList.contains(Group(groupName))) {
                 AppToast.showToast(R.string.group_exists)
@@ -521,10 +519,11 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
     }
 
     override fun onGetPasswords(groupName: String?, passwords: List<Password>) {
-        dismissProgressDialog()
+        dismissProgressBar()
+
         if (mSearchMode) {
             val resultPassword = passwords.filter { it.title.toLowerCase().contains(mSearchKeyword.toLowerCase()) || it.note.toLowerCase().contains(mSearchKeyword.toLowerCase()) }
-            mPasswordAdapter.setData(resultPassword.toMutableList())
+            mPasswordAdapter.setData(resultPassword)
             mGroupName = getString(R.string.search_result)
             val size = resultPassword.size
             mMenuAdapter.updateHeader(getString(R.string.search_result), size)
@@ -533,16 +532,20 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
             }
         } else {
             mGroupName = groupName ?: getString(R.string.group_all)
-            mPasswordAdapter.setData(passwords.toMutableList())
-            mMenuAdapter.updateHeader(groupName, passwords.size)
+            val size = passwords.size
+            mPasswordAdapter.setData(passwords)
+            mMenuAdapter.updateHeader(groupName, size)
+            if (size == 0) {
+                showSnackbar(fab, R.string.no_passwords)
+            }
         }
     }
 
     override fun onNewPassword(password: Password) {
-        AppToast.showToast(getString(R.string.password_added, password.title))
         if (password.groupName == mGroupName || mGroupName == getString(R.string.group_all)) {
             mPasswordAdapter.addData(password)
         }
+        showSnackbar(fab, getString(R.string.new_password_added_to_group, password.title, password.groupName))
     }
 
     override fun onDeletePassword(password: Password) {
@@ -550,11 +553,13 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
     }
 
     override fun onUpdatePassword(newPassword: Password) {
-        AppToast.showToast(getString(R.string.password_updated, newPassword.title))
         val adapterNotEmpty = mPasswordAdapter.updateData(newPassword, mGroupName)
         // 修改密码时更改了密码分组，并且该分组是新创建的时候会执行下面的代码
         if (!adapterNotEmpty && newPassword.groupName == mGroupName) {
             showGroup(mGroupName)
+            showSnackbar(fab, getString(R.string.password_added_to_new_group, newPassword.title, mGroupName))
+        } else {
+            showSnackbar(fab, getString(R.string.password_updated, newPassword.title))
         }
     }
 
@@ -607,7 +612,8 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
         } else {
             mMainBinder?.getPasswords(this, groupName)
         }
-        showProgressDialog()
+
+        showProgressBar()
     }
 
     override fun onInsertFail() {
@@ -645,33 +651,25 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
     }
 
     /**
-     * 显示 ProgressDialog
+     * 显示 ProgressBar
      */
-    private fun showProgressDialog() {
+    private fun showProgressBar() {
         if (isFinishing) {
             return
         }
-        if (mProgressDialog == null) {
-            mProgressDialog = ProgressDialog(this)
-            mProgressDialog!!.setCancelable(false)
-        }
-        mProgressDialog!!.setMessage(getString(R.string.reading_passwords))
-        mProgressDialog!!.show()
+        rv_password.visibility = View.GONE
+        layout_no_content.visibility = View.VISIBLE
     }
 
     /**
-     * 取消 ProgressDialog
+     * 取消 ProgressBar
      */
-    private fun dismissProgressDialog() {
+    private fun dismissProgressBar() {
         if (isFinishing) {
             return
         }
-        if (mProgressDialog != null) {
-            if (mProgressDialog!!.isShowing) {
-                mProgressDialog!!.dismiss()
-            }
-            mProgressDialog = null
-        }
+        layout_no_content.visibility = View.GONE
+        rv_password.visibility = View.VISIBLE
     }
 
     /**
@@ -685,7 +683,6 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
 
     override fun onDestroy() {
         unbindService(mServiceConnection)
-        dismissProgressDialog()
         super.onDestroy()
     }
 }

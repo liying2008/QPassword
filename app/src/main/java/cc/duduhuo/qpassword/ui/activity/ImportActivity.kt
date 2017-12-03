@@ -72,8 +72,21 @@ class ImportActivity : BaseActivity(), FileListAdapter.OnFileClickListener, OnPa
         }
     }
 
-    private fun initViews() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_import)
+
+        val actionBar = supportActionBar
+        actionBar?.setDisplayHomeAsUpEnabled(true)
+        setTitle(R.string.title_import_password)
         tv_import_msg.text = getString(R.string.import_password_tip, Config.EXPORT_FILE_EXTENSION, Config.WORK_DIR + "/" + Config.EXPORT_DIR)
+
+        // 绑定服务
+        val intent = MainService.getIntent(this)
+        this.bindService(intent, mServiceConnection, BIND_AUTO_CREATE)
+    }
+
+    private fun initViews() {
         // 检查权限
         if (Build.VERSION.SDK_INT >= 23) {
             if (isPermissionGranted(PERMISSION)) {
@@ -100,7 +113,7 @@ class ImportActivity : BaseActivity(), FileListAdapter.OnFileClickListener, OnPa
     private fun initData() {
         val sdPath = Environment.getExternalStorageDirectory().absolutePath
         val exportPath = sdPath + File.separator + Config.WORK_DIR + File.separator + Config.EXPORT_DIR
-        val files = getFiles(File(exportPath), File(sdPath))
+        val files = getFiles(File(exportPath))
         if (files.isEmpty()) {
             AppToast.showToast(getString(R.string.search_files_fail, Config.EXPORT_FILE_EXTENSION, Config.WORK_DIR + "/" + Config.EXPORT_DIR))
         }
@@ -111,6 +124,7 @@ class ImportActivity : BaseActivity(), FileListAdapter.OnFileClickListener, OnPa
         rv_file.addItemDecoration(FileItemDecoration(this))
         rv_file.adapter = mAdapter
     }
+
 
     /**
      * 遍历目标文件下的文件，找到扩展名相符的文件
@@ -125,20 +139,6 @@ class ImportActivity : BaseActivity(), FileListAdapter.OnFileClickListener, OnPa
                 .forEach { fileList.add(ImportFile(it.name, it.absolutePath, it.length())) }
         }
         return fileList
-    }
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_import)
-
-        val actionBar = supportActionBar
-        actionBar?.setDisplayHomeAsUpEnabled(true)
-        setTitle(R.string.title_import_password)
-
-        // 绑定服务
-        val intent = MainService.getIntent(this)
-        this.bindService(intent, mServiceConnection, BIND_AUTO_CREATE)
     }
 
     override fun onFileClick(absolutePath: String) {

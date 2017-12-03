@@ -26,8 +26,10 @@ import java.util.*
 class PasswordListAdapter(private val mContext: Context) : RecyclerView.Adapter<PasswordListAdapter.ViewHolder>() {
     private var mPasswords: MutableList<Password> = mutableListOf()
     private var mActionListener: OnPasswordActionListener? = null
-    fun setData(passwords: MutableList<Password>) {
-        mPasswords = passwords
+
+    fun setData(passwords: List<Password>) {
+        mPasswords.clear()
+        mPasswords.addAll(passwords)
         Collections.sort<Password>(mPasswords, mComparator)
         notifyDataSetChanged()
     }

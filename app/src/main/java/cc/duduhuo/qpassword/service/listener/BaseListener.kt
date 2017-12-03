@@ -14,7 +14,7 @@ import android.util.Log
  */
 interface BaseListener {
     /**
-     * 实现该Listener 的 Activity 或 Dialog 是否存活
+     * 实现该 Listener 的 Activity 或 Dialog 是否存活
      */
     fun isAlive(): Boolean {
         Log.d("TTT", "--> " + this.toString())
@@ -25,7 +25,7 @@ interface BaseListener {
             Log.d("TTT", this.javaClass.simpleName + " Die")
             return false
         }
-        Log.d("TTT", this.javaClass.simpleName + " Alive!")
+        Log.d("TTT", this.javaClass.simpleName + " Alive")
         return true
     }
 }

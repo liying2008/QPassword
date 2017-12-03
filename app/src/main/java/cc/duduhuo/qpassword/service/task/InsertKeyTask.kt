@@ -14,12 +14,8 @@ import cc.duduhuo.qpassword.service.listener.OnNewKeyListener
  * =======================================================
  */
 class InsertKeyTask(private val mKey: Key,
-                    private val mKeyService: KeyService) : AsyncTask<Void, Void, Void?>() {
-    private var mListener: OnNewKeyListener? = null
-
-    fun setOnNewKeyListener(listener: OnNewKeyListener) {
-        this.mListener = listener
-    }
+                    private val mKeyService: KeyService,
+                    private val mListener: OnNewKeyListener) : AsyncTask<Void, Void, Void?>() {
 
     override fun doInBackground(vararg params: Void?): Void? {
         mKeyService.addKey(mKey)
@@ -28,8 +24,8 @@ class InsertKeyTask(private val mKey: Key,
 
     override fun onPostExecute(result: Void?) {
         super.onPostExecute(result)
-        if (mListener != null && mListener!!.isAlive()) {
-            mListener!!.onNewKey(mKey)
+        if (mListener.isAlive()) {
+            mListener.onNewKey(mKey)
         }
     }
 }

@@ -71,7 +71,7 @@ class ExportActivity : BaseActivity() {
             tv_export_warning.visibility = View.VISIBLE
         }
 
-        rg_export.setOnCheckedChangeListener { group, checkedId ->
+        rg_export.setOnCheckedChangeListener { _, checkedId ->
             if (checkedId == R.id.rb_no_encrypted) {
                 mExportType = EXPORT_NO_ENCRYPTED
                 et_key.visibility = View.GONE
@@ -210,9 +210,9 @@ class ExportActivity : BaseActivity() {
         // 显示导出成功提醒对话框
         val builder = AlertDialog.Builder(this@ExportActivity)
         builder.setMessage(getString(R.string.export_success, fileName))
-        builder.setPositiveButton(R.string.i_known, DialogInterface.OnClickListener { dialog, which ->
+        builder.setPositiveButton(R.string.i_known) { _, _ ->
             finish()
-        })
+        }
         val dialog = builder.create()
         dialog.setCanceledOnTouchOutside(false)
         dialog.show()

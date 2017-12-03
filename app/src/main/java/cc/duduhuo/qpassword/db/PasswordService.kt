@@ -100,7 +100,7 @@ class PasswordService(context: Context) {
      * 返回-2: 主密码丢失
      */
     fun updatePassword(password: Password): Int {
-        var result = 0
+        val result: Int
         if (keyLost()) {
             return -2
         }

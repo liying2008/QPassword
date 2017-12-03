@@ -112,7 +112,7 @@ class KeyService(context: Context) {
                 cv.clear()
                 cv.put(Password.ID, password.id)
                 cv.put(Password.PASSWORD, password.password)
-                val i = db.update(DBInfo.Table.TB_PASSWORD, cv, "${Password.ID} = ?",
+                db.update(DBInfo.Table.TB_PASSWORD, cv, "${Password.ID} = ?",
                     arrayOf(password.id.toString()))
             }
         } else if (oldKey.mode != Key.MODE_NO_KEY && newKey.mode != Key.MODE_NO_KEY) {
