@@ -1,4 +1,4 @@
-# QPassword（七圈密码） #
+# QPassword (七圈密码) #
 ---
 [![GitHub release](https://img.shields.io/github/release/liying2008/QPassword.svg)](https://github.com/liying2008/QPassword/releases)
 [![Build Status](https://travis-ci.org/liying2008/QPassword.svg?branch=master)](https://travis-ci.org/liying2008/QPassword)
@@ -6,7 +6,7 @@
 [![license](https://img.shields.io/github/license/liying2008/QPassword.svg)](https://github.com/liying2008/QPassword/blob/master/LICENSE)
 
 
-> [Download APK](https://github.com/liying2008/QPassword/releases/download/v1.0.0_beta/qpassword_v1.0.0_beta.apk)
+> **[Download Latest APK](https://github.com/liying2008/QPassword/releases/download/v1.0.0_beta/qpassword_v1.0.0_beta.apk)**
 
 Compiling Environment
 ---------------------
@@ -42,7 +42,7 @@ ScreenShot
 ![ScreenShot3](screenshot/3.png)
 ![ScreenShot4](screenshot/4.png)
 ![ScreenShot5](screenshot/5.png)
-![ScreenShot6](screenshot/5.png)
+![ScreenShot6](screenshot/6.png)
 
 Update
 ------
