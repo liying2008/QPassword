@@ -1,4 +1,4 @@
-# QPassword（七圈密码） #
+# QPassword (七圈密码) #
 ---
 [![GitHub release](https://img.shields.io/github/release/liying2008/QPassword.svg)](https://github.com/liying2008/QPassword/releases)
 [![Build Status](https://travis-ci.org/liying2008/QPassword.svg?branch=master)](https://travis-ci.org/liying2008/QPassword)
@@ -6,7 +6,7 @@
 [![license](https://img.shields.io/github/license/liying2008/QPassword.svg)](https://github.com/liying2008/QPassword/blob/master/LICENSE)
 
 
-> [Download APK](https://github.com/liying2008/QPassword/releases/download/v1.0.0_beta/qpassword_v1.0.0_beta.apk)
+> ### [Download Latest APK](https://github.com/liying2008/QPassword/releases/download/v1.0.0_beta/qpassword_v1.0.0_beta.apk)
 
 Compiling Environment
 ---------------------
@@ -24,7 +24,7 @@ Compiling Environment
 gradlew.bat build
 ```
 
-> **可直接导入 <code>Android Studio 3.0.1</code> 中运行。**
+> ### 项目可直接导入 <code>Android Studio 3.0.1</code> 中运行。
 
 Primary Function
 ----------------
@@ -32,8 +32,9 @@ Primary Function
 
 Others
 ------
-1. 如果用户设置了主密码，则用户所保存的密码都会使用AES加密算法进行加密，加密密钥就是主密码，如果用户选择了不设置主密码，则保存在数据库中的密码数据不会以加密形式存储。
-2. 该应用的部分界面参考了：https://github.com/o602075123/MyPassword 。
+1. 如果用户设置了主密码，则用户所保存的密码都会使用AES加密算法进行加密，加密密钥根据主密码生成；如果用户选择不设置主密码，则保存在数据库中的密码数据将会以明文形式存储；
+2. 该应用不联网，用户存储的所有密码均保存在本地；
+3. 该应用的部分界面参考了：https://github.com/o602075123/MyPassword 。
 
 ScreenShot
 ----------
@@ -42,7 +43,7 @@ ScreenShot
 ![ScreenShot3](screenshot/3.png)
 ![ScreenShot4](screenshot/4.png)
 ![ScreenShot5](screenshot/5.png)
-![ScreenShot6](screenshot/5.png)
+![ScreenShot6](screenshot/6.png)
 
 Update
 ------
@@ -50,8 +51,8 @@ Update
 
 Contact Me
 ---------
-Sina Weibo：[@独毒火](http://weibo.com/neuliying)
-Email：[liruoer2008@yeah.net](mailto:liruoer2008@yeah.net)
+CSDN：[http://blog.csdn.net/u012939909](http://blog.csdn.net/u012939909)  
+Email：[liruoer2008@yeah.net](mailto:liruoer2008@yeah.net)  
 
 Thanks
 ----
