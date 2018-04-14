@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">七圈密码</string>
+    <string name="app_name_debug">七圈密码 (调试)</string>
     <string name="slogan">简单、安全、易用的密码记录本</string>
     <string name="copyright">Copyright 2017 LiYing. All Rights Reserved.</string>
     <string name="version">当前版本：v%s</string>
@@ -158,6 +159,10 @@
     <string name="importing_please_wait">请稍候操作…</string>
     <string name="parsing_password_file">正在解析文件…</string>
     <string name="importing_passwords">%d 个密码正在导入…</string>
+    <string name="delete_file">删除文件</string>
+    <string name="delete_file_message">删除 %1$s ?</string>
+    <string name="delete_fail">删除失败</string>
+    <string name="refresh_file_list">刷新文件列表</string>
 
     <string name="search_passwords">搜索密码</string>
     <string name="enter_search_keyword">请输入搜索关键字</string>

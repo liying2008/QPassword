@@ -47,7 +47,7 @@ class ImportActivity : BaseActivity(), FileListAdapter.OnFileClickListener, OnPa
     companion object {
         const val RESULT_CODE_IMPORT = 0x0010
         @SuppressLint("InlinedApi")
-        private const val PERMISSION = Manifest.permission.READ_EXTERNAL_STORAGE
+        private const val PERMISSION = Manifest.permission.WRITE_EXTERNAL_STORAGE
         private const val REQUEST_PERMISSION = 0x0000
         fun getIntent(context: Context): Intent {
             return Intent(context, ImportActivity::class.java)
@@ -110,19 +110,28 @@ class ImportActivity : BaseActivity(), FileListAdapter.OnFileClickListener, OnPa
 
     }
 
-    private fun initData() {
+    private fun initData(refresh: Boolean = false) {
         val sdPath = Environment.getExternalStorageDirectory().absolutePath
         val exportPath = sdPath + File.separator + Config.WORK_DIR + File.separator + Config.EXPORT_DIR
-        val files = getFiles(File(exportPath))
+        val exportPathFile = File(exportPath)
+        // 检查 exportPath 是否存在，不存在则创建
+        if (!exportPathFile.exists()) {
+            exportPathFile.mkdirs()
+        }
+        val files = getFiles(exportPathFile)
         if (files.isEmpty()) {
             AppToast.showToast(getString(R.string.search_files_fail, Config.EXPORT_FILE_EXTENSION, Config.WORK_DIR + "/" + Config.EXPORT_DIR))
         }
-        mAdapter = FileListAdapter(this, files)
-        // 设置文件名点击监听
-        mAdapter!!.setOnFileClickListener(this)
-        rv_file.layoutManager = LinearLayoutManager(this)
-        rv_file.addItemDecoration(FileItemDecoration(this))
-        rv_file.adapter = mAdapter
+        if (refresh) {
+            mAdapter?.refresh(files)
+        } else {
+            mAdapter = FileListAdapter(this, files)
+            // 设置文件名点击监听
+            mAdapter!!.setOnFileClickListener(this)
+            rv_file.layoutManager = LinearLayoutManager(this)
+            rv_file.addItemDecoration(FileItemDecoration(this))
+            rv_file.adapter = mAdapter
+        }
     }
 
 
@@ -141,6 +150,9 @@ class ImportActivity : BaseActivity(), FileListAdapter.OnFileClickListener, OnPa
         return fileList
     }
 
+    /**
+     * 点击文件名
+     */
     override fun onFileClick(absolutePath: String) {
         var export: Export? = null
         showProgressDialog(getString(R.string.parsing_password_file))
@@ -203,6 +215,34 @@ class ImportActivity : BaseActivity(), FileListAdapter.OnFileClickListener, OnPa
         }
         registerAsyncTask(ImportActivity::class.java, readFileTask)
         readFileTask.execute()
+    }
+
+    /**
+     * 长按文件名
+     */
+    override fun onFileLongClick(position: Int, absolutePath: String): Boolean {
+        val fileName = absolutePath.split(File.separator).last()
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(R.string.delete_file)
+        builder.setMessage(getString(R.string.delete_file_message, fileName))
+        builder.setNegativeButton(R.string.delete, { _, _ ->
+            val ok = File(absolutePath).delete()
+            if (ok) {
+                // 刷新 RecyclerView
+                mAdapter!!.removeItem(position)
+            } else {
+                // 删除文件失败
+                Snackbar.make(rv_file, R.string.delete_fail, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.refresh_file_list, {
+                        initData(refresh = true)
+                    }).show()
+            }
+        })
+        builder.setPositiveButton(R.string.cancel, { _, _ ->
+            // no op
+        })
+        builder.create().show()
+        return true
     }
 
     /**

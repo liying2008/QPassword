@@ -8,6 +8,7 @@ import android.support.v7.app.AlertDialog
 import android.view.MenuItem
 import android.view.View
 import cc.duduhuo.qpassword.R
+import cc.duduhuo.qpassword.app.App
 import cc.duduhuo.qpassword.util.*
 import kotlinx.android.synthetic.main.activity_about.*
 
@@ -28,6 +29,11 @@ class AboutActivity : BaseActivity() {
         setTitle(R.string.title_about)
 
         tv_version.text = getString(R.string.version, getVersionName())
+        if (App.isDebugVersion(this)) {
+            tv_name.setText(R.string.app_name_debug)
+        } else {
+            tv_name.setText(R.string.app_name)
+        }
     }
 
     /**

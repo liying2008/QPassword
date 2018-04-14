@@ -19,19 +19,34 @@ import kotlinx.android.synthetic.main.item_import_file.view.*
  * =======================================================
  */
 class FileListAdapter(private val mContext: Context,
-                      private val mFileList: List<ImportFile>) : RecyclerView.Adapter<FileListAdapter.ViewHolder>() {
+                      private var mFileList: MutableList<ImportFile>) : RecyclerView.Adapter<FileListAdapter.ViewHolder>() {
     private var mFileClickListener: OnFileClickListener? = null
     fun setOnFileClickListener(listener: OnFileClickListener) {
         this.mFileClickListener = listener
     }
 
-    override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
+    fun removeItem(position: Int) {
+        mFileList.removeAt(position)
+        this.notifyItemRemoved(position)
+    }
+
+    fun refresh(fileList: MutableList<ImportFile>) {
+        this.mFileList = fileList
+        notifyDataSetChanged()
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val file = mFileList[position]
-        if (holder != null) {
-            holder.itemView.tv_file.text = file.fileName
-            holder.itemView.tv_file_size.text = getFormatSize(file.fileSize)
-            holder.itemView.setOnClickListener {
-                mFileClickListener?.onFileClick(file.absolutePath)
+        holder.itemView.tv_file.text = file.fileName
+        holder.itemView.tv_file_size.text = getFormatSize(file.fileSize)
+        holder.itemView.setOnClickListener {
+            mFileClickListener?.onFileClick(file.absolutePath)
+        }
+        holder.itemView.setOnLongClickListener {
+            if (mFileClickListener == null) {
+                return@setOnLongClickListener true
+            } else {
+                return@setOnLongClickListener mFileClickListener!!.onFileLongClick(holder.adapterPosition, file.absolutePath)
             }
         }
     }
@@ -43,7 +58,7 @@ class FileListAdapter(private val mContext: Context,
         return mFileList.size
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(mContext).inflate(R.layout.item_import_file, parent, false)
         return ViewHolder(view)
     }
@@ -59,5 +74,12 @@ class FileListAdapter(private val mContext: Context,
          * @param absolutePath 绝对路径
          */
         fun onFileClick(absolutePath: String)
+
+        /**
+         * 文件名被长按
+         * @param position Item 位置
+         * @param absolutePath 绝对路径
+         */
+        fun onFileLongClick(position: Int, absolutePath: String): Boolean
     }
 }

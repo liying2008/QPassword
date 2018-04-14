@@ -26,31 +26,30 @@ class NumberGridAdapter(private val mContext: Context) : RecyclerView.Adapter<Nu
         this.mListener = listener
     }
 
-    override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val number = mNumbers[position]
-        if (holder != null) {
-            holder.itemView.tv_number_btn.text = number
-            if (number == mContext.getString(R.string.delete)) {
-                holder.itemView.setOnClickListener {
-                    mListener?.onClickDel(holder.itemView as TextView)
-                }
-            } else if (number == mContext.getString(R.string.ok)) {
-                holder.itemView.setOnClickListener {
-                    mListener?.onClickOk(holder.itemView as TextView)
-                }
-            } else {
-                holder.itemView.setOnClickListener {
-                    mListener?.onClickNum(number, holder.itemView as TextView)
-                }
+        holder.itemView.tv_number_btn.text = number
+        if (number == mContext.getString(R.string.delete)) {
+            holder.itemView.setOnClickListener {
+                mListener?.onClickDel(holder.itemView as TextView)
+            }
+        } else if (number == mContext.getString(R.string.ok)) {
+            holder.itemView.setOnClickListener {
+                mListener?.onClickOk(holder.itemView as TextView)
+            }
+        } else {
+            holder.itemView.setOnClickListener {
+                mListener?.onClickNum(number, holder.itemView as TextView)
             }
         }
+
     }
 
     override fun getItemCount(): Int {
         return mNumbers.size
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(mContext).inflate(R.layout.item_number_grid, parent, false))
     }
 
