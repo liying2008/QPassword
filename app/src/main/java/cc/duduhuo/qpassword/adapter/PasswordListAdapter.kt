@@ -106,7 +106,7 @@ class PasswordListAdapter(private val mContext: Context) : RecyclerView.Adapter<
         return true
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(mContext).inflate(R.layout.item_password, parent, false)
         return ViewHolder(view)
     }

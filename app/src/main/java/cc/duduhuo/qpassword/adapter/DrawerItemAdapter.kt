@@ -23,11 +23,11 @@ import kotlinx.android.synthetic.main.item_drawer_title.view.*
  */
 class DrawerItemAdapter(private val mContext: Context) : RecyclerView.Adapter<DrawerItemAdapter.DrawerViewHolder>() {
     companion object {
-        private val TYPE_DIVIDER = 0
-        private val TYPE_GROUP = 1
-        private val TYPE_OPERATION = 2
-        private val TYPE_HEADER = 3
-        private val TYPE_TITLE = 4
+        private const val TYPE_DIVIDER = 0
+        private const val TYPE_GROUP = 1
+        private const val TYPE_OPERATION = 2
+        private const val TYPE_HEADER = 3
+        private const val TYPE_TITLE = 4
     }
 
     private var mLastIndex = -1
@@ -151,7 +151,7 @@ class DrawerItemAdapter(private val mContext: Context) : RecyclerView.Adapter<Dr
         return super.getItemViewType(position)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): DrawerViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DrawerViewHolder {
         var viewHolder: DrawerViewHolder? = null
         val inflater = LayoutInflater.from(mContext)
         when (viewType) {

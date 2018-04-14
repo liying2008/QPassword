@@ -6,25 +6,26 @@
 [![license](https://img.shields.io/github/license/liying2008/QPassword.svg)](https://github.com/liying2008/QPassword/blob/master/LICENSE)
 
 
-> ### [Download Latest APK](https://github.com/liying2008/QPassword/releases/download/v1.0.0_beta/qpassword_v1.0.0_beta.apk)
+> ### [Download Latest APK](https://github.com/liying2008/QPassword/releases/download/v1.0.0/qpassword_v1.0.0.apk)
 
 Compiling Environment
 ---------------------
-- compileSdkVersion 26
-- Gradle Version 4.1
-- Kotlin Version 1.2.0
+- compileSdkVersion 27
+- targetSdkVersion 27
+- Gradle Version 4.4
+- Kotlin Version 1.2.31
 
 ### Linux
 ```shell
-./gradlew build
+./gradlew assembleDebug
 ```
 
 ### Windows
 ```shell
-gradlew.bat build
+gradlew assembleDebug
 ```
 
-> ### 项目可直接导入 <code>Android Studio 3.0.1</code> 中运行。
+> ### 项目可直接导入 <code>Android Studio 3.1.1</code> 中运行。
 
 Primary Function
 ----------------
@@ -47,7 +48,11 @@ ScreenShot
 
 Update
 ------
-2017-12-03
+2018-04-14
+
+UpdateLog
+------
+[点击查看更新日志](CHANGELOG.md)
 
 Contact Me
 ---------
@@ -64,7 +69,7 @@ License
 ----
 
 ```
-Copyright 2017 独毒火
+Copyright 2017-2018 独毒火
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

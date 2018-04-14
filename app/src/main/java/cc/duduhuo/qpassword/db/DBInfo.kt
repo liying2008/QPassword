@@ -16,23 +16,23 @@ import cc.duduhuo.qpassword.bean.Password
 object DBInfo {
 
     /** 数据库名称 */
-    val DB_NAME = "password.db"
+    const val DB_NAME = "password.db"
     /** 数据库版本 */
-    val DB_VERSION = 1
+    const val DB_VERSION = 1
 
     /**
      * 数据库表
      */
     object Table {
-        val TB_KEY = "password_key"
-        val TB_PASSWORD = "password"
-        val TB_GROUP = "password_group"
+        const val TB_KEY = "password_key"
+        const val TB_PASSWORD = "password"
+        const val TB_GROUP = "password_group"
 
-        val TB_KEY_CREATE = "CREATE TABLE IF NOT EXISTS " + TB_KEY + " (" +
+        const val TB_KEY_CREATE = "CREATE TABLE IF NOT EXISTS " + TB_KEY + " (" +
             Key.KEY + " TEXT PRIMARY KEY," +
             Key.MODE + " INTEGER NOT NULL" +
             ");"
-        val TB_PASSWORD_CREATE = "CREATE TABLE IF NOT EXISTS " + TB_PASSWORD + " (" +
+        const val TB_PASSWORD_CREATE = "CREATE TABLE IF NOT EXISTS " + TB_PASSWORD + " (" +
             Password.ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
             Password.CREATE_DATE + " INTEGER NOT NULL," +
             Password.TITLE + " TEXT NOT NULL, " +
@@ -43,7 +43,7 @@ object DBInfo {
             Password.NOTE + " TEXT NOT NULL," +
             Password.GROUP_NAME + " TEXT NOT NULL" +
             ");"
-        val TB_GROUP_CREATE = "CREATE TABLE IF NOT EXISTS " + TB_GROUP + " (" +
+        const val TB_GROUP_CREATE = "CREATE TABLE IF NOT EXISTS " + TB_GROUP + " (" +
             Group.NAME + " TEXT PRIMARY KEY" +
             ");"
     }
