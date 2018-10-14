@@ -12,7 +12,8 @@
         android:id="@+id/iv_ic"
         android:layout_width="@dimen/drawer_item_icon_size"
         android:layout_height="@dimen/drawer_item_icon_size"
-        tools:background="@drawable/ic_group"/>
+        tools:background="@drawable/ic_group"
+        android:contentDescription="TODO" />
 
     <TextView
         android:id="@+id/tv_title"

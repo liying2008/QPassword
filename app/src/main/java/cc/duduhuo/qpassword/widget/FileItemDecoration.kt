@@ -25,15 +25,15 @@ class FileItemDecoration(val context: Context) : RecyclerView.ItemDecoration() {
     private val mAttrs = intArrayOf(android.R.attr.listDivider)
 
     init {
-        val a = context.obtainStyledAttributes(mAttrs)
-        mDivider = a.getDrawable(0)
-        a.recycle()
+        val attr = context.obtainStyledAttributes(mAttrs)
+        mDivider = attr.getDrawable(0)!!
+        attr.recycle()
     }
 
     /**
      * 获取分割线尺寸
      */
-    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State?) {
+    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
         super.getItemOffsets(outRect, view, parent, state)
         outRect.set(0, 0, 0, mDividerHeight)
     }
@@ -41,7 +41,7 @@ class FileItemDecoration(val context: Context) : RecyclerView.ItemDecoration() {
     /**
      * 绘制分割线
      */
-    override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State?) {
+    override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         super.onDraw(c, parent, state)
         drawHorizontal(c, parent)
         drawVertical(c, parent)
