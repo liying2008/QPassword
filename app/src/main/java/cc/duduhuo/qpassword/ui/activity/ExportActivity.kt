@@ -93,9 +93,9 @@ class ExportActivity : BaseActivity() {
                     if (shouldShowPermissionRationale(PERMISSION)) {
                         Snackbar.make(view, R.string.permission_write_rationale,
                             Snackbar.LENGTH_INDEFINITE)
-                            .setAction(R.string.ok, {
+                            .setAction(R.string.ok) {
                                 requestPermission(PERMISSION, REQUEST_PERMISSION)
-                            }).show()
+                            }.show()
                     } else {
                         requestPermission(PERMISSION, REQUEST_PERMISSION)
                     }

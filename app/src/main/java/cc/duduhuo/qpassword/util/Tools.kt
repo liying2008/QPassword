@@ -150,7 +150,7 @@ fun openBrowser(context: Context, url: String): Boolean {
  */
 fun sendEmail(context: Context, email: String, subject: String, text: String): Boolean {
     val mailIntent = Intent(Intent.ACTION_SENDTO)
-    mailIntent.data = Uri.parse("mailto:" + email)
+    mailIntent.data = Uri.parse("mailto:$email")
     mailIntent.putExtra(Intent.EXTRA_SUBJECT, subject)
     mailIntent.putExtra(Intent.EXTRA_TEXT, text)
     val componentName = mailIntent.resolveActivity(context.packageManager)

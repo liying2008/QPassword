@@ -3,7 +3,6 @@ package cc.duduhuo.qpassword.service.task
 import android.os.AsyncTask
 import cc.duduhuo.qpassword.db.GroupService
 import cc.duduhuo.qpassword.service.listener.OnGroupChangeListener
-import cc.duduhuo.qpassword.ui.activity.BaseActivity
 
 /**
  * =======================================================

@@ -25,6 +25,7 @@
     <!--主菜单项-->
     <string name="action_function">更多功能</string>
     <string name="action_add">添加密码</string>
+    <string name="action_search">搜索</string>
     <string name="action_modify_main">修改主密码</string>
     <string name="action_import_export">导入与导出</string>
     <string name="action_other">其他功能</string>

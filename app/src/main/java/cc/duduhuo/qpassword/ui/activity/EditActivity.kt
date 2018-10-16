@@ -1,5 +1,6 @@
 package cc.duduhuo.qpassword.ui.activity
 
+import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -113,6 +114,7 @@ class EditActivity : BaseActivity(), OnGetPasswordListener, OnGetPasswordsListen
     /**
      * 创建新分组
      */
+    @SuppressLint("InflateParams")
     private fun createGroup() {
         val builder = AlertDialog.Builder(this)
         val view = layoutInflater.inflate(R.layout.dialog_add_group, null, false)

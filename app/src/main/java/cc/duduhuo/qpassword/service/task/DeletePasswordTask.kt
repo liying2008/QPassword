@@ -1,7 +1,6 @@
 package cc.duduhuo.qpassword.service.task
 
 import android.os.AsyncTask
-import android.util.Log
 import cc.duduhuo.qpassword.bean.Password
 import cc.duduhuo.qpassword.db.PasswordService
 import cc.duduhuo.qpassword.service.listener.OnPasswordChangeListener

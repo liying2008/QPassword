@@ -1,5 +1,6 @@
 package cc.duduhuo.qpassword.ui.activity
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Point
@@ -92,9 +93,10 @@ class AboutActivity : BaseActivity() {
         }
     }
 
-    /**
-     * 关于作者
-     */
+    @SuppressLint("InflateParams")
+        /**
+         * 关于作者
+         */
     fun aboutMe(v: View) {
         val builder = AlertDialog.Builder(this)
         builder.setTitle(R.string.about_author)
