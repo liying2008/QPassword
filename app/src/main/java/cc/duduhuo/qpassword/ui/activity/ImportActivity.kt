@@ -96,9 +96,9 @@ class ImportActivity : BaseActivity(), FileListAdapter.OnFileClickListener, OnPa
                 if (shouldShowPermissionRationale(PERMISSION)) {
                     Snackbar.make(main_layout, R.string.permission_read_rationale,
                         Snackbar.LENGTH_INDEFINITE)
-                        .setAction(R.string.ok, {
+                        .setAction(R.string.ok) {
                             requestPermission(PERMISSION, REQUEST_PERMISSION)
-                        })
+                        }
                         .show()
                 } else {
                     requestPermission(PERMISSION, REQUEST_PERMISSION)
@@ -225,7 +225,7 @@ class ImportActivity : BaseActivity(), FileListAdapter.OnFileClickListener, OnPa
         val builder = AlertDialog.Builder(this)
         builder.setTitle(R.string.delete_file)
         builder.setMessage(getString(R.string.delete_file_message, fileName))
-        builder.setNegativeButton(R.string.delete, { _, _ ->
+        builder.setNegativeButton(R.string.delete) { _, _ ->
             val ok = File(absolutePath).delete()
             if (ok) {
                 // 刷新 RecyclerView
@@ -233,14 +233,14 @@ class ImportActivity : BaseActivity(), FileListAdapter.OnFileClickListener, OnPa
             } else {
                 // 删除文件失败
                 Snackbar.make(rv_file, R.string.delete_fail, Snackbar.LENGTH_LONG)
-                    .setAction(R.string.refresh_file_list, {
+                    .setAction(R.string.refresh_file_list) {
                         initData(refresh = true)
-                    }).show()
+                    }.show()
             }
-        })
-        builder.setPositiveButton(R.string.cancel, { _, _ ->
+        }
+        builder.setPositiveButton(R.string.cancel) { _, _ ->
             // no op
-        })
+        }
         builder.create().show()
         return true
     }

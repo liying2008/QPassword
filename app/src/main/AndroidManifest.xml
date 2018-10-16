@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="cc.duduhuo.qpassword">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="cc.duduhuo.qpassword">
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name=".app.App"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:replace="android:allowBackup">
 
         <!-- 启动界面 -->
         <activity
@@ -19,9 +22,9 @@
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar.FullScreen">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
@@ -30,71 +33,59 @@
             android:name=".ui.activity.MainActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <!-- 添加密码/更新密码界面 -->
         <activity
             android:name=".ui.activity.EditActivity"
-            android:configChanges="orientation|screenSize"/>
+            android:configChanges="orientation|screenSize" />
         <!-- 导出密码界面 -->
         <activity
             android:name=".ui.activity.ExportActivity"
-            android:configChanges="orientation|screenSize">
-        </activity>
+            android:configChanges="orientation|screenSize" />
         <!-- 导入密码界面 -->
         <activity
             android:name=".ui.activity.ImportActivity"
-            android:configChanges="orientation|screenSize">
-        </activity>
+            android:configChanges="orientation|screenSize" />
         <!-- 创建图案密码界面 -->
         <activity
             android:name=".ui.activity.CreatePatternLockActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait" />
         <!-- 图案密码解锁界面 -->
         <activity
             android:name=".ui.activity.PatternLockActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait" />
         <!-- 主密码创建选项界面 -->
         <activity
             android:name=".ui.activity.CreateKeyOptionsActivity"
-            android:configChanges="orientation|screenSize">
-        </activity>
+            android:configChanges="orientation|screenSize" />
         <!-- 创建数字密码界面 -->
         <activity
             android:name=".ui.activity.CreateNumberLockActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait" />
         <!-- 创建复杂密码界面 -->
         <activity
             android:name=".ui.activity.CreateComplexLockActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateVisible">
-        </activity>
+            android:windowSoftInputMode="stateVisible" />
         <!-- 数字密码解锁界面 -->
         <activity
             android:name=".ui.activity.NumberLockActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait" />
         <!-- 复杂密码解锁界面 -->
         <activity
             android:name=".ui.activity.ComplexLockActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateVisible">
-        </activity>
+            android:windowSoftInputMode="stateVisible" />
         <!--关于界面-->
         <activity
             android:name=".ui.activity.AboutActivity"
-            android:configChanges="orientation|screenSize">
-        </activity>
+            android:configChanges="orientation|screenSize" />
 
         <!-- 主后台服务 -->
         <service
             android:name=".service.MainService"
             android:enabled="true"
-            android:exported="false">
-        </service>
+            android:exported="false" />
 
     </application>
 

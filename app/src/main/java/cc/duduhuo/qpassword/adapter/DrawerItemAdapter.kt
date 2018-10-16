@@ -237,12 +237,11 @@ class DrawerItemAdapter(private val mContext: Context) : RecyclerView.Adapter<Dr
         fun onOperationItemClick(groupDrawerItem: OperationDrawerItem)
     }
 
-    inner open class DrawerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    open inner class DrawerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     /**
      * 分组菜单和操作菜单
      */
-
     inner class NormalViewHolder(itemView: View) : DrawerViewHolder(itemView)
 
     /**

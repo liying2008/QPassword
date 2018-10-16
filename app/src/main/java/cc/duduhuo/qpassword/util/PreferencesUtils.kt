@@ -13,7 +13,7 @@ import android.content.Context
  */
 
 object PreferencesUtils {
-    private val PREFERENCES_NAME = "qpassword"
+    private const val PREFERENCES_NAME = "qpassword"
 
     /**
      * put string preferences

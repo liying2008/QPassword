@@ -16,4 +16,5 @@ data class Export @JvmOverloads constructor(
     /** 主密码的 SHA1 值 */
     var key: String = "",
     /** 密码列表 */
-    var passwords: List<Password> = mutableListOf())
+    var passwords: List<Password> = mutableListOf()
+)

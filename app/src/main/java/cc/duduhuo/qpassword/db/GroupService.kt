@@ -91,7 +91,7 @@ class GroupService(context: Context) {
 
     /**
      * 删除分组（同时删除该分组下的所有密码）
-     * @param group 分组名称
+     * @param groupName 分组名称
      * @return 影响的行数
      */
     fun deleteGroup(groupName: String): Int {

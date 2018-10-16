@@ -1,12 +1,8 @@
 package cc.duduhuo.qpassword.service
 
-import android.app.Activity
-import android.app.Dialog
-import android.app.ProgressDialog
 import android.content.Context
 import android.os.AsyncTask
 import android.os.Binder
-import android.support.v7.app.AppCompatActivity
 import cc.duduhuo.qpassword.bean.Group
 import cc.duduhuo.qpassword.bean.Key
 import cc.duduhuo.qpassword.bean.Password
@@ -15,7 +11,6 @@ import cc.duduhuo.qpassword.db.KeyService
 import cc.duduhuo.qpassword.db.PasswordService
 import cc.duduhuo.qpassword.service.listener.*
 import cc.duduhuo.qpassword.service.task.*
-import cc.duduhuo.qpassword.ui.activity.BaseActivity
 
 /**
  * =======================================================
@@ -214,7 +209,7 @@ class MainBinder(context: Context) : Binder() {
 
     /**
      * 添加新密码List
-     * @param password 新密码
+     * @param passwords 新密码
      */
     fun insertPasswords(passwords: List<Password>) {
         val task = InsertPasswordsTask(passwords, mPasswordService, mGroupService)
@@ -238,7 +233,7 @@ class MainBinder(context: Context) : Binder() {
 
     /**
      * 删除分组
-     * @param group 要删除的分组（该分组下的所有密码会一并删除）
+     * @param groupName 要删除的分组（该分组下的所有密码会一并删除）
      */
     fun deleteGroup(groupName: String) {
         val task = DeleteGroupTask(groupName, mGroupService)

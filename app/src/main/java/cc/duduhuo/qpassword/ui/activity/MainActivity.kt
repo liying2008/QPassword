@@ -1,5 +1,6 @@
 package cc.duduhuo.qpassword.ui.activity
 
+import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -35,6 +36,7 @@ import cc.duduhuo.qpassword.util.showSnackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import scut.carson_ho.searchview.SearchFragment
 import kotlin.properties.Delegates
 
 
@@ -50,6 +52,8 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
     private lateinit var mPasswordAdapter: PasswordListAdapter
     /** 密码分组列表 */
     private var mGroupList = mutableListOf<Group>()
+    /** 搜索控件 */
+    private var mSearchFragment: SearchFragment? = null
 
     companion object {
         private const val REQUEST_CODE_IMPORT = 0x0000
@@ -175,37 +179,10 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
         setSupportActionBar(toolbar)
 
         fab.setOnClickListener {
-            // 搜索密码
-            val builder = AlertDialog.Builder(this)
-            builder.setTitle(R.string.search_passwords)
-            val searchView = layoutInflater.inflate(R.layout.dialog_search_password, null, false)
-            builder.setView(searchView)
-            val etSearchKeyword = searchView.findViewById<EditText>(R.id.et_search_keyword)
-            builder.setPositiveButton(R.string.search, null)
-            val dialog = builder.create()
-            dialog.show()
-            // 弹出输入法面板
-            dialog.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE or WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
-
-            etSearchKeyword.setOnEditorActionListener { _, _, _ ->
-                val keyword = etSearchKeyword.text.toString().trim()
-                if (keyword.isEmpty()) {
-                    AppToast.showToast(R.string.search_keyword_can_not_be_empty)
-                } else {
-                    searchPasswords(keyword)
-                    dialog.dismiss()
-                }
-                return@setOnEditorActionListener true
-            }
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                val keyword = etSearchKeyword.text.toString().trim()
-                if (keyword.isEmpty()) {
-                    AppToast.showToast(R.string.search_keyword_can_not_be_empty)
-                } else {
-                    searchPasswords(keyword)
-                    dialog.dismiss()
-                }
-            }
+            // 添加密码
+            val intent = EditActivity.getIntent(this)
+            intent.putExtra(EditActivity.PASSWORD_GROUP, mGroupName)
+            startActivity(intent)
         }
 
         val toggle = ActionBarDrawerToggle(
@@ -288,11 +265,19 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.action_add -> {
-                // 添加密码
-                val intent = EditActivity.getIntent(this)
-                intent.putExtra(EditActivity.PASSWORD_GROUP, mGroupName)
-                startActivity(intent)
+            R.id.action_search -> {
+                // 搜索密码
+                if (mSearchFragment == null) {
+                    mSearchFragment = SearchFragment.newInstance()
+                    mSearchFragment!!.setOnSearchListener { keyword ->
+                        if (keyword.isEmpty()) {
+                            AppToast.showToast(R.string.search_keyword_can_not_be_empty)
+                        } else {
+                            searchPasswords(keyword)
+                        }
+                    }
+                }
+                mSearchFragment!!.show(supportFragmentManager, SearchFragment.TAG)
                 return true
             }
             R.id.action_modify_main -> {
@@ -392,6 +377,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
             }
         }
 
+        @SuppressLint("InflateParams")
         override fun onOperationItemClick(groupDrawerItem: OperationDrawerItem) {
             val title = groupDrawerItem.title
             if (title == getString(R.string.group_add)) {
@@ -406,7 +392,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
                 val dialog = builder.create()
                 dialog.show()
                 // 弹出输入法面板
-                dialog.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE or WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+                dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE or WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
                 etGroup.setOnEditorActionListener { _, _, _ ->
                     val groupName = etGroup.text.toString().trim()
                     if (groupName.isEmpty()) {
@@ -477,6 +463,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
      * 更新分组名
      * @param oldName 原分组名称
      */
+    @SuppressLint("InflateParams")
     private fun updateGroupName(oldName: String) {
         val updateBuilder = AlertDialog.Builder(this)
         val view = layoutInflater.inflate(R.layout.dialog_update_group, null, false)
@@ -490,7 +477,7 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
         val updateDialog = updateBuilder.create()
         updateDialog.show()
         // 弹出输入法面板
-        updateDialog.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE or WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+        updateDialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE or WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
 
         etGroup.setOnEditorActionListener { _, _, _ ->
             val groupName = etGroup.text.toString().trim()

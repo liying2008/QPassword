@@ -8,7 +8,6 @@ import cc.duduhuo.qpassword.db.PasswordService
 import cc.duduhuo.qpassword.service.listener.OnGroupChangeListener
 import cc.duduhuo.qpassword.service.listener.OnPasswordChangeListener
 import cc.duduhuo.qpassword.service.listener.OnPasswordFailListener
-import cc.duduhuo.qpassword.ui.activity.BaseActivity
 
 /**
  * =======================================================
