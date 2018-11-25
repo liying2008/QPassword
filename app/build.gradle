@@ -39,7 +39,7 @@ dependencies {
     // 注：此版本的 fastjson 不会报 default constructor not found 的错误
     implementation 'com.alibaba:fastjson:1.1.61.android'
     implementation 'com.andrognito.patternlockview:patternlockview:1.0.0'
-    implementation 'cc.duduhuo.util:digest-util-android:1.0.0'
+    implementation 'cc.duduhuo.util:digest-util:1.1.0'
     implementation 'com.google.guava:guava:26.0-android'
     implementation 'cc.duduhuo:search-view:1.1.6'
     testImplementation 'junit:junit:4.12'

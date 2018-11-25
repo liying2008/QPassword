@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/QPassword.iml" filepath="$PROJECT_DIR$/.idea/QPassword.iml" />
+      <module fileurl="file://$PROJECT_DIR$/QPassword.iml" filepath="$PROJECT_DIR$/QPassword.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
