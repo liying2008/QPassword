@@ -9,9 +9,9 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.os.*
-import android.support.design.widget.Snackbar
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
+import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.MenuItem
 import android.widget.EditText
 import cc.duduhuo.applicationtoast.AppToast
@@ -128,7 +128,7 @@ class ImportActivity : BaseActivity(), FileListAdapter.OnFileClickListener, OnPa
             mAdapter = FileListAdapter(this, files)
             // 设置文件名点击监听
             mAdapter!!.setOnFileClickListener(this)
-            rv_file.layoutManager = LinearLayoutManager(this)
+            rv_file.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
             rv_file.addItemDecoration(FileItemDecoration(this))
             rv_file.adapter = mAdapter
         }

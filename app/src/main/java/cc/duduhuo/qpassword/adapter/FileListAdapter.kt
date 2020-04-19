@@ -1,7 +1,7 @@
 package cc.duduhuo.qpassword.adapter
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +19,7 @@ import kotlinx.android.synthetic.main.item_import_file.view.*
  * =======================================================
  */
 class FileListAdapter(private val mContext: Context,
-                      private var mFileList: MutableList<ImportFile>) : RecyclerView.Adapter<FileListAdapter.ViewHolder>() {
+                      private var mFileList: MutableList<ImportFile>) : androidx.recyclerview.widget.RecyclerView.Adapter<FileListAdapter.ViewHolder>() {
     private var mFileClickListener: OnFileClickListener? = null
     fun setOnFileClickListener(listener: OnFileClickListener) {
         this.mFileClickListener = listener
@@ -63,7 +63,7 @@ class FileListAdapter(private val mContext: Context,
         return ViewHolder(view)
     }
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    class ViewHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView)
 
     /**
      * 文件名点击监听

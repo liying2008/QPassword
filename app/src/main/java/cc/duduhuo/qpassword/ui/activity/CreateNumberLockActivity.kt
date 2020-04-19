@@ -6,7 +6,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import android.support.v7.widget.GridLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
@@ -99,7 +99,7 @@ class CreateNumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClick
         tv_number_info.text = getString(R.string.please_enter_number_key, mMinKeyLength, mMaxKeyLength)
         mAdapter = NumberGridAdapter(this)
         rv_number_grid.adapter = mAdapter
-        rv_number_grid.layoutManager = GridLayoutManager(this, 3)
+        rv_number_grid.layoutManager = androidx.recyclerview.widget.GridLayoutManager(this, 3)
         mAdapter!!.setOnNumberClickListener(this)
         // 清空输入
         iv_clear_btn.setOnClickListener {

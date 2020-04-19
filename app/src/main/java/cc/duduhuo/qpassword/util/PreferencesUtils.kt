@@ -39,7 +39,7 @@ object PreferencesUtils {
      */
     fun getString(context: Context, key: String, defaultValue: String = ""): String {
         val settings = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
-        return settings.getString(key, defaultValue)
+        return settings.getString(key, defaultValue)!!
     }
 
     /**

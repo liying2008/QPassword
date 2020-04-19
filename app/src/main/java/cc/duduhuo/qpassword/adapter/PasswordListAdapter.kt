@@ -1,7 +1,7 @@
 package cc.duduhuo.qpassword.adapter
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
@@ -22,7 +22,7 @@ import java.util.*
  * Remarks:
  * =======================================================
  */
-class PasswordListAdapter(private val mContext: Context) : RecyclerView.Adapter<PasswordListAdapter.ViewHolder>() {
+class PasswordListAdapter(private val mContext: Context) : androidx.recyclerview.widget.RecyclerView.Adapter<PasswordListAdapter.ViewHolder>() {
     private var mPasswords: MutableList<Password> = mutableListOf()
     private var mActionListener: OnPasswordActionListener? = null
 
@@ -160,7 +160,7 @@ class PasswordListAdapter(private val mContext: Context) : RecyclerView.Adapter<
         return mPasswords.size
     }
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    class ViewHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView)
 
     /**
      * 设置密码操作监听器

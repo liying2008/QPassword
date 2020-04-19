@@ -1,7 +1,7 @@
 package cc.duduhuo.qpassword.adapter
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.item_drawer_title.view.*
  * Remarks:
  * =======================================================
  */
-class DrawerItemAdapter(private val mContext: Context) : RecyclerView.Adapter<DrawerItemAdapter.DrawerViewHolder>() {
+class DrawerItemAdapter(private val mContext: Context) : androidx.recyclerview.widget.RecyclerView.Adapter<DrawerItemAdapter.DrawerViewHolder>() {
     companion object {
         private const val TYPE_DIVIDER = 0
         private const val TYPE_GROUP = 1
@@ -78,12 +78,12 @@ class DrawerItemAdapter(private val mContext: Context) : RecyclerView.Adapter<Dr
                 }
             }
         }
-        if (index >= 0) {
+        return if (index >= 0) {
             mDataList.removeAt(index)
             notifyItemRemoved(index)
-            return true
+            true
         } else {
-            return false
+            false
         }
     }
 
@@ -237,7 +237,7 @@ class DrawerItemAdapter(private val mContext: Context) : RecyclerView.Adapter<Dr
         fun onOperationItemClick(groupDrawerItem: OperationDrawerItem)
     }
 
-    open inner class DrawerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    open inner class DrawerViewHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView)
 
     /**
      * 分组菜单和操作菜单

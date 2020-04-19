@@ -5,7 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 
 
@@ -17,7 +17,7 @@ import android.view.View
  * Remarks:
  * =======================================================
  */
-class FileItemDecoration(val context: Context) : RecyclerView.ItemDecoration() {
+class FileItemDecoration(val context: Context) : androidx.recyclerview.widget.RecyclerView.ItemDecoration() {
     private var mPaint: Paint? = null
     private var mDivider: Drawable
     /** 分割线高度 */
@@ -33,7 +33,7 @@ class FileItemDecoration(val context: Context) : RecyclerView.ItemDecoration() {
     /**
      * 获取分割线尺寸
      */
-    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+    override fun getItemOffsets(outRect: Rect, view: View, parent: androidx.recyclerview.widget.RecyclerView, state: androidx.recyclerview.widget.RecyclerView.State) {
         super.getItemOffsets(outRect, view, parent, state)
         outRect.set(0, 0, 0, mDividerHeight)
     }
@@ -41,7 +41,7 @@ class FileItemDecoration(val context: Context) : RecyclerView.ItemDecoration() {
     /**
      * 绘制分割线
      */
-    override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+    override fun onDraw(c: Canvas, parent: androidx.recyclerview.widget.RecyclerView, state: androidx.recyclerview.widget.RecyclerView.State) {
         super.onDraw(c, parent, state)
         drawHorizontal(c, parent)
         drawVertical(c, parent)
@@ -50,13 +50,13 @@ class FileItemDecoration(val context: Context) : RecyclerView.ItemDecoration() {
     /**
      * 绘制横向 item 分割线
      */
-    private fun drawHorizontal(canvas: Canvas, parent: RecyclerView) {
+    private fun drawHorizontal(canvas: Canvas, parent: androidx.recyclerview.widget.RecyclerView) {
         val left = parent.paddingLeft
         val right = parent.measuredWidth - parent.paddingRight
         val childSize = parent.childCount
         for (i in 0 until childSize) {
             val child = parent.getChildAt(i)
-            val layoutParams = child.layoutParams as RecyclerView.LayoutParams
+            val layoutParams = child.layoutParams as androidx.recyclerview.widget.RecyclerView.LayoutParams
             val top = child.bottom + layoutParams.bottomMargin
             val bottom = top + mDividerHeight
             mDivider.setBounds(left, top, right, bottom)
@@ -70,13 +70,13 @@ class FileItemDecoration(val context: Context) : RecyclerView.ItemDecoration() {
     /**
      * 绘制纵向 item 分割线
      */
-    private fun drawVertical(canvas: Canvas, parent: RecyclerView) {
+    private fun drawVertical(canvas: Canvas, parent: androidx.recyclerview.widget.RecyclerView) {
         val top = parent.paddingTop
         val bottom = parent.measuredHeight - parent.paddingBottom
         val childSize = parent.childCount
         for (i in 0 until childSize) {
             val child = parent.getChildAt(i)
-            val layoutParams = child.layoutParams as RecyclerView.LayoutParams
+            val layoutParams = child.layoutParams as androidx.recyclerview.widget.RecyclerView.LayoutParams
             val left = child.right + layoutParams.rightMargin
             val right = left + mDividerHeight
             mDivider.setBounds(left, top, right, bottom)
