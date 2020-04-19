@@ -44,7 +44,7 @@ class ComplexLockActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_complex_lock)
 
-        mRealKey = intent.getStringExtra(ComplexLockActivity.INTENT_KEY)
+        mRealKey = intent.getStringExtra(INTENT_KEY)!!
 
         mMaxKeyLength = resources.getInteger(R.integer.max_key_length)
         mMinKeyLength = resources.getInteger(R.integer.min_key_length)

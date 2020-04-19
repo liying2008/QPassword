@@ -49,7 +49,7 @@ class NumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClickListen
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_number_lock)
-        mRealKey = intent.getStringExtra(INTENT_KEY)
+        mRealKey = intent.getStringExtra(INTENT_KEY)!!
 
         mMaxKeyLength = resources.getInteger(R.integer.max_key_length)
         mMinKeyLength = resources.getInteger(R.integer.min_key_length)

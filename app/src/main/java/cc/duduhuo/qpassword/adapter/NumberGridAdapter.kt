@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.item_number_grid.view.*
  * Remarks:
  * =======================================================
  */
-class NumberGridAdapter(private val mContext: Context) : androidx.recyclerview.widget.RecyclerView.Adapter<NumberGridAdapter.ViewHolder>() {
+class NumberGridAdapter(private val mContext: Context) : RecyclerView.Adapter<NumberGridAdapter.ViewHolder>() {
     private val mNumbers: Array<String> = arrayOf("1", "2", "3", "4", "5", "6", "7", "8", "9",
         mContext.getString(R.string.delete), "0", mContext.getString(R.string.ok))
     private var mListener: OnNumberClickListener? = null
@@ -53,7 +53,7 @@ class NumberGridAdapter(private val mContext: Context) : androidx.recyclerview.w
         return ViewHolder(LayoutInflater.from(mContext).inflate(R.layout.item_number_grid, parent, false))
     }
 
-    class ViewHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView)
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     /**
      * 数字面板点击监听

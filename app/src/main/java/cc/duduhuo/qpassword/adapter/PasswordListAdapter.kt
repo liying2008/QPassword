@@ -22,14 +22,14 @@ import java.util.*
  * Remarks:
  * =======================================================
  */
-class PasswordListAdapter(private val mContext: Context) : androidx.recyclerview.widget.RecyclerView.Adapter<PasswordListAdapter.ViewHolder>() {
+class PasswordListAdapter(private val mContext: Context) : RecyclerView.Adapter<PasswordListAdapter.ViewHolder>() {
     private var mPasswords: MutableList<Password> = mutableListOf()
     private var mActionListener: OnPasswordActionListener? = null
 
     fun setData(passwords: List<Password>) {
         mPasswords.clear()
         mPasswords.addAll(passwords)
-        Collections.sort<Password>(mPasswords, mComparator)
+        Collections.sort(mPasswords, mComparator)
         notifyDataSetChanged()
     }
 
@@ -39,7 +39,7 @@ class PasswordListAdapter(private val mContext: Context) : androidx.recyclerview
      */
     fun addData(password: Password) {
         mPasswords.add(0, password)
-        Collections.sort<Password>(mPasswords, mComparator)
+        Collections.sort(mPasswords, mComparator)
         notifyDataSetChanged()
     }
 
@@ -160,7 +160,7 @@ class PasswordListAdapter(private val mContext: Context) : androidx.recyclerview
         return mPasswords.size
     }
 
-    class ViewHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView)
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     /**
      * 设置密码操作监听器

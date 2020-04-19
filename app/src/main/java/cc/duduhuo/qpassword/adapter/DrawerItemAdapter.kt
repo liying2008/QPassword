@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.item_drawer_title.view.*
  * Remarks:
  * =======================================================
  */
-class DrawerItemAdapter(private val mContext: Context) : androidx.recyclerview.widget.RecyclerView.Adapter<DrawerItemAdapter.DrawerViewHolder>() {
+class DrawerItemAdapter(private val mContext: Context) : RecyclerView.Adapter<DrawerItemAdapter.DrawerViewHolder>() {
     companion object {
         private const val TYPE_DIVIDER = 0
         private const val TYPE_GROUP = 1
@@ -126,7 +126,7 @@ class DrawerItemAdapter(private val mContext: Context) : androidx.recyclerview.w
             mLastIndex = -1
         } else {
             this.mCurrentGroup = currentGroup
-            val index = mDataList.filter { it is GroupDrawerItem }.indexOfFirst { (it as GroupDrawerItem).title == currentGroup }
+            val index = mDataList.filterIsInstance<GroupDrawerItem>().indexOfFirst { it.title == currentGroup }
             notifyItemChanged(index + 2)
             notifyItemChanged(mLastIndex)
             mLastIndex = index + 2
@@ -237,7 +237,7 @@ class DrawerItemAdapter(private val mContext: Context) : androidx.recyclerview.w
         fun onOperationItemClick(groupDrawerItem: OperationDrawerItem)
     }
 
-    open inner class DrawerViewHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView)
+    open inner class DrawerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     /**
      * 分组菜单和操作菜单

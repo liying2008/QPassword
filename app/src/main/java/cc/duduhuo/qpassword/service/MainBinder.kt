@@ -271,7 +271,7 @@ class MainBinder(context: Context) : Binder() {
 
         if (mTasks.isNotEmpty()) {
             mTasks.forEach {
-                if (it != null && it.status != AsyncTask.Status.FINISHED) {
+                if (it.status != AsyncTask.Status.FINISHED) {
                     it.cancel(true)
                 }
             }

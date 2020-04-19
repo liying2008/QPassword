@@ -90,10 +90,12 @@ class PatternLockActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pattern_lock)
         setTitle(R.string.title_pattern_unlock)
-        mKey = intent.getStringExtra(INTENT_KEY)
+        mKey = intent.getStringExtra(INTENT_KEY)!!
         mPatternLockView = findViewById(R.id.pattern_lock_view)
         mTvInfo = findViewById(R.id.tv_info)
         mPatternLockView.addPatternLockListener(mPatternLockViewListener)
+        // 关闭震动反馈
+        mPatternLockView.isTactileFeedbackEnabled = false
     }
 
     /**

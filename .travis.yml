@@ -6,7 +6,7 @@ android:
   components:
     - platform-tools
     - tools
-    - android-28
+    - android-29
     - extra-android-m2repository
 
 before_install:

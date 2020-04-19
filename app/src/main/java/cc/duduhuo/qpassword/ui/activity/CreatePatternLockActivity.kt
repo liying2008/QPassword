@@ -142,6 +142,8 @@ class CreatePatternLockActivity : BaseActivity() {
         mTvInfo = findViewById(R.id.tv_info)
         mPatternLockView.addPatternLockListener(mPatternLockViewListener)
         mPatternLockView.isInputEnabled = false
+        // 关闭震动反馈
+        mPatternLockView.isTactileFeedbackEnabled = false
         // 绑定服务
         val intent = MainService.getIntent(this)
         this.bindService(intent, mServiceConnection, BIND_AUTO_CREATE)
