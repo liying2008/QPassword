@@ -18,6 +18,7 @@ import cc.duduhuo.qpassword.util.aesEncrypt
  */
 class KeyService(context: Context) {
     private val mDbHelper: DatabaseHelper = DatabaseHelper(context)
+
     /**
      * 向数据库中添加一个主密码
      *

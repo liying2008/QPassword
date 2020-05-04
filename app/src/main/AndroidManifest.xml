@@ -49,11 +49,11 @@
         <!-- 创建图案密码界面 -->
         <activity
             android:name=".ui.activity.CreatePatternLockActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="fullSensor" />
         <!-- 图案密码解锁界面 -->
         <activity
             android:name=".ui.activity.PatternLockActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="fullSensor" />
         <!-- 主密码创建选项界面 -->
         <activity
             android:name=".ui.activity.CreateKeyOptionsActivity"
@@ -61,20 +61,20 @@
         <!-- 创建数字密码界面 -->
         <activity
             android:name=".ui.activity.CreateNumberLockActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="fullSensor" />
         <!-- 创建复杂密码界面 -->
         <activity
             android:name=".ui.activity.CreateComplexLockActivity"
-            android:screenOrientation="portrait"
+            android:screenOrientation="fullSensor"
             android:windowSoftInputMode="stateVisible" />
         <!-- 数字密码解锁界面 -->
         <activity
             android:name=".ui.activity.NumberLockActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="fullSensor" />
         <!-- 复杂密码解锁界面 -->
         <activity
             android:name=".ui.activity.ComplexLockActivity"
-            android:screenOrientation="portrait"
+            android:screenOrientation="fullSensor"
             android:windowSoftInputMode="stateVisible" />
         <!--关于界面-->
         <activity

@@ -1,7 +1,7 @@
 package cc.duduhuo.qpassword.adapter
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
@@ -29,7 +29,7 @@ class PasswordListAdapter(private val mContext: Context) : RecyclerView.Adapter<
     fun setData(passwords: List<Password>) {
         mPasswords.clear()
         mPasswords.addAll(passwords)
-        Collections.sort<Password>(mPasswords, mComparator)
+        Collections.sort(mPasswords, mComparator)
         notifyDataSetChanged()
     }
 
@@ -39,7 +39,7 @@ class PasswordListAdapter(private val mContext: Context) : RecyclerView.Adapter<
      */
     fun addData(password: Password) {
         mPasswords.add(0, password)
-        Collections.sort<Password>(mPasswords, mComparator)
+        Collections.sort(mPasswords, mComparator)
         notifyDataSetChanged()
     }
 

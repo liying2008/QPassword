@@ -1,7 +1,7 @@
 package cc.duduhuo.qpassword.util
 
-import cc.duduhuo.util.android.crypto.AES
-import cc.duduhuo.util.android.digest.Digest
+import cc.duduhuo.util.crypto.AES
+import cc.duduhuo.util.digest.Digest
 
 /**
  * =======================================================

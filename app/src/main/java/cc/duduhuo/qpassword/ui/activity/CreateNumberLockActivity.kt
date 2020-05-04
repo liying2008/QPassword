@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import android.support.v7.widget.GridLayoutManager
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
@@ -34,13 +33,16 @@ import kotlinx.android.synthetic.main.activity_create_number_lock.*
  */
 class CreateNumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClickListener {
     private var mMode: Int = MODE_CREATE
+
     /** 最小主密码长度 */
     private var mMinKeyLength: Int = 0
+
     /** 最大主密码长度 */
     private var mMaxKeyLength: Int = 0
     private var mKey: String = ""
     private var mMainBinder: MainBinder? = null
     private var mAdapter: NumberGridAdapter? = null
+
     /** 是否正在更改主密码（期间不允许finish Activity） */
     private var mUpdating = false
 
@@ -99,7 +101,7 @@ class CreateNumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClick
         tv_number_info.text = getString(R.string.please_enter_number_key, mMinKeyLength, mMaxKeyLength)
         mAdapter = NumberGridAdapter(this)
         rv_number_grid.adapter = mAdapter
-        rv_number_grid.layoutManager = GridLayoutManager(this, 3)
+        rv_number_grid.layoutManager = androidx.recyclerview.widget.GridLayoutManager(this, 3)
         mAdapter!!.setOnNumberClickListener(this)
         // 清空输入
         iv_clear_btn.setOnClickListener {
@@ -132,22 +134,33 @@ class CreateNumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClick
 
     override fun onClickOk(view: TextView) {
         if (mKey.length < mMinKeyLength) {
-            showSnackbar(main_layout, getString(R.string.key_length_can_not_too_short, mMinKeyLength))
+            showSnackbar(
+                main_layout,
+                getString(R.string.key_length_can_not_too_short, mMinKeyLength)
+            )
         } else {
             view.isEnabled = false
             view.setTextColor(resources.getColorStateList(R.color.disable_text_color))
             if (mMode == MODE_CREATE) {
-                mMainBinder?.insertKey(Key(mKey.sha1Hex(), Key.MODE_NUMBER), object : OnNewKeyListener {
-                    override fun onNewKey(key: Key) {
-                        Config.mKey = key
-                        Config.mOriKey = mKey
-                        startActivity(MainActivity.getIntent(this@CreateNumberLockActivity))
-                        finish()
-                    }
-                })
+                mMainBinder?.insertKey(
+                    Key(mKey.sha1Hex(), Key.MODE_NUMBER),
+                    object : OnNewKeyListener {
+                        override fun onNewKey(key: Key) {
+                            Config.mKey = key
+                            Config.mOriKey = mKey
+                            startActivity(MainActivity.getIntent(this@CreateNumberLockActivity))
+                            finish()
+                        }
+                    })
             } else if (mMode == MODE_UPDATE) {
                 AppToast.showToast(R.string.applying_key_changes)
-                mMainBinder?.updateKey(Config.mKey!!, Config.mOriKey, Key(mKey.sha1Hex(), Key.MODE_NUMBER), mKey, mOnKeyChangeListener)
+                mMainBinder?.updateKey(
+                    Config.mKey!!,
+                    Config.mOriKey,
+                    Key(mKey.sha1Hex(), Key.MODE_NUMBER),
+                    mKey,
+                    mOnKeyChangeListener
+                )
                 mUpdating = true
             }
         }

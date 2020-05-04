@@ -8,4 +8,4 @@ package cc.duduhuo.qpassword.util
  * Remarks:
  * =======================================================
  */
-fun IntArray.containsOnly(num: Int): Boolean = filter { it == num }.isNotEmpty()
+fun IntArray.containsOnly(num: Int): Boolean = any { it == num }

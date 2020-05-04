@@ -7,10 +7,10 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import android.support.v4.view.GravityCompat
-import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.LinearLayoutManager
+import androidx.core.view.GravityCompat
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -195,14 +195,14 @@ class MainActivity : BaseActivity(), OnGetPasswordsListener, OnPasswordChangeLis
         this.bindService(intent, mServiceConnection, BIND_AUTO_CREATE)
 
         mPasswordAdapter = PasswordListAdapter(this)
-        rv_password.layoutManager = LinearLayoutManager(this)
+        rv_password.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
         rv_password.adapter = mPasswordAdapter
         mPasswordAdapter.setOnPasswordActionListener(mActionListener)
         // 得到上次选中的分组名称
         mGroupName = PreferencesUtils.getString(this, Config.LAST_GROUP, getString(R.string.group_default))
 
         mMenuAdapter = DrawerItemAdapter(this)
-        rv_left_menu.layoutManager = LinearLayoutManager(this)
+        rv_left_menu.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
         mMenuAdapter.setOnItemClickListener(DrawerItemClickListener())
         rv_left_menu.adapter = mMenuAdapter
     }

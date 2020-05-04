@@ -111,7 +111,7 @@ class CreateComplexLockActivity : BaseActivity() {
      */
     fun ok(view: View) {
         // 隐藏输入法面板
-        (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(currentFocus.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
+        (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(currentFocus?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
 
         mKey = et_complex_lock.text.toString()
         if (mKey.length < mMinKeyLength) {

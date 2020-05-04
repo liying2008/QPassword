@@ -17,7 +17,7 @@ interface BaseListener {
      * 实现该 Listener 的 Activity 或 Dialog 是否存活
      */
     fun isAlive(): Boolean {
-        Log.d("TTT", "--> " + this.toString())
+        Log.d("TTT", "--> $this")
         if (this is Activity && this.isFinishing) {
             Log.d("TTT", this.javaClass.simpleName + " Die")
             return false

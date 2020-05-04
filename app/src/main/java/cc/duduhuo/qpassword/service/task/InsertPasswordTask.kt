@@ -17,9 +17,11 @@ import cc.duduhuo.qpassword.service.listener.OnPasswordFailListener
  * Remarks:
  * =======================================================
  */
-class InsertPasswordTask(private val mPassword: Password,
-                         private val mPasswordService: PasswordService,
-                         private val mGroupService: GroupService) : AsyncTask<Void, Void, Password>() {
+class InsertPasswordTask(
+    private val mPassword: Password,
+    private val mPasswordService: PasswordService,
+    private val mGroupService: GroupService
+) : AsyncTask<Void, Void, Password>() {
     private var mId: Long = 0L
     private var mIsNew = true
     private lateinit var mPasswordListeners: List<OnPasswordChangeListener>
@@ -59,17 +61,21 @@ class InsertPasswordTask(private val mPassword: Password,
 
     override fun onPostExecute(password: Password) {
         super.onPostExecute(password)
-        if (mId == -1L) {
-            mPasswordFailListeners.filter { it.isAlive() }.forEach { it.onInsertFail() }
-        } else if (mId == -2L) {
-            mPasswordFailListeners.filter { it.isAlive() }.forEach { it.onKeyLose() }
-        } else {
-            if (mIsNew) {
-                val group = Group()
-                group.name = password.groupName
-                mGroupListeners.filter { it.isAlive() }.forEach { it.onNewGroup(group) }
+        when (mId) {
+            -1L -> {
+                mPasswordFailListeners.filter { it.isAlive() }.forEach { it.onInsertFail() }
             }
-            mPasswordListeners.filter { it.isAlive() }.forEach { it.onNewPassword(password) }
+            -2L -> {
+                mPasswordFailListeners.filter { it.isAlive() }.forEach { it.onKeyLose() }
+            }
+            else -> {
+                if (mIsNew) {
+                    val group = Group()
+                    group.name = password.groupName
+                    mGroupListeners.filter { it.isAlive() }.forEach { it.onNewGroup(group) }
+                }
+                mPasswordListeners.filter { it.isAlive() }.forEach { it.onNewPassword(password) }
+            }
         }
     }
 }

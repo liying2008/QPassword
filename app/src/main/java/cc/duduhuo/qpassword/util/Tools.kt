@@ -6,8 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Environment
-import android.support.annotation.StringRes
-import android.support.design.widget.Snackbar
+import androidx.annotation.StringRes
+import com.google.android.material.snackbar.Snackbar
 import android.view.View
 import cc.duduhuo.qpassword.R
 import cc.duduhuo.qpassword.bean.Key
@@ -96,7 +96,7 @@ fun showSnackbar(view: View, text: CharSequence, duration: Int = Snackbar.LENGTH
 fun copyText(context: Context, text: String) {
     val cmbName = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     val clipDataName = ClipData.newPlainText(null, text)
-    cmbName.primaryClip = clipDataName
+    cmbName.setPrimaryClip(clipDataName)
 }
 
 /**
@@ -112,11 +112,16 @@ fun shareText(context: Context, text: String): Boolean {
     shareIntent.type = "text/*"
     shareIntent.putExtra(Intent.EXTRA_TEXT, text)
     val componentName = shareIntent.resolveActivity(context.packageManager)
-    if (componentName != null) {
-        context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.share_to)))
-        return true
+    return if (componentName != null) {
+        context.startActivity(
+            Intent.createChooser(
+                shareIntent,
+                context.getString(R.string.share_to)
+            )
+        )
+        true
     } else {
-        return false
+        false
     }
 }
 
@@ -131,11 +136,11 @@ fun openBrowser(context: Context, url: String): Boolean {
     val uri = Uri.parse(url)
     val intent = Intent(Intent.ACTION_VIEW, uri)
     val componentName = intent.resolveActivity(context.packageManager)
-    if (componentName != null) {
+    return if (componentName != null) {
         context.startActivity(intent)
-        return true
+        true
     } else {
-        return false
+        false
     }
 }
 
@@ -154,11 +159,11 @@ fun sendEmail(context: Context, email: String, subject: String, text: String): B
     mailIntent.putExtra(Intent.EXTRA_SUBJECT, subject)
     mailIntent.putExtra(Intent.EXTRA_TEXT, text)
     val componentName = mailIntent.resolveActivity(context.packageManager)
-    if (componentName != null) {
+    return if (componentName != null) {
         context.startActivity(mailIntent)
-        return true
+        true
     } else {
-        return false
+        false
     }
 }
 

@@ -10,7 +10,8 @@ package cc.duduhuo.qpassword.bean
  */
 data class Group(
     /** 分组名称 */
-    var name: String = "") {
+    var name: String = ""
+) {
     companion object {
         const val NAME = "name"
     }

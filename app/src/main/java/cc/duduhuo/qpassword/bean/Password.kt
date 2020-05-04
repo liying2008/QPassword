@@ -26,7 +26,8 @@ data class Password @JvmOverloads constructor(
     /** 备注 */
     var note: String = "",
     /** 所属分组 */
-    var groupName: String = "") {
+    var groupName: String = ""
+) {
 
     companion object {
         const val ID = "id"

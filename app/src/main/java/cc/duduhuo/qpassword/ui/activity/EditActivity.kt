@@ -7,7 +7,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import android.support.v7.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -126,7 +126,7 @@ class EditActivity : BaseActivity(), OnGetPasswordListener, OnGetPasswordsListen
         val dialog = builder.create()
         dialog.show()
         // 弹出输入法面板
-        dialog.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE or WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+        dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE or WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
         etGroup.setOnEditorActionListener { _, _, _ ->
             val groupName = etGroup.text.toString().trim()
             if (groupName.isEmpty()) {

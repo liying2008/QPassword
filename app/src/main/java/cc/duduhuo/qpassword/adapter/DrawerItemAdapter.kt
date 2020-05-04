@@ -1,7 +1,7 @@
 package cc.duduhuo.qpassword.adapter
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -78,12 +78,12 @@ class DrawerItemAdapter(private val mContext: Context) : RecyclerView.Adapter<Dr
                 }
             }
         }
-        if (index >= 0) {
+        return if (index >= 0) {
             mDataList.removeAt(index)
             notifyItemRemoved(index)
-            return true
+            true
         } else {
-            return false
+            false
         }
     }
 
@@ -126,7 +126,7 @@ class DrawerItemAdapter(private val mContext: Context) : RecyclerView.Adapter<Dr
             mLastIndex = -1
         } else {
             this.mCurrentGroup = currentGroup
-            val index = mDataList.filter { it is GroupDrawerItem }.indexOfFirst { (it as GroupDrawerItem).title == currentGroup }
+            val index = mDataList.filterIsInstance<GroupDrawerItem>().indexOfFirst { it.title == currentGroup }
             notifyItemChanged(index + 2)
             notifyItemChanged(mLastIndex)
             mLastIndex = index + 2

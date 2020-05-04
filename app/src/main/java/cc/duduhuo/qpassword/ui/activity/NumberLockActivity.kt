@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.support.v7.widget.GridLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import android.view.View
 import android.widget.TextView
 import cc.duduhuo.applicationtoast.AppToast
@@ -49,7 +49,7 @@ class NumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClickListen
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_number_lock)
-        mRealKey = intent.getStringExtra(INTENT_KEY)
+        mRealKey = intent.getStringExtra(INTENT_KEY)!!
 
         mMaxKeyLength = resources.getInteger(R.integer.max_key_length)
         mMinKeyLength = resources.getInteger(R.integer.min_key_length)
@@ -61,7 +61,7 @@ class NumberLockActivity : BaseActivity(), NumberGridAdapter.OnNumberClickListen
         tv_number_info.text = getString(R.string.please_enter_number_key, mMinKeyLength, mMaxKeyLength)
         mAdapter = NumberGridAdapter(this)
         rv_number_grid.adapter = mAdapter
-        rv_number_grid.layoutManager = GridLayoutManager(this, 3)
+        rv_number_grid.layoutManager = androidx.recyclerview.widget.GridLayoutManager(this, 3)
         mAdapter!!.setOnNumberClickListener(this)
         // 清空输入
         iv_clear_btn.setOnClickListener {

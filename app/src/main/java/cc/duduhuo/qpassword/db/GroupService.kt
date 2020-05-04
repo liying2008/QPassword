@@ -16,6 +16,7 @@ import cc.duduhuo.qpassword.bean.Password
  */
 class GroupService(context: Context) {
     private val mDbHelper: DatabaseHelper = DatabaseHelper(context)
+
     /**
      * 数据库中添加分组
      *
