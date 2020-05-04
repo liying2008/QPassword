@@ -10,6 +10,15 @@ android:
     - extra-google-m2repository
     - extra-android-m2repository
 
+before_install:
+  - mkdir -p ~/.android && touch ~/.android/repositories.cfg
+  - curl https://gist.githubusercontent.com/liying2008/b860e3c46063faf88c3e293719f9ec58/raw/d98694346c3a08cdba93109649a9f71b3c334938/android-sdk-license.sh | sh
+
+before_script:
+  - chmod +x gradlew
+
+script: ./gradlew assembleDebug
+
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
@@ -18,9 +27,3 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
     - $HOME/.android/build-cache
-
-before_script:
-  - mkdir -p ~/.android && touch ~/.android/repositories.cfg
-  - chmod +x gradlew
-
-script: ./gradlew assembleDebug
