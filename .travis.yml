@@ -20,6 +20,7 @@ cache:
     - $HOME/.android/build-cache
 
 before_script:
+  - mkdir -p ~/.android && touch ~/.android/repositories.cfg
   - chmod +x gradlew
 
 script: ./gradlew assembleDebug
