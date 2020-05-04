@@ -10,11 +10,9 @@ android:
     - extra-google-m2repository
     - extra-android-m2repository
 
-before_install:
-  - mkdir -p ~/.android && touch ~/.android/repositories.cfg
-  - curl https://gist.githubusercontent.com/liying2008/b860e3c46063faf88c3e293719f9ec58/raw/d98694346c3a08cdba93109649a9f71b3c334938/android-sdk-license.sh | sh
-
 before_script:
+  - mkdir -p ~/.android && touch ~/.android/repositories.cfg
+  - curl https://gist.githubusercontent.com/liying2008/b860e3c46063faf88c3e293719f9ec58/raw/android-sdk-license.sh | sh
   - chmod +x gradlew
 
 script: ./gradlew assembleDebug
