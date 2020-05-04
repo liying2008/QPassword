@@ -1,8 +1,9 @@
 <resources>
     <string name="app_name">七圈密码</string>
     <string name="app_name_debug">七圈密码 (调试)</string>
+    <string name="splash_q">Q</string>
     <string name="slogan">简单、安全、易用的密码记录本</string>
-    <string name="copyright">Copyright 2017 LiYing. All Rights Reserved.</string>
+    <string name="copyright">Copyright 2017–2020 LiYing. All Rights Reserved.</string>
     <string name="version">当前版本：v%s</string>
     <string name="title_add_password">添加密码</string>
     <string name="title_edit_password">修改密码</string>
