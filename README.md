@@ -5,8 +5,15 @@
 [![Github Releases](https://img.shields.io/github/downloads/liying2008/QPassword/total.svg)](https://codeload.github.com/liying2008/QPassword/zip/master)
 [![license](https://img.shields.io/github/license/liying2008/QPassword.svg)](https://github.com/liying2008/QPassword/blob/master/LICENSE)
 
+## QPassword 已交由 [yingyuelite/QPassword](https://github.com/yingyuelite/QPassword) 继续维护！
 
-> ### [Download Latest APK](https://github.com/liying2008/QPassword/releases/download/v1.0.1/qpassword_v1.0.1.apk)
+> **重要提醒**：  
+> 本仓库为 QPassword v1版本，目前已**不再维护**。v2版本的 QPassword 请到这个仓库（[yingyuelite/QPassword](https://github.com/yingyuelite/QPassword)）下载。
+
+> **数据迁移**：  
+> 首先打开 v1版本的应用，点击右上角菜单，选择“导出到存储卡”，选择“以非加密方式导出”，点击“开始导出”即可将密码数据导出的存储卡。  
+> 然后使用新版本（v2版本）的微信小程序或者应用，点击右上角“...”菜单，选择“导入密码”，点击“从v1版本导入密码”，选择刚刚导出的密码文件（一般在 `QPassword/password` 目录下），导入。  
+> 待确认导入成功之后，将刚才导出到存储卡的密码文件在文件管理器中删除，避免数据泄露。
 
 ## Compiling Environment
 
@@ -58,7 +65,6 @@ gradlew assembleDebug
 
 ## Contact Me
 
-CSDN：[http://blog.csdn.net/u012939909](http://blog.csdn.net/u012939909)  
 Email：[liruoer2008@yeah.net](mailto:liruoer2008@yeah.net)  
 
 ## Thanks
